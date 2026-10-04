@@ -358,6 +358,16 @@ The cropped card image resolution delivered to the callbacks depends on:
 
 ## Building and Running
 
+The `coordinates` module is maintained in
+[android.apexfission.math.coordinates](https://github.com/lambdawalker/android.apexfission.math.coordinates)
+and pinned here as a Git submodule. After pulling this change, initialize it before opening Gradle:
+
+```bash
+git submodule update --init --recursive
+```
+
+For a fresh checkout, use `git clone --recurse-submodules`. CI checkout steps must also fetch submodules (for `actions/checkout`, set `submodules: recursive`). Existing `project(":coordinates")` dependencies are unchanged.
+
 ### Build Debug APK
 ```bash
 ./gradlew :app:assembleDebug
