@@ -41,10 +41,14 @@ kotlin {
 }
 
 dependencies {
+
+
     implementation(project(":cardDetectionLite"))
     implementation(project(":tfmodel"))
-    implementation(project(":permissionsCompose"))
+    implementation(libs.apexfission.permission)
     implementation(project(":yolo"))
+
+    implementation(libs.androidx.compose.material.icons.extended)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

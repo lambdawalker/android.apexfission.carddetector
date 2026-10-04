@@ -1,5 +1,6 @@
 package com.apexfission.android.carddetectiontest
 
+import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,7 +22,16 @@ import com.apexfission.android.carddetectionlite.ui.detector.CardDetectorLite
 import com.apexfission.android.carddetectionlite.ui.detector.CardDetectorPreset
 import com.apexfission.android.carddetectionlite.ui.overlays.IdCaptureOverlay
 import com.apexfission.android.carddetectiontest.ui.theme.CardDetectionTestTheme
-import com.apexfission.android.permissionscompose.HandleCameraPermission
+import com.apexfission.android.permission.requester.HandlePermissions
+import com.apexfission.android.permission.ui.DefaultPermissionPage
+import com.apexfission.android.permission.ui.PermissionDescription
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
+import com.apexfission.android.permission.ui.ReadingPace
+import com.apexfission.android.permission.ui.estimateReadingDelayMillis
+
+private const val CAMERA_TITLE = "Scan documents"
+private const val CAMERA_BODY = "Allow camera access to capture a document when you start a scan."
 
 class CardDetectionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,12 +44,24 @@ class CardDetectionActivity : ComponentActivity() {
             CardDetectionTestTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
-                    HandleCameraPermission(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize(),
+                    HandlePermissions(
+                        permissions = listOf(
+                            PermissionDescription(
+                                permission = Manifest.permission.CAMERA,
+                                autoAdvanceDelayMillis = estimateReadingDelayMillis(
+                                    "$CAMERA_TITLE $CAMERA_BODY", ReadingPace.Slow
+                                )
+                            ){
+                                DefaultPermissionPage(
+                                    label = "Camera",
+                                    heroImage = Icons.Default.PhotoCamera,
+                                    title = CAMERA_TITLE,
+                                    body = CAMERA_BODY,
+                                )
+                            }
+                        ),
                         onBack = { finish() },
-                        onNotNow = { finish() }
+                        onNotNow = { finish() },
                     ) {
                         val isDetectionEnabled by mainViewModel.isDetectionEnabled.collectAsStateWithLifecycle()
                         val navigateBack by mainViewModel.navigateBack.collectAsStateWithLifecycle()

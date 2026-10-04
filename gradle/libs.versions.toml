@@ -30,8 +30,10 @@ mockito = "5.23.0"
 mockitoKotlin = "6.3.0"
 composeRuntime = "1.12.1"
 androidBuiltInKotlin = "9.4.0"
+permission = "0.2.1"
 
 [libraries]
+apexfission-permission = { module = "com.apexfission.androi:permission", version.ref = "permission" }
 
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 litert-support = { group = "com.google.ai.edge.litert", name = "litert-support", version.ref = "litert" }

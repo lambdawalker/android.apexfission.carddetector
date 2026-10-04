@@ -25,6 +25,5 @@ rootProject.name = "CardDetectionTest"
 include(":app")
 include(":cardDetectionLite")
 include(":tfmodel")
-include(":permissionsCompose")
 include(":coordinates")
 include(":yolo")
