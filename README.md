@@ -388,3 +388,7 @@ For a fresh checkout, use `git clone --recurse-submodules`. CI checkout steps mu
 ## License
 
 Copyright © ApexFission. All rights reserved.
+
+## YOLO module source
+
+The `yolo` module is maintained in [android.apexfission.yolo](https://github.com/lambdawalker/android.apexfission.yolo) and pinned here as a Git submodule. After pulling, run `git submodule update --init --recursive`. Fresh clones and CI must fetch submodules recursively. Existing `project(":yolo")` and `project(":coordinates")` dependencies remain unchanged; the host continues using its top-level coordinates module.
