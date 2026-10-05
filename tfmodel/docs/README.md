@@ -6,4 +6,4 @@ This Android asset module packages the bundled Sentinel card model and its label
 - [Validation](testing.md): packaging and device inference.
 - [Package map](packages.md): the catalog extension package.
 
-The module has minSdk 26, compileSdk 36, toolchain 17, and disables compression for tflite assets. See [build configuration](../build.gradle.kts).
+The module has minSdk 28, compileSdk 37, toolchain 17, and disables compression for tflite assets. See [build configuration](../build.gradle.kts).

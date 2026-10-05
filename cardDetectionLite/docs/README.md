@@ -12,9 +12,9 @@ The core Android library turns live camera or recorded video frames into tracked
 
 ## Module boundary
 
-The module depends on `:coordinates` for geometry, CameraX for capture, LiteRT/TFLite for inference, Media3 for simulation, Compose/lifecycle for UI state, and ML Kit for optional text recognition. It does not depend on `:tfmodel` in production; instrumented tests use that module's model. Permission UX is supplied by the separate `:permissionsCompose` module or by the host.
+The module consumes released coordinates and YOLO artifacts from Maven Central for geometry and inference, CameraX for capture, LiteRT/TFLite for inference, Media3 for simulation, Compose/lifecycle for UI state, and ML Kit for optional text recognition. It does not depend on `:tfmodel` in production; instrumented tests use that module's model. Permission UX is supplied by the published Apexfission Permissions library or by the host.
 
-The Android library uses minSdk 26, compileSdk 36, and Java/Kotlin toolchain 17. See [build configuration](../build.gradle.kts) for declared dependencies and publication coordinates.
+The Android library uses minSdk 28, compileSdk 37, and Java/Kotlin toolchain 17. See [build configuration](../build.gradle.kts) for declared dependencies and publication coordinates.
 
 ## Existing visual references
 

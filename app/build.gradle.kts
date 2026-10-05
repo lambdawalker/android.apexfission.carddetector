@@ -46,7 +46,7 @@ dependencies {
     implementation(project(":cardDetectionLite"))
     implementation(project(":tfmodel"))
     implementation(libs.apexfission.permission)
-    implementation(project(":yolo"))
+    implementation(libs.apexfission.yolo)
 
     implementation(libs.androidx.compose.material.icons.extended)
 

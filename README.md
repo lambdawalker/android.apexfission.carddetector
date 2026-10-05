@@ -19,7 +19,7 @@ Powered by a custom YOLO v11 TensorFlow Lite (LiteRT) model and a multi-frame dH
 - **Flexible Pre-processing (`PreProcessingImageTransformation`)**: Supports `FullImage`, `SquareCrop`, `VisibleImage`, and offset crop modes to optimize model input resolution.
 - **Customizable UI Slots**: Scoped slot API (`CardDetectorOverlayScope`) with built-in `IdCaptureOverlay`, animated guides, shutter controls, and flashlight toggles.
 - **Offline Video Simulator (`CardTrackingSimulator`)**: Replays detection logic over video URIs (`raw/video.mp4` or file URIs) for automated UI testing and offline verification without physical hardware.
-- **Multi-Module Workspace Architecture**: Clean separation between core detection, coordinate transformation chains, YOLO inference engine, cryoto utilities, permissions, and model asset catalog.
+- **Multi-Module Workspace Architecture**: Clean separation between core detection, core detection, demo, and model asset catalog, with geometry, YOLO, and permission libraries consumed from Maven Central.
 
 ---
 
@@ -28,10 +28,7 @@ Powered by a custom YOLO v11 TensorFlow Lite (LiteRT) model and a multi-frame dH
 | Module | Type | Description | Documentation |
 | :--- | :--- | :--- | :--- |
 | **`:cardDetectionLite`** | Android Library | Core library providing `CardDetectorLite`, CameraX preview, tracking state machine, overlays, and simulator. | [Core guide](cardDetectionLite/docs/README.md) |
-| **`:yolo`** | Android Library | YOLO object detection engine, TFLite inference core, tensor buffers, validation, and NMS/IoU post-processing. | - |
 | **`:tfmodel`** | Android Library | Model catalog extensions (`ModelCatalog.TfLite`), asset paths, class dictionaries, and card class ID groupings. | [Model guide](tfmodel/docs/guide.md) |
-| **`:coordinates`** | Kotlin/JVM | 2D coordinate space transformation engine (`ImageSpace`, `ImageBox`, `ImagePoint`, `ImageSpaceChain`). | [Geometry guide](coordinates/docs/README.md) |
-| **`:cryoto`** | Android Library | Cryptography and key attestation utilities. | - |
 | **`:app`** | Android App | Sample test bench demonstrating live camera card detection and offline video tracking simulation. | [Sample guide](app/docs/guide.md) |
 
 Each module has a `docs/README.md` index and `docs/packages.md` map where applicable. Each directory containing Kotlin source has its own `README.md`, including test source sets.
@@ -41,34 +38,31 @@ Each module has a `docs/README.md` index and `docs/packages.md` map where applic
 ## Getting Started
 
 ### 1. Set Up Environment
-1. Set up the Android SDK used by the build (`compileSdk 37`) and Java toolchain 17. The sample requires Android API 28 or newer; Android libraries declare `minSdk 26`.
+1. Set up the Android SDK used by the build (`compileSdk 37`) and JDK 21 for the Gradle daemon and toolchain 17 for compilation. All modules require Android API 28 or newer.
 2. Hydrate Git LFS assets when cloning so model and video files contain their real data.
 3. Read [callback ownership and lifecycle](cardDetectionLite/docs/lifecycle.md) before retaining or dispatching images.
 
 ### 2. Add Dependencies
 
-#### `gradle/libs.versions.toml`
-```toml
-[versions]
-carddetectionlite = "0.1.0-B2"
-sentinel = "TFY11640F16-0.1.0-B2"
-permissioncompose = "0.0.1-B0"
+Read [IMPORT.md](IMPORT.md) for confirmed releases of this repository's core and
+model artifacts. The old hardcoded beta version strings have been replaced by a
+manual, signed release workflow; no new release is advertised before confirmation.
 
-[libraries]
-af-cdl-core = { module = "com.apexfission.android.carddetectionlite:core", version.ref = "carddetectionlite" }
-af-cdl-sentinel = { module = "com.apexfission.android.carddetectionlite:sentinel-card-model", version.ref = "sentinel" }
-af-permission-compose = { module = "com.apexfission.android.permissionscompose:core", version.ref = "permissioncompose" }
-```
+External library dependencies are pinned in `gradle/libs.versions.toml`:
 
-#### `app/build.gradle.kts`
-```kotlin
-dependencies {
-    implementation(project(":cardDetectionLite"))
-    implementation(project(":yolo"))
-    implementation(project(":tfmodel"))
-    implementation(project(":permissionsCompose"))
-}
-```
+| Library | Maven dependency |
+| --- | --- |
+| YOLO | `com.apexfission.android:yolo:0.1.0` |
+| Coordinates | `com.apexfission.android.math:coordinates:0.1.0` |
+| Permissions | `com.apexfission.androi:permission:0.2.1` |
+
+The permission group spelling is intentional. No Git submodules, sibling source
+checkouts, or Maven Local repositories are used. Core exposes YOLO and coordinates
+as `api` dependencies because their types appear in public signatures.
+
+The demo builds this repository's core and model modules locally so it tests the
+code being developed. The model module exports a dependency on the core; Gradle
+publication maps this to the matching released core coordinates.
 
 ### 3. Declare Camera Permissions
 
@@ -358,37 +352,22 @@ The cropped card image resolution delivered to the callbacks depends on:
 
 ## Building and Running
 
-The `coordinates` module is maintained in
-[android.apexfission.math.coordinates](https://github.com/lambdawalker/android.apexfission.math.coordinates)
-and pinned here as a Git submodule. After pulling this change, initialize it before opening Gradle:
+YOLO and coordinates are resolved from Maven Central. Plain clones work; Git LFS
+is still needed for this repository's image/video assets. No submodule
+initialization is required.
 
 ```bash
-git submodule update --init --recursive
+./gradlew :cardDetectionLite:testDebugUnitTest :cardDetectionLite:lintRelease :app:assembleDebug
+./gradlew :cardDetectionLite:assembleDebugAndroidTest :app:assembleDebugAndroidTest
 ```
 
-For a fresh checkout, use `git clone --recurse-submodules`. CI checkout steps must also fetch submodules (for `actions/checkout`, set `submodules: recursive`). Existing `project(":coordinates")` dependencies are unchanged.
+Run `:cardDetectionLite:connectedDebugAndroidTest` on a device for camera/image
+integration checks. CI builds the device tests but does not run them on a device.
 
-### Build Debug APK
-```bash
-./gradlew :app:assembleDebug
-```
+## Publishing
 
-### Run JVM Unit Tests
-```bash
-./gradlew :cardDetectionLite:testDebugUnitTest :yolo:testDebugUnitTest :coordinates:test
-```
-
-### Build Instrumented Android Test APK
-```bash
-./gradlew :cardDetectionLite:assembleDebugAndroidTest :yolo:assembleDebugAndroidTest
-```
-
----
-
-## License
-
-Copyright © ApexFission. All rights reserved.
-
-## YOLO module source
-
-The `yolo` module is maintained in [android.apexfission.yolo](https://github.com/lambdawalker/android.apexfission.yolo) and pinned here as a Git submodule. After pulling, run `git submodule update --init --recursive`. Fresh clones and CI must fetch submodules recursively. Existing `project(":yolo")` and `project(":coordinates")` dependencies remain unchanged; the host continues using its top-level coordinates module.
+The manual **Publish Card Detection Lite libraries** workflow uses this repo's
+`maven-central` environment and publishes the release variants of `core` and
+`sentinel-card-model` at the same stable version. The demo APK is an Actions
+artifact, not a Maven library. See [the release runbook](docs/releases.md) for
+version selection, secrets, verification, and recovery.

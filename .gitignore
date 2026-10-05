@@ -55,3 +55,7 @@ google-services.json
 # OS Junk
 # ============================
 .DS_Store
+
+# Python release tooling
+__pycache__/
+*.pyc

@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
 
-    id("com.vanniktech.maven.publish") version "0.36.0"
+    id("com.vanniktech.maven.publish")
 }
 
 android {
@@ -14,7 +14,7 @@ android {
         version = release(37)
     }
     defaultConfig {
-        minSdk = 26
+        minSdk = 28
 
 
         consumerProguardFiles("consumer-rules.pro")
@@ -60,8 +60,8 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":coordinates"))
-    implementation(project(":yolo"))
+    api(libs.apexfission.coordinates)
+    api(libs.apexfission.yolo)
 
     implementation(libs.androidx.compose.material.icons.extended)
 
@@ -152,43 +152,5 @@ tasks.register<Copy>("runTestsAndExtractImages") {
 
 
 
-mavenPublishing {
-    publishToMavenCentral()
-    signAllPublications()
-}
 
-mavenPublishing {
-    coordinates(
-        "com.apexfission.android.carddetectionlite", "core", "0.1.0-B2"
-    )
-
-    pom {
-        name.set("Card Detection Lite")
-        description.set("Card Detection Lite is a high-performance Android module for real-time ID detection using Sentinel-Card and TFLite. Built with Jetpack Compose and CameraX, it leverages GPU acceleration for rapid inference. Key features include an auto-cutout tool, a lock-on process, and intelligent auto-focus.")
-        inceptionYear.set("2026")
-        url.set("https.github.com/lambdawalker/android.card_detection_lite")
-
-        licenses {
-            license {
-                name.set("The Apache License, Version 2.0")
-                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-            }
-        }
-        developers {
-            developer {
-                id.set("lambdawalker")
-                name.set("David Garcia")
-                url.set("https://github.com/lambdawalker")
-                email.set("lambdawalker@isdavid.com")
-            }
-        }
-
-        scm {
-            url.set("https://github.com/lambdawalker/android.card_detection_lite")
-            connection.set("scm:git:git://github.com:lambdawalker/android.card_detection_lite.git")
-            developerConnection.set("scm:git:ssh://git@github.com:lambdawalker/android.card_detection_lite.git")
-        }
-    }
-}
-
+apply(from = rootProject.file("gradle/publish-library.gradle.kts"))

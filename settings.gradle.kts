@@ -25,5 +25,3 @@ rootProject.name = "CardDetectionTest"
 include(":app")
 include(":cardDetectionLite")
 include(":tfmodel")
-include(":coordinates")
-include(":yolo")

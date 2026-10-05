@@ -18,7 +18,7 @@ The card engine, YOLO engine, and inference engine are separate layers. Lower-le
 
 YOLO postprocessing reverses letterbox scale/padding to recover coordinates in the image supplied to YOLO. The UI ViewModel then restores preprocessing crop offsets so reported card/features refer to the upright source frame.
 
-The callback bitmap is a card cutout, while metadata boxes remain in source-frame coordinates. Do not use those boxes directly as cutout-local or screen coordinates. Preview drawing uses the `:coordinates` ImageSpaceChain; see the [coordinate guide](../../coordinates/docs/guide.md).
+The callback bitmap is a card cutout, while metadata boxes remain in source-frame coordinates. Do not use those boxes directly as cutout-local or screen coordinates. Preview drawing uses the `:coordinates` ImageSpaceChain; see the [coordinate guide](https://github.com/lambdawalker/android.apexfission.math.coordinates/blob/main/docs/guide.md).
 
 `Detection` holds raw object metadata. `CardDetection` adds card/features, nullable ID, `lockOnProgress`, `LockingStatus`, and `DetectionSource`. Status moves through `LockingCard`, `NewCard`, and `CardLocked`; source distinguishes `Yolo` from `Hash`. Missing detections/time limits can reset tracking. Locking is temporal stability, not document authenticity or successful OCR.
 

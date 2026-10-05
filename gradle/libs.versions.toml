@@ -1,5 +1,7 @@
 [versions]
-agp = "9.4.0"
+apexfissionYolo = "0.1.0"
+apexfissionCoordinates = "0.1.0"
+agp = "9.4.1"
 cameraCoreVersion = "1.6.2"
 kotlin = "2.4.20"
 coreKtx = "1.19.0"
@@ -33,6 +35,8 @@ androidBuiltInKotlin = "9.4.0"
 permission = "0.2.1"
 
 [libraries]
+apexfission-yolo = { module = "com.apexfission.android:yolo", version.ref = "apexfissionYolo" }
+apexfission-coordinates = { module = "com.apexfission.android.math:coordinates", version.ref = "apexfissionCoordinates" }
 apexfission-permission = { module = "com.apexfission.androi:permission", version.ref = "permission" }
 
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
