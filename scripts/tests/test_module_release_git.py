@@ -101,3 +101,12 @@ class IndependentGitTests(unittest.TestCase):
         self.journal('tfmodel')
         p=self.repo/'gradle.properties';p.write_text(p.read_text().replace('modelCoreVersion=0.1.0','modelCoreVersion=0.1.1'))
         with self.assertRaisesRegex(ValueError,'Pinned core differs'):m.guard('tfmodel','0.1.1')
+
+    def test_rename_continues_module_version_without_public_new_artifact(self):
+        p=self.repo/'gradle.properties'
+        p.write_text(p.read_text().replace('POM_ARTIFACT_ID=core','POM_ARTIFACT_ID=card-detector'))
+        self.git('add','.');self.git('commit','-m','rename');self.git('push','origin','main')
+        with patch.object(m.common,'published_versions',return_value=[]) as fetch:
+            result=m.prepare('carddetector')
+        self.assertEqual(result['version'],'0.1.1')
+        fetch.assert_called_once_with('com.apexfission.android.carddetector','card-detector')
