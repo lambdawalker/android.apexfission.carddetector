@@ -4,7 +4,7 @@
 **No Maven Central release has been confirmed yet.**
 
 Installation snippets will appear here after the first successful publication.
-For now, use the [source-module instructions](README.md#use-as-a-source-module).
+For now, use the [source-module instructions](README.md#getting-started).
 
 Both artifacts are Android AARs requiring minSdk 28, compileSdk 37, JVM 17 and a
 Kotlin compiler compatible with 2.4.20. Add google() and mavenCentral() repositories.

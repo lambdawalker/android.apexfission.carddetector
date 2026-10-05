@@ -23,7 +23,7 @@ SEMVER = r'(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)'
 SUFFIXES = ('.pom', '.aar', '-sources.jar', '-javadoc.jar', '.module')
 DOC_FILES = ('IMPORT.md', 'docs/release.json')
 INSTALL_INPUTS = (*DOC_FILES, 'docs/templates/IMPORT.md.template', 'gradle.properties',
-                  'build.gradle.kts', 'cardDetectionLite/build.gradle.kts', 'tfmodel/build.gradle.kts', 'gradle/publish-library.gradle.kts', 'app/build.gradle.kts', 'settings.gradle.kts', 'gradle/libs.versions.toml',
+                  'build.gradle.kts', 'cardDetectionLite/build.gradle.kts', 'tfmodel/build.gradle.kts', 'app/build.gradle.kts', 'settings.gradle.kts', 'gradle/libs.versions.toml',
                   'scripts', '.github/workflows/publish-card-detection.yml')
 
 
@@ -345,7 +345,7 @@ def wait_for_publication(record, timeout=2400):
 def render(template, record):
     if record is None:
         status = '**No Maven Central release has been confirmed yet.**'
-        installation = 'Installation snippets will appear here after the first successful publication.\nFor now, use the [source-module instructions](README.md#use-as-a-source-module).'
+        installation = 'Installation snippets will appear here after the first successful publication.\nFor now, use the [source-module instructions](README.md#getting-started).'
     else:
         version_key(record['version'])
         group, artifact, version = (record[k] for k in ('group', 'artifact', 'version'))
