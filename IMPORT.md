@@ -42,31 +42,29 @@ carddetector = { module = "com.apexfission.android.carddetector:card-detector", 
 </dependency>
 ```
 
-## sentinel-card-model
+## card-detector-model
 
-Confirmed version: **0.1.0**. Source: [223f543e5f6862d296b2a54e96c35651a6d33eaa](https://github.com/lambdawalker/android.apexfission.carddetector/commit/223f543e5f6862d296b2a54e96c35651a6d33eaa).
-
-Configured next publication: `com.apexfission.android.carddetector:card-detector-model` — not yet confirmed here. The dependency below remains the last confirmed publication.
+Confirmed version: **0.1.1**. Source: [acb0035aee1a0aec0c6886617243514a040fa650](https://github.com/lambdawalker/android.apexfission.carddetector/commit/acb0035aee1a0aec0c6886617243514a040fa650).
 
 Exports `com.apexfission.android.carddetector:core:0.1.0`; the model version is independent.
 
 ### Gradle Kotlin DSL
 
 ```kotlin
-implementation("com.apexfission.android.carddetector:sentinel-card-model:0.1.0")
+implementation("com.apexfission.android.carddetector:card-detector-model:0.1.1")
 ```
 
 ### Gradle Groovy DSL
 
 ```groovy
-implementation 'com.apexfission.android.carddetector:sentinel-card-model:0.1.0'
+implementation 'com.apexfission.android.carddetector:card-detector-model:0.1.1'
 ```
 
 ### Version catalog
 
 ```toml
 [libraries]
-tfmodel = { module = "com.apexfission.android.carddetector:sentinel-card-model", version = "0.1.0" }
+tfmodel = { module = "com.apexfission.android.carddetector:card-detector-model", version = "0.1.1" }
 ```
 
 ### Maven
@@ -74,8 +72,8 @@ tfmodel = { module = "com.apexfission.android.carddetector:sentinel-card-model",
 ```xml
 <dependency>
   <groupId>com.apexfission.android.carddetector</groupId>
-  <artifactId>sentinel-card-model</artifactId>
-  <version>0.1.0</version>
+  <artifactId>card-detector-model</artifactId>
+  <version>0.1.1</version>
   <type>aar</type>
 </dependency>
 ```
