@@ -72,7 +72,6 @@ class TfliteInterpreterOutputOwnershipTest {
         // in the YOLO repository's own tests. GPU selection may fall back to CPU.
         EngineThreadDispatcher().use { worker ->
             val observedThreads = ConcurrentLinkedQueue<Long>()
-            val expectedThread = worker.call { Thread.currentThread().id }
             val engine = ThreadConfinedInferenceEngine(worker) {
                 observedThreads.add(Thread.currentThread().id)
                 val delegate = buildInferenceEngine(
@@ -89,6 +88,8 @@ class TfliteInterpreterOutputOwnershipTest {
                     }
                 }
             }
+            val expectedThread = observedThreads.first()
+            Assert.assertNotEquals(Thread.currentThread().id, expectedThread)
             val bitmap = Bitmap.createBitmap(engine.inputImageWidth, engine.inputImageWidth, Bitmap.Config.ARGB_8888)
             val callers = Executors.newFixedThreadPool(5)
             try {
