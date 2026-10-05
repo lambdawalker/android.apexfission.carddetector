@@ -1,14 +1,12 @@
-name: Publish Card Detector libraries
+name: Shared library publication
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       module:
-        description: 'Library to publish independently'
-        type: choice
+        description: 'Gradle library module selected by the dedicated caller'
+        type: string
         required: true
-        default: carddetector
-        options: [carddetector, tfmodel]
       initial_version:
         description: 'First release of this module only: explicit stable X.Y.Z (for example 0.1.0). Leave empty afterwards.'
         required: false

@@ -1,0 +1,28 @@
+name: Publish card-detector
+
+on:
+  workflow_dispatch:
+    inputs:
+      initial_version:
+        description: 'First release only: explicit stable X.Y.Z. Leave empty afterwards.'
+        required: false
+        default: ''
+        type: string
+      resume_version:
+        description: 'Recovery only: finalize this version without uploading again.'
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/publish-card-detection.yml
+    secrets: inherit
+    with:
+      module: carddetector
+      initial_version: ${{ inputs.initial_version }}
+      resume_version: ${{ inputs.resume_version }}
