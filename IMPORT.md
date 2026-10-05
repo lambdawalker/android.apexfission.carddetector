@@ -1,5 +1,5 @@
 <!-- Generated from confirmed public release metadata. Run ./gradlew generateImportDocs. -->
-# Install Card Detection Lite
+# Install Card Detector
 
 **No Maven Central release has been confirmed yet.**
 

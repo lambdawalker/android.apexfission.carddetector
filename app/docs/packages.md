@@ -8,11 +8,11 @@ Each directory containing Kotlin source has a local README. Namespace-only paren
 
 | Package | Contribution |
 | --- | --- |
-| [com.apexfission.android.carddetectiontest](../src/main/java/com/apexfission/android/carddetectiontest/README.md) | Demonstrates host integration of camera permissions, model metadata, detector UI, and capture handling. |
-| [com.apexfission.android.carddetectiontest.ui.theme](../src/main/java/com/apexfission/android/carddetectiontest/ui/theme/README.md) | Supplies the sample application's Material theme, typography, and colors. |
+| [com.apexfission.android.carddetector.demo](../src/main/java/com/apexfission/android/carddetector/demo/README.md) | Demonstrates host integration of camera permissions, model metadata, detector UI, and capture handling. |
+| [com.apexfission.android.carddetector.demo.ui.theme](../src/main/java/com/apexfission/android/carddetector/demo/ui/theme/README.md) | Supplies the sample application's Material theme, typography, and colors. |
 
 ## androidTest
 
 | Package | Contribution |
 | --- | --- |
-| [com.apexfission.android.carddetectiontest](../src/androidTest/java/com/apexfission/android/carddetectiontest/README.md) | Provides an instrumented application-context smoke test. |
+| [com.apexfission.android.carddetector.demo](../src/androidTest/java/com/apexfission/android/carddetector/demo/README.md) | Provides an instrumented application-context smoke test. |

@@ -23,7 +23,7 @@ SEMVER = r'(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)'
 SUFFIXES = ('.pom', '.aar', '-sources.jar', '-javadoc.jar', '.module')
 DOC_FILES = ('IMPORT.md', 'docs/release.json')
 INSTALL_INPUTS = (*DOC_FILES, 'docs/templates/IMPORT.md.template', 'gradle.properties',
-                  'build.gradle.kts', 'cardDetectionLite/build.gradle.kts', 'tfmodel/build.gradle.kts', 'app/build.gradle.kts', 'settings.gradle.kts', 'gradle/libs.versions.toml',
+                  'build.gradle.kts', 'carddetector/build.gradle.kts', 'tfmodel/build.gradle.kts', 'app/build.gradle.kts', 'settings.gradle.kts', 'gradle/libs.versions.toml',
                   'scripts', '.github/workflows/publish-card-detection.yml')
 
 
@@ -148,7 +148,7 @@ def verify_artifact(data, suffix, group, artifact, version):
                     raise ValueError('AAR is missing manifest or classes.jar')
                 with zipfile.ZipFile(io.BytesIO(archive.read('classes.jar'))) as classes_jar:
                     classes = [n for n in classes_jar.namelist()
-                               if n.endswith('.class') and n.startswith('com/apexfission/android/carddetectionlite/')]
+                               if n.endswith('.class') and n.startswith('com/apexfission/android/carddetector/')]
                     if not classes or any(classes_jar.read(n)[:4] != b'\xca\xfe\xba\xbe' or
                                           int.from_bytes(classes_jar.read(n)[6:8], 'big') != 61 for n in classes):
                         raise ValueError('Missing library classes or unexpected JVM bytecode target')
@@ -394,7 +394,7 @@ implementation(libs.card.detection.lite)
 </dependency>
 ```
 
-Built from source commit [`{record['source']}`](https://github.com/lambdawalker/android.card_detection_lite/commit/{record['source']}).'''
+Built from source commit [`{record['source']}`](https://github.com/lambdawalker/android.apexfission.carddetector/commit/{record['source']}).'''
     if record is not None:
         installation += f'\n\nOptional bundled model (exports the matching core):\n\n```kotlin\nimplementation("{group}:sentinel-card-model:{version}")\n```\n'
     for key, value in dict(STATUS=status, INSTALLATION=installation).items():

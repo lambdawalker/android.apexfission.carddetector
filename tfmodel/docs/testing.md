@@ -6,7 +6,7 @@ From the repository root with Android SDK and Java toolchain 17:
 
 ```bash
 ./gradlew :tfmodel:assembleDebug
-./gradlew :cardDetectionLite:connectedDebugAndroidTest
+./gradlew :carddetector:connectedDebugAndroidTest
 ```
 
 The first task verifies Android library packaging. The second requires a connected device/emulator and uses the model through the core module's instrumented-test dependency.

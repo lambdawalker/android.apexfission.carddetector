@@ -1,7 +1,0 @@
-package com.apexfission.android.carddetectionlite.ui.overlays
-
-import com.apexfission.android.carddetectionlite.ui.overlays.animation.AnimatedDetectionBounds as AnimationAnimatedDetectionBounds
-import com.apexfission.android.carddetectionlite.ui.overlays.animation.DetectionAnimationConfig as AnimationDetectionAnimationConfig
-
-typealias AnimatedDetectionBounds = AnimationAnimatedDetectionBounds
-typealias DetectionAnimationConfig = AnimationDetectionAnimationConfig

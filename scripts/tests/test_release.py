@@ -38,7 +38,7 @@ def aar(bytecode=61, model=False):
         archive.writestr('AndroidManifest.xml', '<manifest/>')
         if model:
             archive.writestr('assets/cdl/tflite/Y11-640E197F16.tflite', (Path(__file__).parents[2] / 'tfmodel/src/main/assets/cdl/tflite/Y11-640E197F16.tflite').read_bytes())
-        archive.writestr('classes.jar', jar('com/apexfission/android/carddetectionlite/Detection.class',
+        archive.writestr('classes.jar', jar('com/apexfission/android/carddetector/Detection.class',
                                          b'\xca\xfe\xba\xbe\x00\x00' + bytecode.to_bytes(2, 'big')))
     return stream.getvalue()
 

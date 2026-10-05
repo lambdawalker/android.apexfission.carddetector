@@ -38,7 +38,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Verify Gradle build and local publication without credentials
         run: |
-          ./gradlew generateImportDocs verifyImportDocs :cardDetectionLite:testDebugUnitTest :cardDetectionLite:lintRelease :cardDetectionLite:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :cardDetectionLite:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug :cardDetectionLite:publishAllPublicationsToVerificationRepository :tfmodel:publishAllPublicationsToVerificationRepository -PreleaseVersion=9.8.7 --no-daemon
+          ./gradlew generateImportDocs verifyImportDocs :carddetector:testDebugUnitTest :carddetector:lintRelease :carddetector:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug :carddetector:publishAllPublicationsToVerificationRepository :tfmodel:publishAllPublicationsToVerificationRepository -PreleaseVersion=9.8.7 --no-daemon
           git diff --exit-code -- IMPORT.md docs/release.json
           python3 scripts/release.py check-local --version 9.8.7 --source "$(git rev-parse HEAD)"
       - name: Upload demo APK

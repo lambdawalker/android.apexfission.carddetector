@@ -8,4 +8,4 @@ Each directory containing Kotlin source has a local README. Namespace-only paren
 
 | Package | Contribution |
 | --- | --- |
-| [com.apexfission.android.carddetectionlite.tfmodel](../src/main/java/com/apexfission/android/carddetectionlite/tfmodel/README.md) | Supplies the bundled Sentinel model's catalog extensions. |
+| [com.apexfission.android.carddetector.tfmodel](../src/main/java/com/apexfission/android/carddetector/tfmodel/README.md) | Supplies the bundled Sentinel model's catalog extensions. |

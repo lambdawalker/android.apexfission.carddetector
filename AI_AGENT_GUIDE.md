@@ -1,12 +1,12 @@
-# AI Agent Integration Guide: CardDetectionLite
+# AI Agent Integration Guide: CardDetector
 
-This guide provides technical instructions for AI agents and automated coding assistants on how to integrate, configure, and use the `CardDetectionLite` library within Android applications.
+This guide provides technical instructions for AI agents and automated coding assistants on how to integrate, configure, and use the `CardDetector` library within Android applications.
 
 ---
 
 ## 1. Library Overview & Purpose
 
-`CardDetectionLite` is a real-time, GPU-accelerated Jetpack Compose module designed for **Stage 1 ID document detection, temporal tracking, and stabilization** (driver's licenses, passports, national IDs). 
+`CardDetector` is a real-time, GPU-accelerated Jetpack Compose module designed for **Stage 1 ID document detection, temporal tracking, and stabilization** (driver's licenses, passports, national IDs).
 
 It utilizes a custom YOLO v11 TensorFlow Lite (LiteRT) model and a multi-frame dHash perceptual similarity tracking engine. It is **not** an OCR or document classification library; its primary output is a high-resolution cropped `Bitmap` of the detected card along with metadata (`CardDetection`, sub-features like photos, barcodes, MRZ text).
 
@@ -15,7 +15,7 @@ It utilizes a custom YOLO v11 TensorFlow Lite (LiteRT) model and a multi-frame d
 ## 2. Module Structure
 
 When depending on or working within this repository, understand the multi-module workspace:
-- **`:cardDetectionLite`**: Core UI composables (`CardDetectorLite`), CameraX adapters, tracking state machine, overlays, and simulator.
+- **`:carddetector`**: Core UI composables (`CardDetectorLite`), CameraX adapters, tracking state machine, overlays, and simulator.
 - **`:yolo`**: YOLO object detection engine, TFLite inference core, tensor buffers, validation, and NMS/IoU post-processing.
 - **`:tfmodel`**: Bundled model assets (`ModelCatalog.TfLite.modelPath`), class labels (`ModelCatalog.TfLite.classes`), and card ID groupings (`cardClasses`).
 - **`:coordinates`**: 2D coordinate transformation engine (`ImageSpace`, `ImageBox`, `ImagePoint`, `ImageSpaceChain`).
@@ -29,7 +29,7 @@ When depending on or working within this repository, understand the multi-module
 ### Dependency Setup (`app/build.gradle.kts`)
 ```kotlin
 dependencies {
-    implementation(project(":cardDetectionLite"))
+    implementation(project(":carddetector"))
     implementation(project(":yolo"))
     implementation(project(":tfmodel"))
     implementation(project(":permissionsCompose"))
@@ -91,7 +91,7 @@ override fun onCardDetection(detection: CardDetection, bitmap: Bitmap) {
 ```
 
 ### 2. Thread Safety & Dispatchers
-- Detection and tracking callbacks run on library background worker threads. 
+- Detection and tracking callbacks run on library background worker threads.
 - Do not perform heavy blocking operations (like network uploads or heavy OCR) directly on the callback thread without switching to `Dispatchers.Default` or `Dispatchers.IO`.
 
 ### 3. Presets Selection

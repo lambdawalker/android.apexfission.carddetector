@@ -1,4 +1,4 @@
-name: Publish Card Detection Lite libraries
+name: Publish Card Detector libraries
 
 on:
   workflow_dispatch:
@@ -69,7 +69,7 @@ jobs:
         run: |
           python3 -m unittest discover -s scripts/tests -v
           bash -n scripts/finalize-release.sh
-          ./gradlew verifyImportDocs :cardDetectionLite:testDebugUnitTest :cardDetectionLite:lintRelease :cardDetectionLite:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :cardDetectionLite:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug :cardDetectionLite:publishAllPublicationsToVerificationRepository :tfmodel:publishAllPublicationsToVerificationRepository "-PreleaseVersion=$RELEASE_VERSION" --no-daemon
+          ./gradlew verifyImportDocs :carddetector:testDebugUnitTest :carddetector:lintRelease :carddetector:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug :carddetector:publishAllPublicationsToVerificationRepository :tfmodel:publishAllPublicationsToVerificationRepository "-PreleaseVersion=$RELEASE_VERSION" --no-daemon
           python3 scripts/release.py check-local --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Upload demo APK
         if: inputs.resume_version == ''
@@ -117,7 +117,7 @@ jobs:
           done
           # The Gradle guard creates a durable upload-started marker before any upload task.
           # Preserve plugin deployment output for Central Portal investigation; no debug logging.
-          ./gradlew :cardDetectionLite:publishAndReleaseToMavenCentral :tfmodel:publishAndReleaseToMavenCentral "-PreleaseVersion=$RELEASE_VERSION" --no-daemon --console=plain 2>&1 | tee "$RUNNER_TEMP/central-publish.log"
+          ./gradlew :carddetector:publishAndReleaseToMavenCentral :tfmodel:publishAndReleaseToMavenCentral "-PreleaseVersion=$RELEASE_VERSION" --no-daemon --console=plain 2>&1 | tee "$RUNNER_TEMP/central-publish.log"
       - name: Confirm public signed artifact set and generate installation docs
         env:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="11">
-      <module name="CardDetectionTest.permissionsCompose" target="17" />
-      <module name="CardDetectionTest.tflite" target="17" />
+      <module name="CardDetectorDemo.permissionsCompose" target="17" />
+      <module name="CardDetectorDemo.tflite" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

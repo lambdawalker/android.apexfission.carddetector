@@ -23,7 +23,7 @@ git merge-base --is-ancestor "$SOURCE_SHA" origin/main
 # Stop rather than overwrite installation/release tooling changes made in flight.
 git diff --exit-code "$SOURCE_SHA" origin/main -- \
   IMPORT.md docs/release.json docs/templates/IMPORT.md.template gradle.properties \
-  build.gradle.kts cardDetectionLite/build.gradle.kts tfmodel/build.gradle.kts app/build.gradle.kts settings.gradle.kts gradle/libs.versions.toml scripts \
+  build.gradle.kts carddetector/build.gradle.kts tfmodel/build.gradle.kts app/build.gradle.kts settings.gradle.kts gradle/libs.versions.toml scripts \
   .github/workflows/publish-card-detection.yml
 pending="release-pending/$RELEASE_VERSION"
 uploading="release-uploading/$RELEASE_VERSION"
@@ -36,12 +36,12 @@ git config user.name 'github-actions[bot]'
 git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 git add IMPORT.md docs/release.json
 if ! git diff --cached --quiet; then
-  git commit -m "docs: record confirmed Card Detection Lite release $RELEASE_VERSION"
+  git commit -m "docs: record confirmed Card Detector release $RELEASE_VERSION"
 fi
 if git show-ref --verify --quiet "refs/tags/v$RELEASE_VERSION"; then
   [[ "$(git rev-parse "v$RELEASE_VERSION^{commit}")" == "$SOURCE_SHA" ]]
 else
-  git tag -a "v$RELEASE_VERSION" "$SOURCE_SHA" -m "Maven Central Card Detection Lite release $RELEASE_VERSION"
+  git tag -a "v$RELEASE_VERSION" "$SOURCE_SHA" -m "Maven Central Card Detector release $RELEASE_VERSION"
 fi
 updates=(HEAD:refs/heads/main "refs/tags/v$RELEASE_VERSION" ":refs/tags/$pending")
 if [[ -n "$(git ls-remote --refs origin "refs/tags/$uploading")" ]]; then

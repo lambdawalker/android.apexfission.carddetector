@@ -1,11 +1,11 @@
-# Publishing Card Detection Lite
+# Publishing Card Detector
 
 ## Publications
 
-The `cardDetectionLite` and `tfmodel` modules publish together at one stable X.Y.Z:
+The `carddetector` and `tfmodel` modules publish together at one stable X.Y.Z:
 
-- `com.apexfission.android.carddetectionlite:core:X.Y.Z`
-- `com.apexfission.android.carddetectionlite:sentinel-card-model:X.Y.Z`
+- `com.apexfission.android.carddetector:core:X.Y.Z`
+- `com.apexfission.android.carddetector:sentinel-card-model:X.Y.Z`
 
 `gradle.properties` declares group/artifact IDs. Core exports the pinned YOLO and
 coordinates dependencies from the version catalog. The optional model exports
@@ -48,8 +48,8 @@ or explicit sdkmanager package installation is performed. Git LFS assets are hyd
 ```bash
 python3 -m unittest discover -s scripts/tests -v
 python3 scripts/release.py verify
-./gradlew verifyImportDocs :cardDetectionLite:testDebugUnitTest :app:assembleDebug
-./gradlew :cardDetectionLite:publishAllPublicationsToVerificationRepository :tfmodel:publishAllPublicationsToVerificationRepository -PreleaseVersion=9.8.7
+./gradlew verifyImportDocs :carddetector:testDebugUnitTest :app:assembleDebug
+./gradlew :carddetector:publishAllPublicationsToVerificationRepository :tfmodel:publishAllPublicationsToVerificationRepository -PreleaseVersion=9.8.7
 python3 scripts/release.py check-local --version 9.8.7 --source "$(git rev-parse HEAD)"
 ```
 
@@ -58,7 +58,7 @@ artifact validation. Normal builds use `0.0.0-SNAPSHOT` and require no secrets.
 
 ## Publish
 
-Run **Publish Card Detection Lite libraries** on main. For the first coordinated
+Run **Publish Card Detector libraries** on main. For the first coordinated
 stable release, enter `initial_version` (for example `0.1.0`) and leave
 `resume_version` empty. Subsequent normal runs leave both empty and increment the
 stable patch version. Older beta/model-prefixed versions are not stable history.

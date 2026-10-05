@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.apexfission.android.carddetectiontest"
+    namespace = "com.apexfission.android.carddetector.demo"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.apexfission.android.cardDetectionTest"
+        applicationId = "com.apexfission.android.carddetector.demo"
         minSdk = 28
         versionCode = 1
         versionName = "1.0"
@@ -43,7 +43,7 @@ kotlin {
 dependencies {
 
 
-    implementation(project(":cardDetectionLite"))
+    implementation(project(":carddetector"))
     implementation(project(":tfmodel"))
     implementation(libs.apexfission.permission)
     implementation(libs.apexfission.yolo)

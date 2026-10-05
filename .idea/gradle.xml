@@ -10,7 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/cardDetectionLite" />
+            <option value="$PROJECT_DIR$/carddetector" />
             <option value="$PROJECT_DIR$/coordinates" />
             <option value="$PROJECT_DIR$/tfmodel" />
             <option value="$PROJECT_DIR$/yolo" />

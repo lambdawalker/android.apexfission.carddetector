@@ -20,8 +20,8 @@ With the configured SDK/toolchain and hydrated Git LFS assets:
 ```bash
 ./gradlew :app:assembleDebug
 ./gradlew :app:installDebug
-adb shell am start -n com.apexfission.android.cardDetectionTest/com.apexfission.android.carddetectiontest.CardDetectionActivity
-adb shell am start -n com.apexfission.android.cardDetectionTest/com.apexfission.android.carddetectiontest.CardDetectionSimulationActivity
+adb shell am start -n com.apexfission.android.carddetector.demo/com.apexfission.android.carddetector.demo.CardDetectionActivity
+adb shell am start -n com.apexfission.android.carddetector.demo/com.apexfission.android.carddetector.demo.CardDetectionSimulationActivity
 ```
 
 Installation/launch requires a connected compatible device or emulator. The simulation URI resolves a bundled raw video and does not use CameraX.
@@ -32,6 +32,6 @@ Activities pass function references such as `mainViewModel::onCardDetection` and
 
 The cloud and on-device OCR functions are placeholders. Replace them with actual application processing; do not interpret sample logs as text extraction.
 
-Before adapting its coroutine handoff into production, review [bitmap ownership](../../cardDetectionLite/docs/lifecycle.md). Cleanup inside a launched body alone does not cover cancellation before that body starts. The sample is wiring guidance, not a general asynchronous resource-management abstraction.
+Before adapting its coroutine handoff into production, review [bitmap ownership](../../carddetector/docs/lifecycle.md). Cleanup inside a launched body alone does not cover cancellation before that body starts. The sample is wiring guidance, not a general asynchronous resource-management abstraction.
 
-Detector configuration belongs in CardDetectorPreset/CameraPreset; presentation belongs in the scoped controlOverlay. See [core integration](../../cardDetectionLite/docs/integration.md) for current parameter names.
+Detector configuration belongs in CardDetectorPreset/CameraPreset; presentation belongs in the scoped controlOverlay. See [core integration](../../carddetector/docs/integration.md) for current parameter names.

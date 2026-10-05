@@ -152,7 +152,7 @@ class GitTests(unittest.TestCase):
         self.assertEqual(self.remote_git('show', 'main:IMPORT.md'), self.old_doc.strip())
 
     def test_concurrent_library_build_change_stops_finalization(self):
-        self.advance('cardDetectionLite/build.gradle.kts')
+        self.advance('carddetector/build.gradle.kts')
         result = self.finalize()
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.remote_git('tag', '--list', 'v*'), '')

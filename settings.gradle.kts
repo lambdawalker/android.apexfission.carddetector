@@ -20,8 +20,8 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CardDetectionTest"
+rootProject.name = "carddetector"
 
 include(":app")
-include(":cardDetectionLite")
+include(":carddetector")
 include(":tfmodel")

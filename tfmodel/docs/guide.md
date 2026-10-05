@@ -2,7 +2,7 @@
 
 [Documentation index](README.md)
 
-The active model is `cdl/tflite/Y11-640E197F16.tflite`, under the module's [assets directory](../src/main/assets/cdl/tflite). The catalog's modelName is `Y11-640E197F16.tflite`. The extension source is [add.kt](../src/main/java/com/apexfission/android/carddetectionlite/tfmodel/add.kt).
+The active model is `cdl/tflite/Y11-640E197F16.tflite`, under the module's [assets directory](../src/main/assets/cdl/tflite). The catalog's modelName is `Y11-640E197F16.tflite`. The extension source is [add.kt](../src/main/java/com/apexfission/android/carddetector/tfmodel/add.kt).
 
 | Class ID | Label | Primary card class |
 | --- | --- | --- |
@@ -23,10 +23,10 @@ The active model is `cdl/tflite/Y11-640E197F16.tflite`, under the module's [asse
 Add project dependencies on core and tfmodel in the host application, then import the extensions:
 
 ```kotlin
-import com.apexfission.android.carddetectionlite.domain.ModelCatalog
-import com.apexfission.android.carddetectionlite.tfmodel.cardClasses
-import com.apexfission.android.carddetectionlite.tfmodel.classes
-import com.apexfission.android.carddetectionlite.tfmodel.modelPath
+import com.apexfission.android.carddetector.domain.ModelCatalog
+import com.apexfission.android.carddetector.tfmodel.cardClasses
+import com.apexfission.android.carddetector.tfmodel.classes
+import com.apexfission.android.carddetector.tfmodel.modelPath
 
 val assetPath = ModelCatalog.TfLite.modelPath
 val labels = ModelCatalog.TfLite.classes
@@ -37,6 +37,6 @@ Pass these values to CardDetectorLite, CardTrackingSimulator, or lower-level bui
 
 ## Replacing the model
 
-Keep asset path, output class ordering, labels, and cardClasses aligned. The core validates a specific square-RGB YOLO tensor contract; see [supported contract](../../cardDetectionLite/docs/architecture.md). FP16-weight naming does not imply FLOAT16 input/output support.
+Keep asset path, output class ordering, labels, and cardClasses aligned. The core validates a specific square-RGB YOLO tensor contract; see [supported contract](../../carddetector/docs/architecture.md). FP16-weight naming does not imply FLOAT16 input/output support.
 
 Preserve uncompressed tflite packaging and ensure Git LFS assets are hydrated when building from a checkout. Validate new assets using real inference tests, not only catalog changes. This repository module contains runtime assets/metadata rather than a model-training pipeline.

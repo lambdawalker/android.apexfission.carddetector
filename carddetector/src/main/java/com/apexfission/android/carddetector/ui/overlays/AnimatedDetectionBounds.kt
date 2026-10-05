@@ -1,0 +1,7 @@
+package com.apexfission.android.carddetector.ui.overlays
+
+import com.apexfission.android.carddetector.ui.overlays.animation.AnimatedDetectionBounds as AnimationAnimatedDetectionBounds
+import com.apexfission.android.carddetector.ui.overlays.animation.DetectionAnimationConfig as AnimationDetectionAnimationConfig
+
+typealias AnimatedDetectionBounds = AnimationAnimatedDetectionBounds
+typealias DetectionAnimationConfig = AnimationDetectionAnimationConfig

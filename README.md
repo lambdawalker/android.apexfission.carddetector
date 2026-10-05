@@ -1,10 +1,18 @@
-# CardDetectionLite
+# Card Detector
 
-`CardDetectionLite` is a real-time, GPU-accelerated Jetpack Compose module for detecting, tracking, and stabilizing ID cards (such as driver's licenses, passports, voter IDs, and national identity documents) directly from an Android camera feed or video feed.
+The project and core module are named `carddetector`. Kotlin imports use
+`com.apexfission.android.carddetector`; the demo uses
+`com.apexfission.android.carddetector.demo`. Maven publications use the group
+`com.apexfission.android.carddetector` with artifacts `core` and
+`sentinel-card-model`. Consumers migrating from the previous namespace must
+update their imports and dependency coordinates. See [IMPORT.md](IMPORT.md)
+for confirmed release availability.
+
+`CardDetector` is a real-time, GPU-accelerated Jetpack Compose module for detecting, tracking, and stabilizing ID cards (such as driver's licenses, passports, voter IDs, and national identity documents) directly from an Android camera feed or video feed.
 
 Powered by a custom YOLO v11 TensorFlow Lite (LiteRT) model and a multi-frame dHash perceptual similarity tracking engine, it isolates target cards, stabilizes detection against frame jitter, and extracts cropped card images along with subfeatures (photos, barcodes, PDF417, MRZ text, QR codes).
 
-`CardDetectionLite` acts as **Stage 1** of an ID-processing or identity verification pipeline—focusing purely on **detection, stabilization, and extraction** before passing high-quality crops to downstream OCR, barcode parsing, or cloud verification services.
+`CardDetector` acts as **Stage 1** of an ID-processing or identity verification pipeline—focusing purely on **detection, stabilization, and extraction** before passing high-quality crops to downstream OCR, barcode parsing, or cloud verification services.
 
 ---
 
@@ -27,7 +35,7 @@ Powered by a custom YOLO v11 TensorFlow Lite (LiteRT) model and a multi-frame dH
 
 | Module | Type | Description | Documentation |
 | :--- | :--- | :--- | :--- |
-| **`:cardDetectionLite`** | Android Library | Core library providing `CardDetectorLite`, CameraX preview, tracking state machine, overlays, and simulator. | [Core guide](cardDetectionLite/docs/README.md) |
+| **`:carddetector`** | Android Library | Core library providing `CardDetectorLite`, CameraX preview, tracking state machine, overlays, and simulator. | [Core guide](carddetector/docs/README.md) |
 | **`:tfmodel`** | Android Library | Model catalog extensions (`ModelCatalog.TfLite`), asset paths, class dictionaries, and card class ID groupings. | [Model guide](tfmodel/docs/guide.md) |
 | **`:app`** | Android App | Sample test bench demonstrating live camera card detection and offline video tracking simulation. | [Sample guide](app/docs/guide.md) |
 
@@ -40,7 +48,7 @@ Each module has a `docs/README.md` index and `docs/packages.md` map where applic
 ### 1. Set Up Environment
 1. Set up the Android SDK used by the build (`compileSdk 37`) and JDK 21 for the Gradle daemon and toolchain 17 for compilation. All modules require Android API 28 or newer.
 2. Hydrate Git LFS assets when cloning so model and video files contain their real data.
-3. Read [callback ownership and lifecycle](cardDetectionLite/docs/lifecycle.md) before retaining or dispatching images.
+3. Read [callback ownership and lifecycle](carddetector/docs/lifecycle.md) before retaining or dispatching images.
 
 ### 2. Add Dependencies
 
@@ -134,7 +142,7 @@ class CardDetectionActivity : ComponentActivity() {
         val mainViewModel: MainViewModel by viewModels()
 
         setContent {
-            CardDetectionTestTheme {
+            CardDetectorDemoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
                     HandleCameraPermission(
@@ -357,16 +365,16 @@ is still needed for this repository's image/video assets. No submodule
 initialization is required.
 
 ```bash
-./gradlew :cardDetectionLite:testDebugUnitTest :cardDetectionLite:lintRelease :app:assembleDebug
-./gradlew :cardDetectionLite:assembleDebugAndroidTest :app:assembleDebugAndroidTest
+./gradlew :carddetector:testDebugUnitTest :carddetector:lintRelease :app:assembleDebug
+./gradlew :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest
 ```
 
-Run `:cardDetectionLite:connectedDebugAndroidTest` on a device for camera/image
+Run `:carddetector:connectedDebugAndroidTest` on a device for camera/image
 integration checks. CI builds the device tests but does not run them on a device.
 
 ## Publishing
 
-The manual **Publish Card Detection Lite libraries** workflow uses this repo's
+The manual **Publish Card Detector libraries** workflow uses this repo's
 `maven-central` environment and publishes the release variants of `core` and
 `sentinel-card-model` at the same stable version. The demo APK is an Actions
 artifact, not a Maven library. See [the release runbook](docs/releases.md) for

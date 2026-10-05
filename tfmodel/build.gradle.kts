@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    namespace = "com.apexfission.android.carddetectionlite.tfmodel"
+    namespace = "com.apexfission.android.carddetector.tfmodel"
     compileSdk {
         version = release(37)
     }
@@ -44,7 +44,7 @@ kotlin {
 }
 
 dependencies {
-    api(project(":cardDetectionLite"))
+    api(project(":carddetector"))
 
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
@@ -53,21 +53,21 @@ dependencies {
 }
 
 
-val isCore = project.name == "cardDetectionLite"
+val isCore = project.name == "carddetector"
 val artifact = providers.gradleProperty(if (isCore) "POM_ARTIFACT_ID" else "MODEL_ARTIFACT_ID").get()
 val releaseVersion = providers.gradleProperty("releaseVersion")
 require(releaseVersion.orNull?.matches(Regex("(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)")) != false) {
     "releaseVersion must be a stable X.Y.Z"
 }
-val projectUrl = "https://github.com/lambdawalker/android.card_detection_lite"
+val projectUrl = "https://github.com/lambdawalker/android.apexfission.carddetector"
 mavenPublishing {
     coordinates(providers.gradleProperty("GROUP").get(), artifact, releaseVersion.orElse("0.0.0-SNAPSHOT").get())
     configure(AndroidSingleVariantLibrary(variant = "release", javadocJar = JavadocJar.Empty(), sourcesJar = SourcesJar.Sources()))
     publishToMavenCentral()
     if (providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
     pom {
-        name.set(if (isCore) "Card Detection Lite" else "Sentinel Card Model")
-        description.set(if (isCore) "Compose and CameraX card detection, tracking, overlays, and image extraction." else "Sentinel YOLO card model assets and catalog extensions for Card Detection Lite.")
+        name.set(if (isCore) "Card Detector" else "Sentinel Card Model")
+        description.set(if (isCore) "Compose and CameraX card detection, tracking, overlays, and image extraction." else "Sentinel YOLO card model assets and catalog extensions for Card Detector.")
         inceptionYear.set("2026")
         url.set(projectUrl)
         licenses { license {
@@ -83,7 +83,7 @@ mavenPublishing {
         scm {
             url.set(projectUrl)
             connection.set("scm:git:$projectUrl.git")
-            developerConnection.set("scm:git:ssh://git@github.com/lambdawalker/android.card_detection_lite.git")
+            developerConnection.set("scm:git:ssh://git@github.com/lambdawalker/android.apexfission.carddetector.git")
         }
     }
 }

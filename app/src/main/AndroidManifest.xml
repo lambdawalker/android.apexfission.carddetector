@@ -13,18 +13,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CardDetectionTest">
+        android:theme="@style/Theme.CardDetectorDemo">
         <activity
             android:name=".CardDetectionSimulationActivity"
             android:exported="true"
             android:label="@string/demo"
-            android:theme="@style/Theme.CardDetectionTest" />
+            android:theme="@style/Theme.CardDetectorDemo" />
 
         <activity
             android:name=".CardDetectionActivity"
             android:exported="true"
             android:label="@string/demo"
-            android:theme="@style/Theme.CardDetectionTest">
+            android:theme="@style/Theme.CardDetectorDemo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
