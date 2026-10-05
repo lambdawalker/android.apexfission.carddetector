@@ -8,29 +8,27 @@ Do not combine `core` and `card-detector` in one app: they contain overlapping c
 
 Add `google()` and `mavenCentral()` to your dependency repositories.
 
-## core
+## card-detector
 
-Confirmed version: **0.1.0**. Source: [223f543e5f6862d296b2a54e96c35651a6d33eaa](https://github.com/lambdawalker/android.apexfission.carddetector/commit/223f543e5f6862d296b2a54e96c35651a6d33eaa).
-
-Configured next publication: `com.apexfission.android.carddetector:card-detector` — not yet confirmed here. The dependency below remains the last confirmed publication.
+Confirmed version: **0.1.1**. Source: [acb0035aee1a0aec0c6886617243514a040fa650](https://github.com/lambdawalker/android.apexfission.carddetector/commit/acb0035aee1a0aec0c6886617243514a040fa650).
 
 ### Gradle Kotlin DSL
 
 ```kotlin
-implementation("com.apexfission.android.carddetector:core:0.1.0")
+implementation("com.apexfission.android.carddetector:card-detector:0.1.1")
 ```
 
 ### Gradle Groovy DSL
 
 ```groovy
-implementation 'com.apexfission.android.carddetector:core:0.1.0'
+implementation 'com.apexfission.android.carddetector:card-detector:0.1.1'
 ```
 
 ### Version catalog
 
 ```toml
 [libraries]
-carddetector = { module = "com.apexfission.android.carddetector:core", version = "0.1.0" }
+carddetector = { module = "com.apexfission.android.carddetector:card-detector", version = "0.1.1" }
 ```
 
 ### Maven
@@ -38,8 +36,8 @@ carddetector = { module = "com.apexfission.android.carddetector:core", version =
 ```xml
 <dependency>
   <groupId>com.apexfission.android.carddetector</groupId>
-  <artifactId>core</artifactId>
-  <version>0.1.0</version>
+  <artifactId>card-detector</artifactId>
+  <version>0.1.1</version>
   <type>aar</type>
 </dependency>
 ```
