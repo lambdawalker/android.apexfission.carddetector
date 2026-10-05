@@ -13,6 +13,7 @@ import release as common
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = {'carddetector': 'core', 'tfmodel': 'sentinel-card-model'}
+ARTIFACTS = {'carddetector': ('core', 'card-detector'), 'tfmodel': ('sentinel-card-model', 'card-detector-model')}
 
 def git(*args): return subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
 def metadata_path(module): return f'docs/releases/{module}.json'
@@ -31,7 +32,7 @@ def properties():
 def identity(module):
     props=properties()
     group=props['GROUP']; artifact=props['POM_ARTIFACT_ID' if module=='carddetector' else 'MODEL_ARTIFACT_ID']
-    if not re.fullmatch(r'[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+',group) or artifact!=MODULES[module]:
+    if not re.fullmatch(r'[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+',group) or artifact not in ARTIFACTS[module]:
         raise ValueError('Unexpected module coordinates')
     return group,artifact
 
@@ -46,13 +47,15 @@ def ensure_available(module,tags):
     if own: raise ValueError(f'Unresolved {module} attempt {own}; run finalization, never re-upload')
 
 def validate_record(record,module):
-    if module not in MODULES or record.get('module')!=module or record.get('artifact')!=MODULES[module] or record.get('companions'):
+    if module not in MODULES or record.get('module')!=module or record.get('artifact') not in ARTIFACTS[module] or record.get('companions'):
         raise ValueError('Journal must contain exactly the selected module')
     common.version_key(record['version'])
     if not re.fullmatch('[0-9a-f]{40}',record['source']): raise ValueError('Invalid source')
     if set(record['sha256'])!=set(common.SUFFIXES) or any(not re.fullmatch('[0-9a-f]{64}',v) for v in record['sha256'].values()):
         raise ValueError('Incomplete publication hashes')
-    if module=='tfmodel': common.version_key(record['core_version'])
+    if module=='tfmodel':
+        common.version_key(record['core_version'])
+        if record.get('core_artifact','core') not in ARTIFACTS['carddetector']: raise ValueError('Invalid core artifact pin')
     if record['phase'] not in ('reserved-before-upload','confirmed-public'): raise ValueError('Invalid phase')
 
 def read_record(module,version):
@@ -65,20 +68,27 @@ def read_record(module,version):
     return r
 
 def ensure_core_public(version):
+    artifact=properties().get("modelCoreArtifact", "core")
+    if artifact not in ARTIFACTS["carddetector"]: raise ValueError("Invalid core artifact pin")
     common.version_key(version)
     group,_=identity('carddetector')
-    if version not in common.published_versions(group,'core'): raise ValueError('Pinned model core dependency is not published')
-    base=f'{common.artifact_base(group,"core")}/{version}/core-{version}'
+    if version not in common.published_versions(group,artifact): raise ValueError('Pinned model core dependency is not published')
+    base=f'{common.artifact_base(group,artifact)}/{version}/{artifact}-{version}'
     xml=ET.fromstring(common.fetch(base+'.pom'))
     for node in xml.iter(): node.tag=node.tag.split('}')[-1]
-    if tuple(xml.findtext(k) for k in ('groupId','artifactId','version','packaging'))!=(group,'core',version,'aar'):
+    if tuple(xml.findtext(k) for k in ('groupId','artifactId','version','packaging'))!=(group,artifact,version,'aar'):
         raise ValueError('Pinned core POM mismatch')
     if not common.fetch(base+'.aar'): raise ValueError('Pinned core AAR is unavailable')
 
 def prepare(module,initial=''):
     refresh(); tags=remote_tags(); ensure_available(module,tags)
     group,artifact=identity(module)
-    version=next_version(module,tags,common.published_versions(group,artifact),initial)
+    history=common.published_versions(group,artifact)
+    confirmed=json.loads((ROOT/metadata_path(module)).read_text())
+    if confirmed:
+        validate_record(confirmed,module)
+        history=list(set(history+[confirmed['version']]))
+    version=next_version(module,tags,history,initial)
     source=git('rev-parse','HEAD');git('merge-base','--is-ancestor',source,'origin/main')
     for name in tags:
         if re.fullmatch(re.escape(module+'/v')+common.SEMVER,name) and git('rev-parse',f'{name}^{{commit}}')==source:
@@ -115,7 +125,7 @@ def model_assets():
     return {'assets/'+p.relative_to(ROOT/'tfmodel/src/main/assets').as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in (ROOT/'tfmodel/src/main/assets').rglob('*.tflite')}
 
 def verify_bytes(data,suffix,r):
-    common.verify_artifact(data,suffix,r['group'],r['artifact'],r['version'],model_core_version=r.get('core_version'),model_assets=r.get('model_assets'))
+    common.verify_artifact(data,suffix,r['group'],r['artifact'],r['version'],model_core_version=r.get('core_version'),model_assets=r.get('model_assets'),model_core_artifact=r.get('core_artifact','core'))
 
 def local_record(module,version,source):
     common.version_key(version)
@@ -125,6 +135,7 @@ def local_record(module,version,source):
     r=dict(module=module,version=version,source=source,group=group,artifact=artifact,sha256={},phase='reserved-before-upload',workflow_run=os.environ.get('GITHUB_RUN_ID','local'))
     if module=='tfmodel':
         r['core_version']=properties()['modelCoreVersion'];common.version_key(r['core_version'])
+        r['core_artifact']=properties().get('modelCoreArtifact','core')
         r['model_assets']=model_assets()
         if not r['model_assets']: raise ValueError('No model assets')
     directory=ROOT/'build/verification-repository'/group.replace('.','/')/artifact/version
@@ -145,7 +156,7 @@ def reserve(module,version,source):
 def guard(module,version):
     common.version_key(version);r=read_record(module,version)
     if r['source']!=git('rev-parse','HEAD') or (r['group'],r['artifact'])!=identity(module): raise ValueError('Reservation differs from source/module')
-    if module=='tfmodel' and r['core_version']!=properties()['modelCoreVersion']: raise ValueError('Pinned core differs from reservation')
+    if module=='tfmodel' and (r['core_version']!=properties()['modelCoreVersion'] or r.get('core_artifact','core')!=properties().get('modelCoreArtifact','core')): raise ValueError('Pinned core differs from reservation')
     if remote_ref(tag(module,version)): raise ValueError('Version already finalized')
     marker=uploading(module,version)
     if remote_ref(marker): raise ValueError('Upload already started; finalize without re-uploading')
@@ -181,13 +192,16 @@ def documentation(verify=False):
         if r is None:sections.append(f'## {MODULES[module]}\n\nNo confirmed release.');continue
         validate_record(r,module)
         if r['phase']!='confirmed-public':raise ValueError('Installation can only advertise confirmed releases')
-        if verify and (r['group'],r['artifact'])!=identity(module):raise ValueError('Development coordinates differ from confirmed release')
+        configured=identity(module)
+        notice=''
+        if (r['group'],r['artifact'])!=configured:
+            notice=f'\nConfigured next publication: `{configured[0]}:{configured[1]}` — not yet confirmed here. The dependency below remains the last confirmed publication.\n'
         gav=f'{r["group"]}:{r["artifact"]}:{r["version"]}'
-        dep=f'\nExports core **{r["core_version"]}**; the model version is independent.\n' if module=='tfmodel' else ''
+        dep=f"\nExports `{r['group']}:{r.get('core_artifact','core')}:{r['core_version']}`; the model version is independent.\n" if module=='tfmodel' else ''
         sections.append(f'''## {r['artifact']}
 
 Confirmed version: **{r['version']}**. Source: [{r['source']}](https://github.com/lambdawalker/android.apexfission.carddetector/commit/{r['source']}).
-{dep}
+{notice}{dep}
 ### Gradle Kotlin DSL
 
 ```kotlin

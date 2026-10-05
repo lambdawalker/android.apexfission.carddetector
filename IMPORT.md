@@ -1,15 +1,18 @@
 <!-- Generated from independently confirmed module metadata. Run ./gradlew generateImportDocs. -->
 # Install Card Detector
 
-The two Android libraries have independent releases. Choose `core` for your own
-model, or `sentinel-card-model` for bundled model assets and its pinned core dependency.
-Adding both explicitly lets Gradle select a newer core; verify compatibility before overriding the model's pin.
+The two Android libraries have independent releases. Choose the detector for your own
+model, or the model artifact for bundled assets and its pinned detector dependency.
+An explicit detector dependency can select a newer version only when its artifact ID matches the model's pin; verify compatibility before overriding it.
+Do not combine `core` and `card-detector` in one app: they contain overlapping classes. Check the model's exported coordinate below before adding a detector dependency.
 
 Add `google()` and `mavenCentral()` to your dependency repositories.
 
 ## core
 
 Confirmed version: **0.1.0**. Source: [223f543e5f6862d296b2a54e96c35651a6d33eaa](https://github.com/lambdawalker/android.apexfission.carddetector/commit/223f543e5f6862d296b2a54e96c35651a6d33eaa).
+
+Configured next publication: `com.apexfission.android.carddetector:card-detector` — not yet confirmed here. The dependency below remains the last confirmed publication.
 
 ### Gradle Kotlin DSL
 
@@ -45,7 +48,9 @@ carddetector = { module = "com.apexfission.android.carddetector:core", version =
 
 Confirmed version: **0.1.0**. Source: [223f543e5f6862d296b2a54e96c35651a6d33eaa](https://github.com/lambdawalker/android.apexfission.carddetector/commit/223f543e5f6862d296b2a54e96c35651a6d33eaa).
 
-Exports core **0.1.0**; the model version is independent.
+Configured next publication: `com.apexfission.android.carddetector:card-detector-model` — not yet confirmed here. The dependency below remains the last confirmed publication.
+
+Exports `com.apexfission.android.carddetector:core:0.1.0`; the model version is independent.
 
 ### Gradle Kotlin DSL
 
