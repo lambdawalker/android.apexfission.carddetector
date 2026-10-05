@@ -31,6 +31,14 @@ Use a Central Portal token authorized for the group and a signing key registered
 with the public keyservers required by Central. Secret values are not printed.
 The workflow checks required secret presence before creating release markers.
 
+Create **delayed-docs** in this repository with a **15-minute wait timer**.
+Leave required reviewers unset for automatic continuation, and allow `main` if
+restricting deployment branches. No secrets are needed in this environment.
+Configure the timer before the next publish; referencing an environment in YAML
+alone does not configure a wait timer. Environments are repository-specific.
+The existing permission to write release docs and tags is still required; no new
+personal access token or Maven credentials are needed.
+
 ## Validate before release
 
 The non-publishing verification workflow runs on main pushes, pull requests, or
@@ -71,19 +79,54 @@ both full artifact sets. One shared Gradle guard creates
 are signed and published in one Gradle invocation; an existing upload marker
 prevents blind re-upload attempts.
 
+After the publishing plugin completes, a separate job waits on **delayed-docs**
+for 15 minutes without occupying a runner or holding the release lock. It then
+calls **Finalize CardDetector release**, which polls Maven Central for up to
+40 minutes, stopping as soon as both complete artifact sets are available.
+This allows roughly **15 + 40 = 55 minutes** after plugin completion, plus
+runner queue/setup time. The finalization job has a 50-minute execution timeout.
+Any waiting inside the Gradle publishing plugin remains in the publishing job.
+
 Only after both public artifact sets and signatures are available and their
 hashes match does the workflow generate `IMPORT.md` and `docs/release.json`.
 Finalization atomically commits the confirmed docs, creates vX.Y.Z at the source
 commit, and removes attempt markers. It never force-pushes or moves stable tags.
 No GitHub Release is created. Only manual dispatch can publish to Central.
 
+## Manual finalization and race protection
+
+Open **Actions > Finalize CardDetector release > Run workflow**, select **main**,
+and enter the existing version (for example `0.1.0`, without the `v` prefix).
+This skips the 15-minute delay and uses the same verification/finalization code
+as the automatic path. It never builds, reserves a new version, or uploads again.
+Both `core` and `sentinel-card-model` must pass the existing hash, content, and
+signature-availability checks before documentation or tags are updated.
+
+Publishing and automatic/manual finalization share the job-level concurrency
+group `maven-central-card-detection` with `cancel-in-progress: false`. The delay
+job is outside this group, so manual verification can run during the delay. If
+publishing or another finalization is active, the manual job waits. GitHub's
+default queue retains one pending job; repeated requests can replace pending
+requests but do not cancel an active upload or finalization.
+
+After acquiring the lock, the finalizer reloads remote release state. If another
+run already finalized the version, it exits successfully without polling or
+writing again. Older finalized versions cannot overwrite newer documentation.
+Conflicting source commits, inconsistent release state, and unknown versions
+stop the job. Immutable source checks, paired-publication validation, and the
+atomic non-force Git push remain in place. New publication attempts are still
+blocked while an earlier release has unresolved markers.
+
+The original `resume_version` input remains available and skips the delay;
+the dedicated finalization action is the preferred recovery entry point.
+
 ## Recovery
 
 - Before reservation: fix the error and start a fresh normal run.
 - After upload starts, on timeout, or with a partial release: retain attempt tags,
   inspect Central Portal and deployment logs, and determine the actual outcome.
-- If both artifacts are published but confirmation/finalization failed, run with
-  `resume_version=X.Y.Z` and initial empty. Recovery only verifies/finalizes the
+- If both artifacts are published but confirmation/finalization failed, run **Finalize CardDetector release**
+  with `version=X.Y.Z`. Recovery only verifies/finalizes the
   original attempt; it never uploads again.
 - If the attempt definitely failed before any artifact became public and no
   deployment can still publish, an authorized maintainer can remove that exact
