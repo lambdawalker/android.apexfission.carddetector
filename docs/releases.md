@@ -9,13 +9,19 @@ The repository has two independently versioned Maven Central publications:
 
 Publishing core does not publish the model. Publishing the model does not publish core. Versions can diverge: for example, a later model version can still depend on core 0.1.0. The model release builds against that Maven dependency, so a local unpublished core API cannot silently leak into its artifact. Normal development builds still use the local project dependency.
 
+## Artifact rename status
+
+`gradle.properties` now selects `card-detector` and `card-detector-model`, but the release validators and confirmed metadata still describe `core` and `sentinel-card-model`. The dedicated actions do not migrate coordinates. Until that migration is completed, preflight stops with `Unexpected module coordinates` before any upload. Keep the old confirmed metadata as historical publication facts; changing a property does not publish a renamed artifact.
+
 ## Run a release
 
 1. Merge the intended source to `main`. Review the selected module's changes and, for model releases, its `modelCoreVersion` compatibility pin.
-2. Open **Actions → Publish Card Detector libraries → Run workflow** on `main`.
-3. Select `carddetector` or `tfmodel` in **module**.
+2. Open **Actions → Publish card-detector** for the detector or **Actions → Publish card-detector-model** for the bundled model.
+3. Choose **Run workflow** on `main`. Each entry fixes its own module; there is no module selector.
 4. Leave **initial_version** blank for both existing artifacts. Each already has a confirmed 0.1.0 release. The workflow independently allocates the selected artifact's next stable patch version. Only a module with no release history needs an explicit first version.
 5. Leave **resume_version** blank for a new upload.
+
+Both dedicated workflows call `publish-card-detection.yml`, a reusable implementation with no manual entry point. They retain the same environment secrets, release lock, delayed finalization, and recovery inputs. The documentation workflow listens for either dedicated publication to finish.
 
 Only the selected module is staged for local publication verification and uploaded to Central. Common tests and the demo still build as integration checks. Attempting a Gradle Central invocation for both modules, or without `releaseModule`, fails before upload.
 
