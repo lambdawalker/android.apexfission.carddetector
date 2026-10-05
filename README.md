@@ -12,7 +12,7 @@ Watch the [screen recording with playback controls](https://lambdawalker.github.
 
 ## Integrate
 
-Use the confirmed coordinates generated in [IMPORT.md](IMPORT.md). Choose `core` for your own compatible model or `sentinel-card-model` for the bundled model and matching core. The [complete quickstart](docs/agents/quickstart.md) includes imports, permission handling, and explicit bitmap cleanup.
+Use the confirmed coordinates generated in [IMPORT.md](IMPORT.md). Choose `core` for your own compatible model or `sentinel-card-model` for the bundled model and pinned compatible core. The [complete quickstart](docs/agents/quickstart.md) includes imports, permission handling, and explicit bitmap cleanup.
 
 - Live camera: `CardDetectorLite`.
 - Recorded video: `CardTrackingSimulator`.
@@ -40,3 +40,7 @@ npm run check
 ```
 
 The guides describe **main development source**, with source links pinned at site build time. Published installation facts come independently from confirmed release metadata. See [maintenance](docs/maintenance.md), [coverage](docs/coverage.md), and the [release runbook](docs/releases.md). Apache-2.0; see [LICENSE](LICENSE).
+
+## Independent releases
+
+Choose **carddetector** or **tfmodel** in the publishing workflow. Each has its own version and release history; model releases pin a compatible published core. See [the release runbook](docs/releases.md).

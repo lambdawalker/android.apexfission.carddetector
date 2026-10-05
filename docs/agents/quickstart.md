@@ -2,7 +2,7 @@
 
 ## Requirements and dependencies
 
-Start with a Compose-enabled Android app, `google()` and `mavenCentral()` repositories, and the [confirmed bundled-model dependency](../../IMPORT.md). The model artifact exports the matching core. Use the Android/Kotlin/JVM requirements in that generated installation document; building this repository additionally uses the checked-in Gradle wrapper and JDK 21 daemon / JDK 17 compilation toolchain.
+Start with a Compose-enabled Android app, `google()` and `mavenCentral()` repositories, and the [confirmed bundled-model dependency](../../IMPORT.md). The model artifact exports the pinned compatible core. Use the Android/Kotlin/JVM requirements in that generated installation document; building this repository additionally uses the checked-in Gradle wrapper and JDK 21 daemon / JDK 17 compilation toolchain.
 
 For the exact demo dependency/plugin versions see [the app build](../../app/build.gradle.kts) and [version catalog](../../gradle/libs.versions.toml). The minimal Activity below uses Activity Compose, Compose foundation/runtime/Material3, and lifecycle APIs. The separate Apexfission permissions dependency is not required for this example.
 

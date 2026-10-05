@@ -160,13 +160,9 @@ tasks.register<Copy>("runTestsAndExtractImages") {
 
 val isCore = project.name == "carddetector"
 val artifact = providers.gradleProperty(if (isCore) "POM_ARTIFACT_ID" else "MODEL_ARTIFACT_ID").get()
-val releaseVersion = providers.gradleProperty("releaseVersion")
-require(releaseVersion.orNull?.matches(Regex("(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)")) != false) {
-    "releaseVersion must be a stable X.Y.Z"
-}
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.carddetector"
 mavenPublishing {
-    coordinates(providers.gradleProperty("GROUP").get(), artifact, releaseVersion.orElse("0.0.0-SNAPSHOT").get())
+    coordinates(providers.gradleProperty("GROUP").get(), artifact, project.version.toString())
     configure(AndroidSingleVariantLibrary(variant = "release", javadocJar = JavadocJar.Empty(), sourcesJar = SourcesJar.Sources()))
     publishToMavenCentral()
     if (providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()

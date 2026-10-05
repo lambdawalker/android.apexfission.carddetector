@@ -1,0 +1,17 @@
+{
+  "artifact": "core",
+  "group": "com.apexfission.android.carddetector",
+  "legacy_tag": "v0.1.0",
+  "module": "carddetector",
+  "phase": "confirmed-public",
+  "sha256": {
+    "-javadoc.jar": "dd7c41dec88835a600317c9b8d6fcfb2dba193cac52b224344879b5cb58bc544",
+    "-sources.jar": "e748f42851a4baa286ccd078d0f61eb66c94b2c475a20706136ade99980e4bf7",
+    ".aar": "8003d0265497462d16339c6588a6a619b26e8a5aa42a6f2ab72b3dd44e2b4d8b",
+    ".module": "4d5a4c46836223a58e1bd32bdd9eac58bce6abd80c30edc98f5a9e2add2748c5",
+    ".pom": "c7557d04d6331c3186128216fc2d0b68ff431804686c2c8d737ed8c4a2517319"
+  },
+  "source": "223f543e5f6862d296b2a54e96c35651a6d33eaa",
+  "version": "0.1.0",
+  "workflow_run": "37322369989"
+}

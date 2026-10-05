@@ -16,6 +16,6 @@
 | Wrong preprocessing type | Use `com.apexfission.android.yolo.image.PreProcessingImageTransformation`, not the legacy same-named carddetector type. |
 | Simulator blank | Use a readable `android.resource://<applicationId>/raw/x` or other supported URI; confirm the video is real LFS data. |
 | Website contains LFS pointer text | Hydrate assets (`git lfs pull`) and run media verification. Generated site media must be real bytes. |
-| IMPORT verification fails | Run `python3 scripts/release.py generate` only from confirmed metadata and inspect the diff; do not advertise an unconfirmed version. |
+| IMPORT verification fails | Run `python3 scripts/module_release.py generate` only from confirmed metadata and inspect the diff; do not advertise an unconfirmed version. |
 
 For native/inference issues provide device/API, model contract, CPU/GPU choice, preset, and a synthetic reproduction. The demo's OCR methods are placeholders: no text or network result is expected from them.

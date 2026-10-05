@@ -3,8 +3,14 @@ name: Publish Card Detector libraries
 on:
   workflow_dispatch:
     inputs:
+      module:
+        description: 'Library to publish independently'
+        type: choice
+        required: true
+        default: carddetector
+        options: [carddetector, tfmodel]
       initial_version:
-        description: 'First release only: explicit stable X.Y.Z (for example 0.1.0). Leave empty afterwards.'
+        description: 'First release of this module only: explicit stable X.Y.Z (for example 0.1.0). Leave empty afterwards.'
         required: false
         default: ''
         type: string
@@ -46,9 +52,16 @@ jobs:
       - name: Allocate next version or recover original source
         id: release
         env:
+          RELEASE_MODULE: ${{ inputs.module }}
           INITIAL_VERSION: ${{ inputs.initial_version }}
           RESUME_VERSION: ${{ inputs.resume_version }}
-        run: python3 scripts/release.py prepare --initial "$INITIAL_VERSION" --resume "$RESUME_VERSION"
+        run: |
+          if [[ -n "$RESUME_VERSION" ]]; then
+            [[ -z "$INITIAL_VERSION" ]] || { echo 'Recovery cannot allocate a version'; exit 1; }
+            python3 scripts/module_release.py prepare-finalization --module "$RELEASE_MODULE" --version "$RESUME_VERSION"
+          else
+            python3 scripts/module_release.py prepare --module "$RELEASE_MODULE" --initial "$INITIAL_VERSION"
+          fi
       - name: Check out immutable artifact source
         env:
           SOURCE_SHA: ${{ steps.release.outputs.source }}
@@ -75,13 +88,14 @@ jobs:
       - name: Test and validate complete unsigned publication locally
         if: inputs.resume_version == ''
         env:
+          RELEASE_MODULE: ${{ inputs.module }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SOURCE_SHA: ${{ steps.release.outputs.source }}
         run: |
           python3 -m unittest discover -s scripts/tests -v
           bash -n scripts/finalize-release.sh
-          ./gradlew verifyImportDocs :carddetector:testDebugUnitTest :carddetector:lintRelease :carddetector:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug :carddetector:publishAllPublicationsToVerificationRepository :tfmodel:publishAllPublicationsToVerificationRepository "-PreleaseVersion=$RELEASE_VERSION" --no-daemon
-          python3 scripts/release.py check-local --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
+          ./gradlew verifyImportDocs :carddetector:testDebugUnitTest :carddetector:lintRelease :carddetector:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon
+          python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Upload demo APK
         if: inputs.resume_version == ''
         uses: actions/upload-artifact@v4
@@ -105,13 +119,15 @@ jobs:
       - name: Reserve immutable version, source, and artifact hashes
         if: inputs.resume_version == ''
         env:
+          RELEASE_MODULE: ${{ inputs.module }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SOURCE_SHA: ${{ steps.release.outputs.source }}
-        run: python3 scripts/release.py reserve --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
+        run: python3 scripts/module_release.py reserve --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Publish and release signed artifacts
         if: inputs.resume_version == ''
         timeout-minutes: 35
         env:
+          RELEASE_MODULE: ${{ inputs.module }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
@@ -128,7 +144,7 @@ jobs:
           done
           # The Gradle guard creates a durable upload-started marker before any upload task.
           # Preserve plugin deployment output for Central Portal investigation; no debug logging.
-          ./gradlew :carddetector:publishAndReleaseToMavenCentral :tfmodel:publishAndReleaseToMavenCentral "-PreleaseVersion=$RELEASE_VERSION" --no-daemon --console=plain 2>&1 | tee "$RUNNER_TEMP/central-publish.log"
+          ./gradlew ":$RELEASE_MODULE:publishAndReleaseToMavenCentral" "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon --console=plain 2>&1 | tee "$RUNNER_TEMP/central-publish.log"
       - name: Retain deployment log
         if: always() && inputs.resume_version == ''
         uses: actions/upload-artifact@v4
@@ -166,5 +182,6 @@ jobs:
            needs.propagation-delay.result == 'skipped') }}
     uses: ./.github/workflows/finalize-carddetector.yml
     with:
+      module: ${{ inputs.module }}
       version: ${{ needs.publish.outputs.version }}
       source: ${{ needs.publish.outputs.source }}

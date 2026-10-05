@@ -1,0 +1,19 @@
+<!-- Generated from independently confirmed module metadata. Run ./gradlew generateImportDocs. -->
+# Install Card Detector
+
+The two Android libraries have independent releases. Choose `core` for your own
+model, or `sentinel-card-model` for bundled model assets and its pinned core dependency.
+Adding both explicitly lets Gradle select a newer core; verify compatibility before overriding the model's pin.
+
+Add `google()` and `mavenCentral()` to your dependency repositories.
+
+{{INSTALLATION}}
+
+## Requirements
+
+Both artifacts target Android API 28+; this repository uses compileSdk 37,
+JVM 17 bytecode, and Kotlin 2.4.20-compatible tooling. The Gradle daemon uses JDK 21.
+Core exports YOLO and coordinates. The optional model artifact exports its declared
+core dependency; model and core version numbers need not match.
+
+See [quickstart](docs/agents/quickstart.md) and [independent releases](docs/releases.md).

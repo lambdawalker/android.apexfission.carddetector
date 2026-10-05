@@ -2,7 +2,7 @@
 
 ## Bundled model
 
-`sentinel-card-model` exports the matching core and packages `cdl/tflite/Y11-640E197F16.tflite`. `ModelCatalog.TfLite` is a marker in core; `modelPath`, `modelName`, `classes`, and `cardClasses` are extension properties from `com.apexfission.android.carddetector.tfmodel` and require imports.
+`sentinel-card-model` exports the pinned compatible core and packages `cdl/tflite/Y11-640E197F16.tflite`. `ModelCatalog.TfLite` is a marker in core; `modelPath`, `modelName`, `classes`, and `cardClasses` are extension properties from `com.apexfission.android.carddetector.tfmodel` and require imports.
 
 | Class | Label | Primary card? |
 | --- | --- | --- |
