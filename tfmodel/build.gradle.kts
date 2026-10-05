@@ -88,7 +88,8 @@ mavenPublishing {
     }
 }
 tasks.withType<com.vanniktech.maven.publish.tasks.JavadocJar>().configureEach {
-    from("README.md", "docs")
+    from("README.md")
+    from("docs") { into("docs") }
     from(rootProject.file("LICENSE"))
 }
 tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
