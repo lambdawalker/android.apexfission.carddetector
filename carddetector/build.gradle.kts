@@ -158,8 +158,7 @@ tasks.register<Copy>("runTestsAndExtractImages") {
 
 
 
-val isCore = project.name == "carddetector"
-val artifact = providers.gradleProperty(if (isCore) "POM_ARTIFACT_ID" else "MODEL_ARTIFACT_ID").get()
+val artifact = providers.gradleProperty("POM_ARTIFACT_ID").get()
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.carddetector"
 mavenPublishing {
     coordinates(providers.gradleProperty("GROUP").get(), artifact, project.version.toString())
@@ -167,8 +166,8 @@ mavenPublishing {
     publishToMavenCentral()
     if (providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
     pom {
-        name.set(if (isCore) "Card Detector" else "Sentinel Card Model")
-        description.set(if (isCore) "Compose and CameraX card detection, tracking, overlays, and image extraction." else "Sentinel YOLO card model assets and catalog extensions for Card Detector.")
+        name.set("Card Detector")
+        description.set("Compose and CameraX card detection, tracking, overlays, and image extraction.")
         inceptionYear.set("2026")
         url.set(projectUrl)
         licenses { license {
