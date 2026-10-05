@@ -1,0 +1,350 @@
+[
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/ModelCatalog.kt",
+    "sha256": "32d82663a20c7778c9480ed41dde0d85b9294ebff561bc76155be16b46acc6d9",
+    "guide": "docs/agents/api/detection.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/ocr/OcrWrapper.kt",
+    "sha256": "fe43b748358d43c3f04fb51eb2198194152b4681e36f06f0a4d3fc48bffddfe5",
+    "guide": "docs/agents/api/utilities.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/CardDetector.kt",
+    "sha256": "cc2bfb7ece1a114916aafe010e32aa253f413ce9437ee9f939b16b58a6fa5c1a",
+    "guide": "docs/agents/api/detection.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/DefaultCardDetector.kt",
+    "sha256": "3513d5075606ba6a8e53f058c83378e63ea3927b298198eeb8ac786318e92d23",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/ThreadConfinedCardDetector.kt",
+    "sha256": "eac004dd0768c4b0d3a1b13711887c5863d192e6eb40bfc8dc2e7a71954cbb7d",
+    "guide": "docs/agents/api/detection.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/build.kt",
+    "sha256": "f836a3fbbe656d96595540b529fdbf9b0eb49f97e54a8438513fa3ce7404575a",
+    "guide": "docs/agents/api/detection.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/selection/CardCandidateSelector.kt",
+    "sha256": "f0648269161a80553bf2075b581eca36ca13ccd67f08d3e760f721938c4d24f2",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/tracking/CardLockStateMachine.kt",
+    "sha256": "0e27289378a711825201dfc4d576fa79c9922d1fc77198183328fd72b0fa8ae0",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/tracking/TemporalConsistencyChecker.kt",
+    "sha256": "b6db80b53e3a72ffef68f1d7a4faa189ae7ce2e362015101b394fd4ca8ac0d7a",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/transformation/PreProcessingImageTransformation.kt",
+    "sha256": "29acd6bb095e371ff5e4d14f33fe2b420f9b58263b531d0a05f5c5e8fb7e460b",
+    "guide": "docs/agents/api/detection.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/filters/AspectRatioValidator.kt",
+    "sha256": "3e053c5cb4ee36726e6ba9f880142bba4b3837e9368c2766a6111b0a583c2bf3",
+    "guide": "docs/agents/api/detection.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/filters/CardValidator.kt",
+    "sha256": "0943430e81ea403b725d4c67da86223de0d8bb28e43325798d92583d6cb06961",
+    "guide": "docs/agents/api/detection.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/filters/MarginValidator.kt",
+    "sha256": "b775f077de1fe141fe5f3f7d293ab2b6a06769a9fcb47fe9c6ff2b3e3b8857c8",
+    "guide": "docs/agents/api/detection.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/image/differenceHash.kt",
+    "sha256": "349447f7eb8464fdeeece453d90bdde8ddaac9564f9663f9cf59ffaaf6f67749",
+    "guide": "docs/agents/api/utilities.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/model/CardDetection.kt",
+    "sha256": "c3e9ac40fcb4e37d5d2800bf07ee8dae51d27c33860840842b67ba4362c19e04",
+    "guide": "docs/agents/api/detection.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/resource/BitmapUse.kt",
+    "sha256": "ff549851519c07e83cdc568929abb8d97962c6accbd9f8aa25993609cc8ace00",
+    "guide": "docs/agents/api/utilities.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/AutoFocusPolicy.kt",
+    "sha256": "772a690016d973afbe6359adff2e761cacb50dbb32c67abc16897d18263b6979",
+    "guide": "docs/agents/api/adapters.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/CameraPreset.kt",
+    "sha256": "d96eb0d07958648cf5ebbbab53ca628a9ea093cb8683160b47a0be317b0b4a35",
+    "guide": "docs/agents/api/components.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/CameraPreview.kt",
+    "sha256": "e9792ffe8111c8540b06ab14f23139eb9814c244819dec3866329b82fa7adaaa",
+    "guide": "docs/agents/api/adapters.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/CameraProviderSession.kt",
+    "sha256": "67710e6df536b386d12ed62be58db3dafbb9f6067fe512145b651813837ef752",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/utils.kt",
+    "sha256": "90e443bac7b286544699fe2ddd851adea7de46a166dd30a07daaa345e28ea7a4",
+    "guide": "docs/agents/api/adapters.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLite.kt",
+    "sha256": "70ffb50dc4637ef47bf6604fc8044bcc5c6840127e6dad6dec3f5e39d57dbd65",
+    "guide": "docs/agents/api/components.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLiteViewModel.kt",
+    "sha256": "5e3b8d26e28ea1059bfbedc82b195e5028448b68465a2aca84e6508b02126c64",
+    "guide": "docs/agents/api/adapters.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLiteViewModelFactory.kt",
+    "sha256": "85bb9a91241229da2b3123b97b9bc35a00a112eb35679f48efc7ac353fb17b01",
+    "guide": "docs/agents/api/adapters.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorOverlayScope.kt",
+    "sha256": "b68a911405d276835f09e5363ce1b6ad40c500868e93f11c55bd1cf6f56cc417",
+    "guide": "docs/agents/api/components.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorPreset.kt",
+    "sha256": "c7e5fc60f7bdb864bcdb4a4517c0d383031ef1d718f86ab6ef16feb41dccd4df",
+    "guide": "docs/agents/api/components.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/DetectionFrame.kt",
+    "sha256": "bd5fb896053b232af1c832fba92bbb58ae19db7c5584dc5db8f275d318b9139e",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/DetectorViewModelKey.kt",
+    "sha256": "e482da04207b202b5504624c7f2200f3551bcbceec48e4f4259cd38550f9d9a3",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/LatestBestDetectionStore.kt",
+    "sha256": "7657d9f41e67e0e61fc1be5a72ca8e8c1893f0d8847cd1fb6d5014146a9f9992",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/LatestCallbackDispatcher.kt",
+    "sha256": "2a66efb498b21b6a46a1e7595f770491a085cc16eedffcd7b16eb90faf7da7bd",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/SingleFlightGate.kt",
+    "sha256": "60dd175758e24591554811a91e1d91144b73fda0b148ded4479f3201b10c75af",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/AnimatedDetectionBounds.kt",
+    "sha256": "590b11f31bbfae24496ec361b4c5767a841a13e103b383edd8d976c7b91bed79",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/AnimatedDetectionCanvas.kt",
+    "sha256": "5a485dd4a0aa35daefaab0f658edce9f4b6bfec6ebacdf5225a9b51838693ab2",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/CardLockOnOverlay.kt",
+    "sha256": "f9b4a9dbccf9f5cf3c2859b0c5906b7c6fe1739cf89a8b65f096721a3c09c188",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/DebugOverlay.kt",
+    "sha256": "a394e26b1369d4ad4f97a96f000e33726e2a50cfb63d61c686fd74450712a726",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/DetectionOverlay.kt",
+    "sha256": "75c26126d090ee5b834bc07bbf94fe9e85ac48c9b1b6f66c52e55b814cb67cad",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/IdCaptureOverlay.kt",
+    "sha256": "5bfa51ba1168223ae014d28f8a59cd77fd8a3db4f164b613c353df60a2d4978d",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/IdCaptureOverlayConfig.kt",
+    "sha256": "f36a62975d48cb857be49f7dc2a46eed6658beb31578a5c9e1e622474376e6ef",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/AnimatedDetectionBounds.kt",
+    "sha256": "99396ddb54883c928acf88a767793c74185f0ef6ced3ef25824b0c9773eda609",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/AnimatedDetectionCanvas.kt",
+    "sha256": "b07a993540a714ab00bbaa48ff9851cc50b4038fa15c56d45404f115fe5e96a4",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/InternalGuideState.kt",
+    "sha256": "99535e421a46c58fd267cc02c9382129f7756366acde5dad37d947e926cb61a0",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/RememberAnimatedDetectionBounds.kt",
+    "sha256": "aaf3bfcc1340610f306998079c11ae1b1acbe558c54c2f81938cf303bcefb978",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/guideStateMachine.kt",
+    "sha256": "a9391d4056743c4abea6d0f64adbc5587d75f0b21e9f887d1c96de0bbc747f6e",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/rememberAnimatedCoordinates.kt",
+    "sha256": "7a26eda98f34ab6eab4538984c813dd5cefdfb018b6a0b8b193a0b41b3b54e60",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/rememberAnimatedLockOnProgress.kt",
+    "sha256": "ad2222ebd89886eee847707ffb419c25d3c267b4ee879f5d1e17bebbd97bea10",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/rememberAnimatedOpacity.kt",
+    "sha256": "1eb4941e9272f4ffc0525e32c9bcc3975c97cce18c0655eafa993549f9f7f934",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/rememberContinuousAnimations.kt",
+    "sha256": "fe4ba0788af6cd97be667de479a3f70cf73ab47a892bf25ea212df21805714e7",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/shouldRunContinuousAnimations.kt",
+    "sha256": "f36aae6b150fc2d445e6e1880421ff25413977eb884543aa015a804fdd1f5161",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/draw/PathUtils.kt",
+    "sha256": "a9d42fe4666207681c5c50aa534a92783c98968cbc395fb283410c838a88ca16",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/draw/RoundedSegment.kt",
+    "sha256": "0df6bc62d8c4f6190dcf3c0212087e879b6e59574e0ac70e7dab62b9c95f7a56",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/draw/SegmentBuilders.kt",
+    "sha256": "df67e2f6ec1dee84731da75481d09d92bc3ad3b56a10b4364899ae1752bd82d3",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/BitmapFrameProcessor.kt",
+    "sha256": "c0327fbd26c3dcd7bcba1dc2a315285b2a9b7f3176cef3bb3d06810acd326296",
+    "guide": "docs/agents/api/adapters.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/CardTrackingSimulator.kt",
+    "sha256": "5496ba4dbf0769f317593dcdd118629a391c61be1b18d59d79e5284a9f751600",
+    "guide": "docs/agents/api/components.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/CardTrackingSimulatorViewModel.kt",
+    "sha256": "ad5da938fec9f5e8098151212f184ec9c1809055db5eb3661e2a7fa26e7c19be",
+    "guide": "docs/agents/api/adapters.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/CardTrackingSimulatorViewModelFactory.kt",
+    "sha256": "3d19240a929f9f2bd01a8064f6a455ef15636b63b4e853d56a864f0537e6a83d",
+    "guide": "docs/agents/api/adapters.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/OwnedFrameBitmap.kt",
+    "sha256": "bcb7ebdb597502aae3db13f72c5f88900e74ae7e2a28253451a9cb2a50bef688",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/VideoPreviewWithFullFrameCapture.kt",
+    "sha256": "620efac06f99890993f6a545e72a92763d73b8de0b8075728243d53c3e5c2611",
+    "guide": "docs/agents/api/adapters.md",
+    "visibility": "public"
+  },
+  {
+    "path": "tfmodel/src/main/java/com/apexfission/android/carddetector/tfmodel/add.kt",
+    "sha256": "d7d960096844af7ddf2936004e3b94c7ad3e6028e0ff647fe7a655f8e7d23d81",
+    "guide": "docs/agents/api/detection.md",
+    "visibility": "public"
+  }
+]
