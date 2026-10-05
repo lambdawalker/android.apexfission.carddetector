@@ -13,7 +13,7 @@ Publishing core does not publish the model. Publishing the model does not publis
 
 `gradle.properties` selects `card-detector` and `card-detector-model`. Validation accepts these names and the historical `core` / `sentinel-card-model` records. Installation examples continue to show the last confirmed publication until a renamed release is verified on Central; pending names are explicitly labeled.
 
-Module version histories continue across the rename: with confirmed 0.1.0 and no later history, the next version is 0.1.1 even if the new artifact has no Maven history. Leave `initial_version` blank. Existing journal and tag safeguards still apply.
+Module version histories continue across the rename: with confirmed 0.1.0 and no later history, the next version is 0.1.1 even if the new artifact has no Maven history. Leave `version` blank. Existing journal and tag safeguards still apply.
 
 The model currently pins `modelCoreArtifact=core` and `modelCoreVersion=0.1.0`, an already published dependency. To move it to the renamed detector, first publish and finalize `card-detector`, then update both pin properties to that confirmed artifact/version. Publishing the model first remains supported with its existing dependency. Avoid adding both old and renamed detector artifacts to one app: their classes overlap.
 
@@ -22,10 +22,10 @@ The model currently pins `modelCoreArtifact=core` and `modelCoreVersion=0.1.0`, 
 1. Merge the intended source to `main`. Review the selected module's changes and, for model releases, its `modelCoreVersion` compatibility pin.
 2. Open **Actions → Publish card-detector** for the detector or **Actions → Publish card-detector-model** for the bundled model.
 3. Choose **Run workflow** on `main`. Each entry fixes its own module; there is no module selector.
-4. Leave **initial_version** blank for both modules. Their histories include the confirmed 0.1.0 releases under the old names. The workflow independently allocates the selected artifact's next stable patch version. Only a module with no release history needs an explicit first version.
-5. Leave **resume_version** blank for a new upload.
+4. Leave **version** blank for automatic numbering: 0.1.0 when the module has no history, otherwise the latest version with its patch incremented by one (for example, 1.2.9 → 1.2.10). These modules already have confirmed 0.1.0 history, so their next automatic version is 0.1.1 unless a newer release exists.
+5. To choose a version yourself, enter a stable **X.Y.Z** such as **1.0.0**. It must be newer than the latest release. Existing versions cannot be republished; use the Finalize workflow for recovery.
 
-Both dedicated workflows call `publish-card-detection.yml`, a reusable implementation with no manual entry point. They retain the same environment secrets, release lock, delayed finalization, and recovery inputs. The documentation workflow listens for either dedicated publication to finish.
+Both dedicated workflows call `publish-card-detection.yml`, a reusable implementation with no manual entry point. They retain the same environment secrets, release lock, delayed finalization, and publication safeguards. The documentation workflow listens for either dedicated publication to finish.
 
 Only the selected module is staged for local publication verification and uploaded to Central. Common tests and the demo still build as integration checks. Attempting a Gradle Central invocation for both modules, or without `releaseModule`, fails before upload.
 
@@ -42,7 +42,7 @@ Keep **delayed-docs** with the **15-minute wait timer**. After upload, the autom
 
 ## Recovery and races
 
-Use **Actions → Finalize CardDetector release → Run workflow**, choosing the original **module** and **version**. It checks and finalizes an existing publication; it never uploads. The publishing workflow's `resume_version` path provides the same recovery behavior for the selected module.
+Use **Actions → Finalize CardDetector release → Run workflow**, choosing the original **module** and **version**. It checks and finalizes an existing publication; it never uploads. Publishing has only the optional version field; use this dedicated Finalize workflow to recover an interrupted release without another upload.
 
 Automatic and manual publication/finalization share the existing repository-wide lock, with `cancel-in-progress: false`. This intentionally serializes jobs that can update `main`, while keeping module versions and attempt state independent. The wait job is outside that lock. GitHub can replace queued jobs in a concurrency group; if a queued finalization is displaced, manually run Finalize for its module/version. Durable journals prevent lost upload state.
 

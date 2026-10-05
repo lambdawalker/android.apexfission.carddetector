@@ -36,9 +36,18 @@ def identity(module):
         raise ValueError('Unexpected module coordinates')
     return group,artifact
 
-def next_version(module,tags,published,initial=''):
+def next_version(module,tags,published,requested=''):
     prefix=module+'/'
-    return common.next_version([t[len(prefix):] for t in tags if t.startswith(prefix)],published,initial)
+    selected=[t[len(prefix):] for t in tags if t.startswith(prefix)]
+    stable=[v for v in published if re.fullmatch(common.SEMVER,v)]
+    # Keep provenance checks even when the caller supplies a version.
+    automatic=common.next_version(selected,published,'' if stable else '0.1.0')
+    requested=requested.strip()
+    if not requested:return automatic
+    common.version_key(requested)
+    if stable and common.version_key(requested)<=max(map(common.version_key,stable)):
+        raise ValueError('Version must be newer than the latest release; use Finalize for recovery')
+    return requested
 
 def ensure_available(module,tags):
     legacy=[t for t in tags if re.fullmatch(r'release-(?:pending|uploading)/'+common.SEMVER,t)]
@@ -80,7 +89,7 @@ def ensure_core_public(version):
         raise ValueError('Pinned core POM mismatch')
     if not common.fetch(base+'.aar'): raise ValueError('Pinned core AAR is unavailable')
 
-def prepare(module,initial=''):
+def prepare(module,requested=''):
     refresh(); tags=remote_tags(); ensure_available(module,tags)
     group,artifact=identity(module)
     history=common.published_versions(group,artifact)
@@ -88,7 +97,7 @@ def prepare(module,initial=''):
     if confirmed:
         validate_record(confirmed,module)
         history=list(set(history+[confirmed['version']]))
-    version=next_version(module,tags,history,initial)
+    version=next_version(module,tags,history,requested)
     source=git('rev-parse','HEAD');git('merge-base','--is-ancestor',source,'origin/main')
     for name in tags:
         if re.fullmatch(re.escape(module+'/v')+common.SEMVER,name) and git('rev-parse',f'{name}^{{commit}}')==source:
@@ -266,10 +275,10 @@ def finalize(module,version,source):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['prepare','prepare-finalization','check-local','reserve','guard','confirm','finalize','generate','verify'])
-    p.add_argument('--module',choices=MODULES);p.add_argument('--version');p.add_argument('--source',default='');p.add_argument('--initial',default='');p.add_argument('--timeout',type=int,default=2400);a=p.parse_args()
+    p.add_argument('--module',choices=MODULES);p.add_argument('--version');p.add_argument('--source',default='');p.add_argument('--timeout',type=int,default=2400);a=p.parse_args()
     if a.command in ('generate','verify'):return documentation(a.command=='verify')
     if not a.module:p.error('--module is required')
-    if a.command=='prepare':return prepare(a.module,a.initial)
+    if a.command=='prepare':return prepare(a.module,a.version or '')
     if not a.version:p.error('--version is required')
     if a.command=='prepare-finalization':return prepare_finalization(a.module,a.version,a.source)
     if a.command in ('check-local','reserve','finalize') and not a.source:p.error('--source is required')
