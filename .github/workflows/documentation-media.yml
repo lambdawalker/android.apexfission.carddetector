@@ -1,0 +1,22 @@
+name: Documentation media candidates
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  candidates:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: python3 scripts/media.py render
+      - uses: actions/upload-artifact@v4
+        with:
+          name: documentation-media-candidates
+          path: build/docs-media/
+          if-no-files-found: error

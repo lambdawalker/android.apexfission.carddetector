@@ -101,7 +101,7 @@ def published_versions(group, artifact):
     return [node.text for node in versions]
 
 
-def verify_pom(data, group, artifact, version):
+def verify_pom(data, group, artifact, version, model_core_version=None):
     xml = ET.fromstring(data)
     for node in xml.iter():
         node.tag = node.tag.split('}')[-1]
@@ -115,7 +115,7 @@ def verify_pom(data, group, artifact, version):
             raise ValueError(f'Missing POM metadata: {path}')
     dependencies = xml.findall('dependencies/dependency')
     if artifact == 'sentinel-card-model':
-        expected_dependencies = [(group, 'core', version)]
+        expected_dependencies = [(group, 'core', model_core_version or version)]
     else:
         catalog = tomllib.loads((ROOT / 'gradle/libs.versions.toml').read_text())
         expected_dependencies = [
@@ -131,13 +131,23 @@ def verify_pom(data, group, artifact, version):
         raise ValueError('Unresolved project dependency in POM')
 
 
-def verify_artifact(data, suffix, group, artifact, version):
+def verify_artifact(data, suffix, group, artifact, version, model_core_version=None, model_assets=None):
     if suffix == '.pom':
-        verify_pom(data, group, artifact, version)
+        verify_pom(data, group, artifact, version, model_core_version)
     elif suffix == '.module':
         module = json.loads(data)
         if tuple(module.get('component', {}).get(k) for k in ('group', 'module', 'version')) != (group, artifact, version):
             raise ValueError('Gradle module coordinates mismatch')
+        if artifact == 'sentinel-card-model' and model_core_version is not None:
+            variants = module.get('variants', [])
+            if not variants:
+                raise ValueError('Model module has no consumption variants')
+            for variant in variants:
+                if variant.get('attributes', {}).get('org.gradle.category') == 'documentation':
+                    continue
+                deps = [d for d in variant.get('dependencies', []) if (d.get('group'), d.get('module')) == (group, 'core')]
+                if len(deps) != 1 or deps[0].get('version') != {'requires': model_core_version}:
+                    raise ValueError('Model Gradle metadata must pin the published core dependency')
     else:
         with zipfile.ZipFile(io.BytesIO(data)) as archive:
             if archive.testzip():
@@ -153,6 +163,11 @@ def verify_artifact(data, suffix, group, artifact, version):
                                           int.from_bytes(classes_jar.read(n)[6:8], 'big') != 61 for n in classes):
                         raise ValueError('Missing library classes or unexpected JVM bytecode target')
                 if artifact == 'sentinel-card-model':
+                    if model_assets is not None:
+                        actual = {name: hashlib.sha256(archive.read(name)).hexdigest() for name in names if name.endswith('.tflite')}
+                        if not model_assets or actual != model_assets:
+                            raise ValueError('Missing or changed model assets')
+                        return
                     model = 'assets/cdl/tflite/Y11-640E197F16.tflite'
                     if model not in names or hashlib.sha256(archive.read(model)).hexdigest() != '473f497ca45b4ab2f66ef59b3da1c0e27a0ac11227279ba6d89a19566c450e1e':
                         raise ValueError('Missing or changed Sentinel model asset')

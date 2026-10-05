@@ -1,62 +1,87 @@
-<!-- Generated from confirmed public release metadata. Run ./gradlew generateImportDocs. -->
+<!-- Generated from independently confirmed module metadata. Run ./gradlew generateImportDocs. -->
 # Install Card Detector
 
-Confirmed release: **0.1.0** · Maven coordinates: `com.apexfission.android.carddetector:core:0.1.0`.
+The two Android libraries have independent releases. Choose `core` for your own
+model, or `sentinel-card-model` for bundled model assets and its pinned core dependency.
+Adding both explicitly lets Gradle select a newer core; verify compatibility before overriding the model's pin.
 
-## Gradle Kotlin DSL
+Add `google()` and `mavenCentral()` to your dependency repositories.
 
-Add `mavenCentral()` to your settings repositories, then:
+## core
+
+Confirmed version: **0.1.0**. Source: [223f543e5f6862d296b2a54e96c35651a6d33eaa](https://github.com/lambdawalker/android.apexfission.carddetector/commit/223f543e5f6862d296b2a54e96c35651a6d33eaa).
+
+### Gradle Kotlin DSL
 
 ```kotlin
-dependencies {
-    implementation("com.apexfission.android.carddetector:core:0.1.0")
-}
+implementation("com.apexfission.android.carddetector:core:0.1.0")
 ```
 
-## Gradle Groovy DSL
+### Gradle Groovy DSL
 
 ```groovy
-dependencies {
-    implementation 'com.apexfission.android.carddetector:core:0.1.0'
-}
+implementation 'com.apexfission.android.carddetector:core:0.1.0'
 ```
 
-## Version catalog
+### Version catalog
 
 ```toml
-[versions]
-card-detection-lite = "0.1.0"
-
 [libraries]
-card-detection-lite = { module = "com.apexfission.android.carddetector:core", version.ref = "card-detection-lite" }
+carddetector = { module = "com.apexfission.android.carddetector:core", version = "0.1.0" }
 ```
 
-```kotlin
-implementation(libs.card.detection.lite)
-```
-
-## Maven
+### Maven
 
 ```xml
 <dependency>
-    <groupId>com.apexfission.android.carddetector</groupId>
-    <artifactId>core</artifactId>
-    <version>0.1.0</version>
-    <type>aar</type>
+  <groupId>com.apexfission.android.carddetector</groupId>
+  <artifactId>core</artifactId>
+  <version>0.1.0</version>
+  <type>aar</type>
 </dependency>
 ```
 
-Built from source commit [`223f543e5f6862d296b2a54e96c35651a6d33eaa`](https://github.com/lambdawalker/android.apexfission.carddetector/commit/223f543e5f6862d296b2a54e96c35651a6d33eaa).
+## sentinel-card-model
 
-Optional bundled model (exports the matching core):
+Confirmed version: **0.1.0**. Source: [223f543e5f6862d296b2a54e96c35651a6d33eaa](https://github.com/lambdawalker/android.apexfission.carddetector/commit/223f543e5f6862d296b2a54e96c35651a6d33eaa).
+
+Exports core **0.1.0**; the model version is independent.
+
+### Gradle Kotlin DSL
 
 ```kotlin
 implementation("com.apexfission.android.carddetector:sentinel-card-model:0.1.0")
 ```
 
+### Gradle Groovy DSL
 
-Both artifacts are Android AARs requiring minSdk 28, compileSdk 37, JVM 17 and a
-Kotlin compiler compatible with 2.4.20. Add google() and mavenCentral() repositories.
-The core exports YOLO and coordinates transitively. The optional model artifact
-exports the matching core and packages the Sentinel model assets and catalog.
-See [README.md](README.md) for APIs and [docs/releases.md](docs/releases.md) for releases.
+```groovy
+implementation 'com.apexfission.android.carddetector:sentinel-card-model:0.1.0'
+```
+
+### Version catalog
+
+```toml
+[libraries]
+tfmodel = { module = "com.apexfission.android.carddetector:sentinel-card-model", version = "0.1.0" }
+```
+
+### Maven
+
+```xml
+<dependency>
+  <groupId>com.apexfission.android.carddetector</groupId>
+  <artifactId>sentinel-card-model</artifactId>
+  <version>0.1.0</version>
+  <type>aar</type>
+</dependency>
+```
+
+## Requirements
+
+Both artifacts target Android API 28+; this repository uses compileSdk 37,
+JVM 17 bytecode, and Kotlin 2.4.20-compatible tooling. The Gradle daemon uses JDK 21.
+Core exports YOLO and coordinates. The optional model artifact exports its declared
+core dependency; model and core version numbers need not match.
+
+See [quickstart](docs/agents/quickstart.md) and [independent releases](docs/releases.md).

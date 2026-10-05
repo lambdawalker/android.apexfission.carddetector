@@ -20,3 +20,11 @@
 
 # Documents / others previously tracked
 *.pdf filter=lfs diff=lfs merge=lfs -text
+
+# Small, reviewed documentation stills are stored directly in Git.
+/docs/screenshots/*.png -filter -diff -merge -text
+
+# These pre-existing small assets were committed as ordinary Git blobs.
+# Explicitly retain that format so release source checks do not see phantom LFS changes.
+/app/src/main/res/mipmap-*/*.webp -filter -diff -merge -text
+/carddetector/docs/imageMode.svg -filter -diff -merge -text

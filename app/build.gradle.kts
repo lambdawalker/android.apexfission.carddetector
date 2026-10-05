@@ -43,7 +43,8 @@ kotlin {
 dependencies {
 
 
-    implementation(project(":carddetector"))
+    // tfmodel exposes the selected core through its api dependency.
+    // This keeps model-release builds on the pinned published core.
     implementation(project(":tfmodel"))
     implementation(libs.apexfission.permission)
     implementation(libs.apexfission.yolo)

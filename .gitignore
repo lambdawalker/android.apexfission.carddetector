@@ -59,3 +59,12 @@ google-services.json
 # Python release tooling
 __pycache__/
 *.pyc
+
+# Generated documentation
+sites/node_modules/
+sites/dist/
+sites/.astro/
+sites/public/
+sites/src/build.json
+sites/src/content/docs/
+build/docs-media/
