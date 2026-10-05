@@ -11,9 +11,14 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import org.junit.Assume.assumeTrue
 import org.tensorflow.lite.gpu.CompatibilityList
-import com.apexfission.android.carddetectionlite.domain.tflite.detector.yolo.engine.buildYoloDetector
+import com.apexfission.android.yolo.engine.buildYoloDetector
 import com.apexfission.android.carddetectionlite.domain.tflite.detector.card.engine.buildCardDetector
 import org.junit.Assert
+import com.apexfission.android.yolo.tflite.engine.buildInferenceEngine
+import com.apexfission.android.yolo.tflite.engine.EngineThreadDispatcher
+import com.apexfission.android.yolo.tflite.engine.InferenceEngine
+import com.apexfission.android.yolo.tflite.engine.ThreadConfinedInferenceEngine
+import java.util.concurrent.ConcurrentLinkedQueue
 import org.junit.Assert.assertNotSame
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,7 +59,7 @@ class TfliteInterpreterOutputOwnershipTest {
     fun engineThreadAffinityIsPreservedAcrossLifecycle() = verifyLifecycle(false)
 
     @Test
-    fun gpuAffinityIsPreservedAcrossLifecycle() {
+    fun gpuRequestedLifecycleWorksOnCompatibleHardware() {
         assumeTrue("Requires GPU-compatible hardware", CompatibilityList().use {
             it.isDelegateSupportedOnThisDevice
         })
@@ -63,32 +68,43 @@ class TfliteInterpreterOutputOwnershipTest {
 
     private fun verifyLifecycle(useGpu: Boolean) {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        var selectedGpu = false
-        val engine = ThreadConfinedInferenceEngine {
-            InferenceCore(context, ModelCatalog.TfLite.modelPath, useGpu).also { core ->
-                val field = InferenceCore::class.java.getDeclaredField("gpuDelegate")
-                field.isAccessible = true
-                selectedGpu = field.get(core) != null
+        // Consumer tests use public interfaces; private engine/delegate state belongs
+        // in the YOLO repository's own tests. GPU selection may fall back to CPU.
+        EngineThreadDispatcher().use { worker ->
+            val observedThreads = ConcurrentLinkedQueue<Long>()
+            val expectedThread = worker.call { Thread.currentThread().id }
+            val engine = ThreadConfinedInferenceEngine(worker) {
+                observedThreads.add(Thread.currentThread().id)
+                val delegate = buildInferenceEngine(
+                    context, ModelCatalog.TfLite.modelPath, useGpu, sharedDispatcher = worker,
+                )
+                object : InferenceEngine by delegate {
+                    override fun runInference(bitmap: Bitmap): FloatArray {
+                        observedThreads.add(Thread.currentThread().id)
+                        return delegate.runInference(bitmap)
+                    }
+                    override fun close() {
+                        observedThreads.add(Thread.currentThread().id)
+                        delegate.close()
+                    }
+                }
             }
-        }
-        val bitmap = Bitmap.createBitmap(engine.inputImageWidth, engine.inputImageWidth, Bitmap.Config.ARGB_8888)
-        val callers = Executors.newFixedThreadPool(5)
-        try {
-            if (useGpu) Assert.assertTrue("Must actually select a GPU delegate", selectedGpu)
-            val expected = engine.engineThreadId
-            Assert.assertTrue(expected != -1L)
-            val results = List(5) { callers.submit(Callable {
-                Assert.assertTrue(engine.runInference(bitmap).isNotEmpty())
-                engine.lastInferenceThreadId
-            }) }
-            results.forEach { Assert.assertEquals(expected, it.get(30, TimeUnit.SECONDS)) }
-            engine.close()
-            Assert.assertEquals(expected, engine.closeThreadId)
-            Assert.assertTrue(engine.runInference(bitmap).isEmpty())
-        } finally {
-            callers.shutdownNow()
-            engine.close()
-            bitmap.recycle()
+            val bitmap = Bitmap.createBitmap(engine.inputImageWidth, engine.inputImageWidth, Bitmap.Config.ARGB_8888)
+            val callers = Executors.newFixedThreadPool(5)
+            try {
+                val results = List(5) { callers.submit(Callable {
+                    Assert.assertTrue(engine.runInference(bitmap).isNotEmpty())
+                }) }
+                results.forEach { it.get(30, TimeUnit.SECONDS) }
+                engine.close()
+                Assert.assertEquals(7, observedThreads.size) // construction, five calls, close
+                Assert.assertTrue(observedThreads.all { it == expectedThread })
+                Assert.assertTrue(engine.runInference(bitmap).isEmpty())
+            } finally {
+                callers.shutdownNow()
+                engine.close()
+                bitmap.recycle()
+            }
         }
     }
 
