@@ -1,6 +1,6 @@
 # Recording and screenshot provenance
 
-The primary showcase is the repository's supplied `docs/Screen_recording_20260917_121435.mp4`. It is approximately 31 seconds, H.264, 1080 × 2340, with no narrated audio track. `manifest.json` records its content hash and the repository commit that supplied it. The original capture commit/device/OS/density/font-scale configuration is unknown; these fields remain explicitly null.
+The primary showcase is the repository's supplied `../demo.mp4`. It is approximately 31 seconds, H.264, 1080 × 2340, with no narrated audio track. `manifest.json` records its content hash and the repository commit that supplied it. The original capture commit/device/OS/density/font-scale configuration is unknown; these fields remain explicitly null.
 
 `tracking.png` is a reviewed still at 12 seconds, extracted with FFmpeg at width 540. It shows a cyan outline around a sample card. It is an illustrative recording frame, **not** a new device screenshot or a screenshot regression baseline. The recording and still do not establish current-release functionality or performance. Textual API contracts remain authoritative for integrations.
 
