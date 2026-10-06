@@ -5,7 +5,7 @@ on:
   pull_request:
   workflow_dispatch:
   workflow_run:
-    workflows: ['Finalize CardDetector release', 'Publish Card Detector libraries']
+    workflows: ['Finalize CardDetector release', 'Publish card-detector', 'Publish card-detector-model']
     types: [completed]
 permissions:
   contents: read

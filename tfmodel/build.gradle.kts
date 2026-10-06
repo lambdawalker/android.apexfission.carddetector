@@ -50,7 +50,8 @@ dependencies {
         require(coreVersion.matches(Regex("(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"))) {
             "modelCoreVersion must pin a stable published core version"
         }
-        api("${providers.gradleProperty("GROUP").get()}:core:$coreVersion")
+        val coreArtifact = providers.gradleProperty("modelCoreArtifact").get()
+        api("${providers.gradleProperty("GROUP").get()}:$coreArtifact:$coreVersion")
     } else {
         api(project(":carddetector"))
     }

@@ -1,18 +1,21 @@
 {
-  "artifact": "sentinel-card-model",
+  "artifact": "card-detector-model",
+  "core_artifact": "core",
   "core_version": "0.1.0",
   "group": "com.apexfission.android.carddetector",
-  "legacy_tag": "v0.1.0",
+  "model_assets": {
+    "assets/cdl/tflite/Y11-640E197F16.tflite": "473f497ca45b4ab2f66ef59b3da1c0e27a0ac11227279ba6d89a19566c450e1e"
+  },
   "module": "tfmodel",
   "phase": "confirmed-public",
   "sha256": {
     "-javadoc.jar": "a261e40e8ac9223a5949d2addbb0e6af388fe38a1f714796539e5b91e51ef301",
     "-sources.jar": "eda1bf6fcbc500c5107533e4c58b4c9d033dba2df8c057fedd96596baa289f58",
     ".aar": "d3f23db6eb1928c5940e75e7e78ec2effa3b3cc70a664c45be4aaffe0e56384a",
-    ".module": "26c386e79eb2bae694904c815e98e216dcddfc70af6b3815b5fa81949a800838",
-    ".pom": "0a3f245cd101b51f21b9571decef00e9cb09eddc72988b84705f1ab4477b58f8"
+    ".module": "8170ca3b99351e568366f5fc5b198a269b3aec24da8cc1db34539d3cca89b9ff",
+    ".pom": "34ab9bfa1f25f9c4278b7da4c5cb38db800a4393d3f50fe431a2577ddff736f3"
   },
-  "source": "223f543e5f6862d296b2a54e96c35651a6d33eaa",
-  "version": "0.1.0",
-  "workflow_run": "37322369989"
+  "source": "acb0035aee1a0aec0c6886617243514a040fa650",
+  "version": "0.1.1",
+  "workflow_run": "37378084884"
 }

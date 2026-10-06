@@ -4,18 +4,28 @@ The repository has two independently versioned Maven Central publications:
 
 | Workflow module | Gradle module | Maven artifact | Dependency policy |
 | --- | --- | --- | --- |
-| `carddetector` | `:carddetector` | `com.apexfission.android.carddetector:core` | Exports YOLO and coordinates; no model dependency |
-| `tfmodel` | `:tfmodel` | `com.apexfission.android.carddetector:sentinel-card-model` | Exports the published core version pinned by `modelCoreVersion` in `gradle.properties` |
+| `carddetector` | `:carddetector` | `com.apexfission.android.carddetector:card-detector` | Exports YOLO and coordinates; no model dependency |
+| `tfmodel` | `:tfmodel` | `com.apexfission.android.carddetector:card-detector-model` | Exports the published core version pinned by `modelCoreArtifact` and `modelCoreVersion` in `gradle.properties` |
 
 Publishing core does not publish the model. Publishing the model does not publish core. Versions can diverge: for example, a later model version can still depend on core 0.1.0. The model release builds against that Maven dependency, so a local unpublished core API cannot silently leak into its artifact. Normal development builds still use the local project dependency.
+
+## Artifact rename status
+
+`gradle.properties` selects `card-detector` and `card-detector-model`. Validation accepts these names and the historical `core` / `sentinel-card-model` records. Installation examples continue to show the last confirmed publication until a renamed release is verified on Central; pending names are explicitly labeled.
+
+Module version histories continue across the rename: with confirmed 0.1.0 and no later history, the next version is 0.1.1 even if the new artifact has no Maven history. Leave `initial_version` blank. Existing journal and tag safeguards still apply.
+
+The model currently pins `modelCoreArtifact=core` and `modelCoreVersion=0.1.0`, an already published dependency. To move it to the renamed detector, first publish and finalize `card-detector`, then update both pin properties to that confirmed artifact/version. Publishing the model first remains supported with its existing dependency. Avoid adding both old and renamed detector artifacts to one app: their classes overlap.
 
 ## Run a release
 
 1. Merge the intended source to `main`. Review the selected module's changes and, for model releases, its `modelCoreVersion` compatibility pin.
-2. Open **Actions → Publish Card Detector libraries → Run workflow** on `main`.
-3. Select `carddetector` or `tfmodel` in **module**.
-4. Leave **initial_version** blank for both existing artifacts. Each already has a confirmed 0.1.0 release. The workflow independently allocates the selected artifact's next stable patch version. Only a module with no release history needs an explicit first version.
+2. Open **Actions → Publish card-detector** for the detector or **Actions → Publish card-detector-model** for the bundled model.
+3. Choose **Run workflow** on `main`. Each entry fixes its own module; there is no module selector.
+4. Leave **initial_version** blank for both modules. Their histories include the confirmed 0.1.0 releases under the old names. The workflow independently allocates the selected artifact's next stable patch version. Only a module with no release history needs an explicit first version.
 5. Leave **resume_version** blank for a new upload.
+
+Both dedicated workflows call `publish-card-detection.yml`, a reusable implementation with no manual entry point. They retain the same environment secrets, release lock, delayed finalization, and recovery inputs. The documentation workflow listens for either dedicated publication to finish.
 
 Only the selected module is staged for local publication verification and uploaded to Central. Common tests and the demo still build as integration checks. Attempting a Gradle Central invocation for both modules, or without `releaseModule`, fails before upload.
 
