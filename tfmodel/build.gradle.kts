@@ -94,7 +94,11 @@ mavenPublishing {
 }
 tasks.withType<com.vanniktech.maven.publish.tasks.JavadocJar>().configureEach {
     from("README.md")
-    from("docs") { into("docs") }
+    // Publish text documentation only; demonstrations remain on the website.
+    from("docs") {
+        include("**/*.md")
+        into("docs")
+    }
     from(rootProject.file("LICENSE"))
 }
 tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
