@@ -1,6 +1,8 @@
 """Independent, journaled releases for carddetector and tfmodel. Never uploads packages."""
 import argparse
 import hashlib
+import io
+import zipfile
 import json
 import os
 from pathlib import Path
@@ -127,6 +129,14 @@ def model_assets():
 def verify_bytes(data,suffix,r):
     common.verify_artifact(data,suffix,r['group'],r['artifact'],r['version'],model_core_version=r.get('core_version'),model_assets=r.get('model_assets'),model_core_artifact=r.get('core_artifact','core'))
 
+def verify_documentation_contents(data):
+    # Apply to new local candidates only; historical releases may contain media.
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        unexpected=[entry.filename for entry in archive.infolist()
+                    if not entry.is_dir() and not entry.filename.endswith('.md')
+                    and entry.filename not in ('LICENSE','META-INF/MANIFEST.MF')]
+        if unexpected:raise ValueError(f'Unexpected documentation archive content: {unexpected}')
+
 def local_record(module,version,source):
     common.version_key(version)
     if source!=git('rev-parse','HEAD'): raise ValueError('Checkout differs from source')
@@ -141,6 +151,7 @@ def local_record(module,version,source):
     directory=ROOT/'build/verification-repository'/group.replace('.','/')/artifact/version
     for suffix in common.SUFFIXES:
         data=(directory/f'{artifact}-{version}{suffix}').read_bytes();verify_bytes(data,suffix,r)
+        if suffix=='-javadoc.jar':verify_documentation_contents(data)
         r['sha256'][suffix]=hashlib.sha256(data).hexdigest()
     validate_record(r,module);return r
 

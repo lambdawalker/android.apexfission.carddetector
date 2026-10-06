@@ -32,3 +32,9 @@ test('validator rejects missing targets, anchors, and domain-root assets',async(
   assert.equal(errors.length,3);assert.ok(errors.some(x=>x.includes('missing anchor')));
  }finally{await rm(dir,{recursive:true,force:true});}
 });
+test('renamed recording links target the hosted media file',()=>{
+ for(const mode of ['raw','human']) {
+  const out=rewriteMarkdown('[recording](../demo.mp4)','docs/agents/demos.md',mode);
+  assert.ok(out.includes(mode === 'raw' ? '../media/card-detection.mp4' : `${base}/media/card-detection.mp4`));
+ }
+});
