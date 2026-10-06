@@ -7,7 +7,7 @@ import shutil
 import subprocess
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
-VIDEO = ROOT/'docs/Screen_recording_20260917_121435.mp4'
+VIDEO = ROOT/'docs/demo.mp4'
 ACCEPTED = ROOT/'docs/screenshots/tracking.png'
 CANDIDATE = ROOT/'build/docs-media/tracking.png'
 MANIFEST = ROOT/'docs/screenshots/manifest.json'
@@ -29,7 +29,7 @@ def main():
         evidence=json.loads(CANDIDATE.with_suffix('.json').read_text())
         if evidence['source_sha256']!=sha(VIDEO) or evidence['output_sha256']!=sha(CANDIDATE): raise SystemExit('Stale candidate; render again')
         shutil.copyfile(CANDIDATE,ACCEPTED)
-        data={'schema':1,'recording':{'path':str(VIDEO.relative_to(ROOT)),'sha256':sha(VIDEO),'duration_seconds':30.733456,'width':1080,'height':2340,'capture_commit':None,'capture_configuration':None,'repository_input_commit':run('git','-C',str(ROOT),'log','-1','--format=%H','--',str(VIDEO.relative_to(ROOT))),'scope':'Historical user-supplied recording; original capture ref and device unknown; not release evidence.'},'scenarios':[{'id':'historical-card-tracking','file':'tracking.png','sha256':sha(ACCEPTED),'capture_kind':'recording-frame','fixture':'docs/Screen_recording_20260917_121435.mp4','timestamp_seconds':12,'render':{'filter':'scale=540:-1','threads':1,'tool':evidence['tool']},'alt':'Cyan tracking guide around a sample card at 12 seconds in the historical recording','guide':'docs/agents/demos.md','demo':'app/src/main/java/com/apexfission/android/carddetector/demo/CardDetectionActivity.kt'}]}
+        data={'schema':1,'recording':{'path':str(VIDEO.relative_to(ROOT)),'sha256':sha(VIDEO),'duration_seconds':30.733456,'width':1080,'height':2340,'capture_commit':None,'capture_configuration':None,'repository_input_commit':run('git','-C',str(ROOT),'log','-1','--format=%H','--',str(VIDEO.relative_to(ROOT))),'scope':'Historical user-supplied recording; original capture ref and device unknown; not release evidence.'},'scenarios':[{'id':'historical-card-tracking','file':'tracking.png','sha256':sha(ACCEPTED),'capture_kind':'recording-frame','fixture':'docs/demo.mp4','timestamp_seconds':12,'render':{'filter':'scale=540:-1','threads':1,'tool':evidence['tool']},'alt':'Cyan tracking guide around a sample card at 12 seconds in the historical recording','guide':'docs/agents/demos.md','demo':'app/src/main/java/com/apexfission/android/carddetector/demo/CardDetectionActivity.kt'}]}
         MANIFEST.write_text(json.dumps(data,indent=2)+'\n');print('Accepted inspected candidate; review manifest and image diff');return
     data=json.loads(MANIFEST.read_text())
     if sha(VIDEO)!=data['recording']['sha256']: raise SystemExit('Recording changed; review provenance and regenerate intentionally')

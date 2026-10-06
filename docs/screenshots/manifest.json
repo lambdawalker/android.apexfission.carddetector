@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "recording": {
-    "path": "docs/Screen_recording_20260917_121435.mp4",
+    "path": "docs/demo.mp4",
     "sha256": "d9446135ea4d815f35d7222dbe836bdae77fe2fe15f175b9c39f134ba8aa494e",
     "duration_seconds": 30.733456,
     "width": 1080,
@@ -17,7 +17,7 @@
       "file": "tracking.png",
       "sha256": "49329f690402d19b1f631539b1d5343bec6698356a7278cd5e132217f203a145",
       "capture_kind": "recording-frame",
-      "fixture": "docs/Screen_recording_20260917_121435.mp4",
+      "fixture": "docs/demo.mp4",
       "timestamp_seconds": 12,
       "render": {
         "filter": "scale=540:-1",

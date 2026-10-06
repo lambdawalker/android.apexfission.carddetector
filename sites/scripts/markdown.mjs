@@ -32,7 +32,7 @@ export function rewriteMarkdown(markdown, sourcePath, mode = 'raw') {
         : `${base}/agents/${guide}`;
     } else if (mode === 'human' && ['docs/maintenance.md','docs/releases.md','docs/coverage.md'].includes(target)) output = `${base}/${{'docs/maintenance.md':'development','docs/releases.md':'releases','docs/coverage.md':'coverage'}[target]}/`;
     else if (target === 'IMPORT.md') output = mode === 'human' ? `${base}/installation/` : `${base}/IMPORT.md`;
-    else if (target === 'docs/Screen_recording_20260917_121435.mp4') output = `${base}/media/card-detection.mp4`;
+    else if (target === 'docs/demo.mp4') output = `${base}/media/card-detection.mp4`;
     else if (mode === 'human' && target === 'docs/screenshots/README.md') output = `${base}/media/`;
     else if (target.startsWith('docs/screenshots/') && target.endsWith('.png')) output = `${base}/screenshots/${target.slice('docs/screenshots/'.length)}`;
     else output = `${repository}/blob/${process.env.DOCS_REF || 'main'}/${target}`;

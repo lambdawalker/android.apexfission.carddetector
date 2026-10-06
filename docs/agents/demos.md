@@ -1,10 +1,10 @@
 # See detection in motion
 
-The primary showcase is the supplied **Screen_recording_20260917_121435.mp4**, approximately 31 seconds at 1080 × 2340. Watch the moving guide around the sample card; individual stills cannot show tracking behavior. The recording predates this documentation update. Its original capture commit, device and rendering configuration are unknown, so it is historical illustrative media, not a current-release test or performance benchmark.
+The primary showcase is the supplied **demo.mp4**, approximately 31 seconds at 1080 × 2340. Watch the moving guide around the sample card; individual stills cannot show tracking behavior. The recording predates this documentation update. Its original capture commit, device and rendering configuration are unknown, so it is historical illustrative media, not a current-release test or performance benchmark.
 
 <!-- recording-player -->
 
-[Download the original recording](../Screen_recording_20260917_121435.mp4).
+[Download the original recording](../demo.mp4).
 
 ## Visual description
 

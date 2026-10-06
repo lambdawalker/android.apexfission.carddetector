@@ -15,7 +15,7 @@ await mkdir('public/agents',{recursive:true});
 await mkdir('public/media',{recursive:true});
 await mkdir('public/screenshots',{recursive:true});
 await put('public/favicon.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#006973"/><rect x="12" y="20" width="40" height="26" rx="5" fill="none" stroke="white" stroke-width="4"/><path d="M18 28h8m-8 8h20" stroke="white" stroke-width="3"/></svg>');
-await copyFile(resolve(root,'docs/Screen_recording_20260917_121435.mp4'),'public/media/card-detection.mp4');
+await copyFile(resolve(root,'docs/demo.mp4'),'public/media/card-detection.mp4');
 const manifest=JSON.parse(await read('docs/screenshots/manifest.json'));
 for(const s of manifest.scenarios)await copyFile(resolve(root,'docs/screenshots',s.file),resolve('public/screenshots',s.file));
 await copyFile(resolve(root,'docs/screenshots/manifest.json'),'public/screenshots/manifest.json');
