@@ -1,6 +1,6 @@
 # Publish libraries independently
 
-The repository has two independently versioned Maven Central publications:
+The repository has two independently versioned Maven publications:
 
 | Workflow module | Gradle module | Maven artifact | Dependency policy |
 | --- | --- | --- | --- |
@@ -13,7 +13,7 @@ Publishing core does not publish the model. Publishing the model does not publis
 
 `gradle.properties` selects `card-detector` and `card-detector-model`. Validation accepts these names and the historical `core` / `sentinel-card-model` records. Installation examples continue to show the last confirmed publication until a renamed release is verified on Central; pending names are explicitly labeled.
 
-Module version histories continue across the rename: with confirmed 0.1.0 and no later history, the next version is 0.1.1 even if the new artifact has no Maven history. Leave `initial_version` blank. Existing journal and tag safeguards still apply.
+Module version histories continue across the rename: with confirmed 0.1.0 and no later history, the next version is 0.1.1 even if the new artifact has no Maven history. Leave `version` blank. Existing journal and tag safeguards still apply.
 
 The model currently pins `modelCoreArtifact=core` and `modelCoreVersion=0.1.0`, an already published dependency. To move it to the renamed detector, first publish and finalize `card-detector`, then update both pin properties to that confirmed artifact/version. Publishing the model first remains supported with its existing dependency. Avoid adding both old and renamed detector artifacts to one app: their classes overlap.
 
@@ -21,38 +21,46 @@ The model currently pins `modelCoreArtifact=core` and `modelCoreVersion=0.1.0`, 
 
 1. Merge the intended source to `main`. Review the selected module's changes and, for model releases, its `modelCoreVersion` compatibility pin.
 2. Open **Actions → Publish card-detector** for the detector or **Actions → Publish card-detector-model** for the bundled model.
-3. Choose **Run workflow** on `main`. Each entry fixes its own module; there is no module selector.
-4. Leave **initial_version** blank for both modules. Their histories include the confirmed 0.1.0 releases under the old names. The workflow independently allocates the selected artifact's next stable patch version. Only a module with no release history needs an explicit first version.
-5. Leave **resume_version** blank for a new upload.
+3. Choose **Run workflow** on `main` and select **repository**: `maven-central` or `apexfission-maven`. Each entry fixes its own module; there is no module selector.
+4. Leave **version** blank for automatic numbering: 0.1.0 when the selected module/repository has no history, otherwise the latest version with its patch incremented by one (for example, 1.2.9 → 1.2.10). On Maven Central these modules already have confirmed 0.1.0 history, so their next automatic version is 0.1.1 unless a newer release exists.
+5. To choose a version yourself, enter a stable **X.Y.Z** such as **1.0.0**. It must be newer than the latest release. Existing versions cannot be republished; use the Finalize workflow for recovery.
 
-Both dedicated workflows call `publish-card-detection.yml`, a reusable implementation with no manual entry point. They retain the same environment secrets, release lock, delayed finalization, and recovery inputs. The documentation workflow listens for either dedicated publication to finish.
+Both dedicated workflows call `publish-card-detection.yml`, a reusable implementation with no manual entry point. They select the matching GitHub environment and retain the shared release lock and publication safeguards. Only Maven Central uses delayed finalization. The documentation workflow listens for either dedicated publication to finish.
 
-Only the selected module is staged for local publication verification and uploaded to Central. Common tests and the demo still build as integration checks. Attempting a Gradle Central invocation for both modules, or without `releaseModule`, fails before upload.
+Only the selected module is staged for local publication verification and uploaded to the selected repository. Common tests and the demo still build as integration checks. Attempting a Gradle upload for both modules, for the wrong repository, or without `releaseModule`, fails before upload.
 
-## Existing environments and secrets
+## GitHub environments and configuration
 
-Keep the `maven-central` environment and its existing secrets:
+Create these environments in **Settings → Environments**. The dropdown value is the environment name.
 
-- `MAVEN_CENTRAL_USERNAME`
-- `MAVEN_CENTRAL_PASSWORD`
-- `SIGNING_IN_MEMORY_KEY`
-- `SIGNING_IN_MEMORY_KEY_PASSWORD` (if the key has a passphrase)
+| Environment | Environment secrets | Environment variables |
+| --- | --- | --- |
+| `maven-central` | `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, `SIGNING_IN_MEMORY_KEY_PASSWORD` | None required |
+| `apexfission-maven` | `MAVEN_REPOSITORY_USERNAME`, `MAVEN_REPOSITORY_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, `SIGNING_IN_MEMORY_KEY_PASSWORD` | `MAVEN_REPOSITORY_URL` |
 
-Keep **delayed-docs** with the **15-minute wait timer**. After upload, the automatic flow waits there without holding a runner or the release lock, then polls Central for up to **40 minutes** for the selected artifact's POM, AAR, sources, documentation, Gradle metadata, and signatures. The other module need not have a matching version. No additional GitHub environment or secret is required.
+Add **MAVEN_REPOSITORY_URL** under the `apexfission-maven` environment's **Environment variables** (not in the workflow form). Set it to the canonical HTTPS Maven repository base URL, including the repository path, for example `https://maven.example.com/releases`. This example is a placeholder. Do not include a username, password, query string, or fragment. The endpoint must support standard Maven uploads and artifact/metadata reads at that same URL. Redirects are rejected during verification. A signing-key password can be empty for an unencrypted key.
+
+The self-hosted credentials are used for upload and artifact verification; signing remains enabled for both destinations. The repository URL is public configuration and is recorded in release metadata and installation instructions. For a private repository, consumers need their own read credentials; never copy publishing credentials into application source.
+
+Keep **delayed-docs** with the **15-minute wait timer**. After a Central upload, the automatic flow waits there without holding a runner or the release lock, then polls for up to **40 minutes** for the selected artifact's POM, AAR, sources, documentation, Gradle metadata, and signatures. Self-hosted uploads skip that environment delay and begin the same verification immediately. Neither upload success alone nor a pending release updates installation claims.
+
+Version history is independent per module **and destination**. A first self-hosted release defaults to **0.1.0**, even if Central already has later versions. A blank version subsequently increments that destination's latest patch. The model's pinned detector must already exist on Central or the selected repository; Central is checked first, matching Gradle resolution. Keep the same GAV consistent across repositories if you choose to publish it to both.
 
 ## Recovery and races
 
-Use **Actions → Finalize CardDetector release → Run workflow**, choosing the original **module** and **version**. It checks and finalizes an existing publication; it never uploads. The publishing workflow's `resume_version` path provides the same recovery behavior for the selected module.
+Use **Actions → Finalize CardDetector release → Run workflow**, choosing the original **repository**, **module**, and **version**. It checks and finalizes an existing publication; it never uploads. Publishing has the repository dropdown and optional version field; use this dedicated Finalize workflow to recover an interrupted release without another upload.
 
 Automatic and manual publication/finalization share the existing repository-wide lock, with `cancel-in-progress: false`. This intentionally serializes jobs that can update `main`, while keeping module versions and attempt state independent. The wait job is outside that lock. GitHub can replace queued jobs in a concurrency group; if a queued finalization is displaced, manually run Finalize for its module/version. Durable journals prevent lost upload state.
 
-Per-module immutable refs are:
+Maven Central keeps its existing per-module immutable refs:
 
 | State | Core example | Model example |
 | --- | --- | --- |
 | Reserved source and artifact hashes | `release-pending/carddetector/0.1.1` | `release-pending/tfmodel/0.1.1` |
 | Upload may have begun | `release-uploading/carddetector/0.1.1` | `release-uploading/tfmodel/0.1.1` |
 | Confirmed source release | `carddetector/v0.1.1` | `tfmodel/v0.1.1` |
+
+Self-hosted refs add `apexfission-maven/` before the module: for example `release-pending/apexfission-maven/carddetector/0.1.0`, `release-uploading/apexfission-maven/carddetector/0.1.0`, and `apexfission-maven/carddetector/v0.1.0`. The journal pins the repository URL; changing it while a release is pending stops recovery until the original URL is restored. Attempts on one destination do not block the other.
 
 A pending model attempt does not block allocating a core release, and vice versa. An upload-started marker rejects any second upload for that module/version. A retry after completed finalization exits successfully; it does not move documentation backwards.
 
@@ -64,10 +72,11 @@ If relevant build/release tooling changed during the wait, finalization stops in
 
 - `docs/releases/carddetector.json`: latest confirmed core release.
 - `docs/releases/tfmodel.json`: latest confirmed model release and its `core_version`.
-- `IMPORT.md`: generated from both records and `docs/templates/MODULE_IMPORT.md.template`.
+- `docs/releases/apexfission-maven/carddetector.json` and `tfmodel.json`: independent self-hosted confirmed records (initially null).
+- `IMPORT.md`: generated from all confirmed records and `docs/templates/MODULE_IMPORT.md.template`.
 - `docs/release.json`, `scripts/release.py` legacy journal commands, and `scripts/finalize-release.sh`: preserved for old paired-release provenance/recovery. New workflows use `scripts/module_release.py`. Shared artifact-validation helpers remain in `release.py`.
 
-The initial records were split from the already confirmed 0.1.0 pair; their hashes and source were preserved. They refer to the existing `v0.1.0` tag through `legacy_tag`. No new tag, package upload, or registry claim is created by this migration. Later releases use module-prefixed tags. Old unscoped pending/uploading markers block new releases until resolved using the original paired-release tooling. See the [legacy runbook](legacy-releases.md) only for that historical recovery case.
+The initial records were split from the already confirmed 0.1.0 pair; their hashes and source were preserved. They refer to the existing `v0.1.0` tag through `legacy_tag`. No new tag, package upload, or registry claim is created by this migration. Later releases use module-prefixed tags. Old unscoped pending/uploading markers block new Central releases until resolved using the original paired-release tooling. See the [legacy runbook](legacy-releases.md) only for that historical recovery case.
 
 ## Local verification
 

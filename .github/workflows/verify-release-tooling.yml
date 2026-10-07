@@ -47,6 +47,14 @@ jobs:
           ./gradlew generateImportDocs verifyImportDocs :carddetector:testDebugUnitTest :carddetector:lintRelease :carddetector:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" "-PreleaseModule=$RELEASE_MODULE" -PreleaseVersion=9.8.7 --no-daemon
           git diff --exit-code -- IMPORT.md docs/releases/
           python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version 9.8.7 --source "$(git rev-parse HEAD)"
+      - name: Validate self-hosted Gradle task graph without uploading
+        env:
+          RELEASE_REPOSITORY: apexfission-maven
+          MAVEN_REPOSITORY_URL: https://maven.example.invalid/releases
+          MAVEN_REPOSITORY_USERNAME: verification-only
+          MAVEN_REPOSITORY_PASSWORD: verification-only
+        run: |
+          ./gradlew ":$RELEASE_MODULE:publishAllPublicationsToApexfissionRepository" "-PreleaseModule=$RELEASE_MODULE" -PreleaseVersion=9.8.7 --dry-run --no-daemon
       - name: Upload demo APK
         uses: actions/upload-artifact@v4
         with:

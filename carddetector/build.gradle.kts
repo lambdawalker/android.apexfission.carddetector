@@ -201,11 +201,23 @@ tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
     isReproducibleFileOrder = true
 }
 extensions.configure<PublishingExtension> {
+    providers.environmentVariable("MAVEN_REPOSITORY_URL").orNull?.takeIf { it.isNotBlank() }?.let { endpoint ->
+        repositories.maven {
+            name = "apexfission"
+            url = uri(endpoint)
+            credentials {
+                username = providers.environmentVariable("MAVEN_REPOSITORY_USERNAME").orNull
+                password = providers.environmentVariable("MAVEN_REPOSITORY_PASSWORD").orNull
+            }
+        }
+    }
     repositories.maven {
         name = "verification"
         url = rootProject.layout.buildDirectory.dir("verification-repository").get().asFile.toURI()
     }
 }
 tasks.configureEach {
-    if (name.contains("MavenCentral", ignoreCase = true)) dependsOn(rootProject.tasks.named("verifyCentralReservation"))
+    if (name.contains("MavenCentral", ignoreCase = true) || name.endsWith("ToApexfissionRepository")) {
+        dependsOn(rootProject.tasks.named("verifyPublicationReservation"))
+    }
 }
