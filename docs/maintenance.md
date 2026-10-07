@@ -41,6 +41,8 @@ Use JDK 21 for the Gradle daemon, JDK 17 compilation toolchain, and the reposito
 
 Unit tests and compilation do not establish camera/video correctness. Run the catalog's live permission/denial/capture and simulator flows on a compatible device. The app's OCR methods are placeholders. Historical media is never substituted for current-device release evidence.
 
+Install Python tooling before running documentation checks: `python3 -m pip install -r scripts/requirements-publishing.txt`. For the complete release/setup test suite, use `scripts/requirements-setup.txt`.
+
 ## GitHub Pages
 
 In repository **Settings → Pages → Build and deployment**, select **GitHub Actions**. The intended URL is `https://lambdawalker.github.io/android.apexfission.carddetector/`. Configure the `github-pages` environment if repository policy requires approval. The workflow cannot enable Pages on behalf of an owner without that setting.

@@ -3,13 +3,16 @@ name: Publish card-detector
 on:
   workflow_dispatch:
     inputs:
-      initial_version:
-        description: 'First release only: explicit stable X.Y.Z. Leave empty afterwards.'
-        required: false
-        default: ''
-        type: string
-      resume_version:
-        description: 'Recovery only: finalize this version without uploading again.'
+      repository:
+        description: 'Destination repository (uses its matching GitHub environment)'
+        type: choice
+        required: true
+        default: maven-central
+        # BEGIN GENERATED REPOSITORIES
+        options: ["maven-central", "apexfission-maven"]
+        # END GENERATED REPOSITORIES
+      version:
+        description: 'Optional X.Y.Z. Blank: first release 0.1.0, otherwise next patch.'
         required: false
         default: ''
         type: string
@@ -23,6 +26,6 @@ jobs:
     uses: ./.github/workflows/publish-card-detection.yml
     secrets: inherit
     with:
+      repository: ${{ inputs.repository }}
       module: carddetector
-      initial_version: ${{ inputs.initial_version }}
-      resume_version: ${{ inputs.resume_version }}
+      version: ${{ inputs.version }}

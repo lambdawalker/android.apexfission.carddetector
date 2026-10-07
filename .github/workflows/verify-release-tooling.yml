@@ -30,6 +30,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python3 -m pip install -r scripts/requirements-setup.txt
+      - run: python3 scripts/publishing_config.py check
       - name: Test release policy and deterministic documentation
         run: |
           python3 -m unittest discover -s scripts/tests -v
@@ -47,9 +49,31 @@ jobs:
           ./gradlew generateImportDocs verifyImportDocs :carddetector:testDebugUnitTest :carddetector:lintRelease :carddetector:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" "-PreleaseModule=$RELEASE_MODULE" -PreleaseVersion=9.8.7 --no-daemon
           git diff --exit-code -- IMPORT.md docs/releases/
           python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version 9.8.7 --source "$(git rev-parse HEAD)"
+      - name: Validate self-hosted Gradle task graph without uploading
+        env:
+          RELEASE_REPOSITORY: apexfission-maven
+          MAVEN_REPOSITORY_URL: https://maven.example.invalid/releases
+          MAVEN_REPOSITORY_USERNAME: verification-only
+          MAVEN_REPOSITORY_PASSWORD: verification-only
+        run: |
+          ./gradlew ":$RELEASE_MODULE:publishAllPublicationsToSelectedMavenRepository" "-PreleaseModule=$RELEASE_MODULE" -PreleaseVersion=9.8.7 --dry-run --no-daemon
       - name: Upload demo APK
         uses: actions/upload-artifact@v4
         with:
           name: card-detection-demo-${{ matrix.module }}
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+  setup-wizard-windows:
+    name: Verify setup wizard on Windows (offline)
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r scripts/requirements-setup.txt
+      - run: python scripts/publishing_config.py check
+      - run: python -m unittest discover -s scripts/tests -p test_environment_setup.py -v
+      - run: python -m unittest discover -s scripts/tests -p test_publishing_config.py -v

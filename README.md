@@ -34,6 +34,7 @@ YOLO and coordinates come from Maven Central. No sibling checkouts or submodules
 
 ```bash
 ./gradlew :carddetector:testDebugUnitTest :app:assembleDebug
+python3 -m pip install -r scripts/requirements-publishing.txt
 cd sites
 npm ci
 npm run check
@@ -43,4 +44,4 @@ The guides describe **main development source**, with source links pinned at sit
 
 ## Independent releases
 
-Choose **carddetector** or **tfmodel** in the publishing workflow. Each has its own version and release history; model releases pin a compatible published core. See [the release runbook](docs/releases.md).
+Use **Publish card-detector** or **Publish card-detector-model**, then select the destination repository. Each module/destination has its own version and release history; model releases pin a compatible published core. Configure destinations in `publishing/repositories.yml` and use the [Textual environment setup wizard](docs/releases.md#interactive-environment-setup) to create or update their GitHub settings. See [the release runbook](docs/releases.md).

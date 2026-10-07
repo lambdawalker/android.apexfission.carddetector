@@ -84,3 +84,6 @@ build/docs-media/
 /captures
 .externalNativeBuild
 .cxx
+
+# Local Python tooling environment
+.venv/

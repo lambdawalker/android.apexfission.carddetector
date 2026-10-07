@@ -110,3 +110,46 @@ class IndependentGitTests(unittest.TestCase):
             result=m.prepare('carddetector')
         self.assertEqual(result['version'],'0.1.1')
         fetch.assert_called_once_with('com.apexfission.android.carddetector','card-detector')
+
+    def test_self_hosted_finalize_preserves_central_and_has_independent_upload_guard(self):
+        central=(self.repo/'docs/releases/carddetector.json').read_bytes()
+        env={'RELEASE_REPOSITORY':'apexfission-maven','MAVEN_REPOSITORY_URL':'https://maven.example/releases'}
+        folder=self.repo/'docs/releases/apexfission-maven';folder.mkdir()
+        for module in m.MODULES:(folder/f'{module}.json').write_text('null\n')
+        self.git('add','.');self.git('commit','-m','enable alternative repository')
+        self.source=self.git('rev-parse','HEAD');self.git('push','origin','main')
+        self.journal('carddetector','0.1.1')  # Central remains pending throughout.
+        with patch.dict(os.environ,env):
+            with patch.object(m,'published_versions',return_value=[]):
+                self.assertEqual(m.prepare('carddetector')['version'],'0.1.0')
+            r=self.record('carddetector','0.1.0',self.source)
+            r.update(repository='apexfission-maven',repository_url='https://maven.example/releases')
+            self.git('tag','-a',m.pending('carddetector','0.1.0'),self.source,'-m',json.dumps(r));self.git('push','origin','--tags')
+            m.guard('carddetector','0.1.0')
+            with self.assertRaisesRegex(ValueError,'already started'):m.guard('carddetector','0.1.0')
+            with patch.object(m,'verify_public'):m.confirm('carddetector','0.1.0',0)
+            m.finalize('carddetector','0.1.0',self.source)
+            self.assertEqual(m.prepare_finalization('carddetector','0.1.0')['skip'],'true')
+        self.assertEqual((self.repo/'docs/releases/carddetector.json').read_bytes(),central)
+        self.assertIsNotNone(m.remote_ref('release-pending/carddetector/0.1.1'))
+        self.assertIsNone(m.remote_ref('release-pending/apexfission-maven/carddetector/0.1.0'))
+        self.assertEqual(self.remote_git('rev-parse','apexfission-maven/carddetector/v0.1.0^{commit}'),self.source)
+        self.assertIn('https://maven.example/releases',(self.repo/'IMPORT.md').read_text())
+        m.documentation(verify=True)  # Generating docs needs no environment credentials.
+
+    def test_new_configured_target_finalizes_without_seed_metadata(self):
+        entries={'maven-central':{'publisher':'central','environment':'maven-central'},'third-party':{'publisher':'maven','environment':'third-party-production'}}
+        with patch.object(m,'load_config',return_value=entries),patch.dict(os.environ,{'RELEASE_REPOSITORY':'third-party','MAVEN_REPOSITORY_URL':'https://third.example/releases'}):
+            with patch.object(m,'published_versions',return_value=[]):
+                self.assertEqual(m.prepare('carddetector')['version'],'0.1.0')
+            r=self.record('carddetector','0.1.0',self.source)
+            r.update(repository='third-party',repository_url='https://third.example/releases')
+            self.git('tag','-a',m.pending('carddetector','0.1.0'),self.source,'-m',json.dumps(r));self.git('push','origin','--tags')
+            self.assertEqual(m.prepare_finalization('carddetector','0.1.0')['skip'],'false')
+            m.guard('carddetector','0.1.0')
+            with patch.object(m,'verify_public'):m.confirm('carddetector','0.1.0',0)
+            m.finalize('carddetector','0.1.0',self.source)
+            self.assertEqual(m.prepare_finalization('carddetector','0.1.0')['skip'],'true')
+            self.assertEqual(json.loads((self.repo/'docs/releases/third-party/carddetector.json').read_text())['repository'],'third-party')
+        m.documentation(verify=True)
+        self.assertIn('https://third.example/releases',(self.repo/'IMPORT.md').read_text())
