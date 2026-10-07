@@ -21,13 +21,37 @@ permissions:
   contents: write
 
 jobs:
+  configuration:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      environment: ${{ steps.repository.outputs.environment }}
+      publisher: ${{ steps.repository.outputs.publisher }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install -r scripts/requirements-publishing.txt
+      - run: python3 scripts/publishing_config.py check
+      - id: repository
+        env:
+          RELEASE_REPOSITORY: ${{ inputs.repository }}
+        run: python3 scripts/publishing_config.py resolve
+
   publish:
+    needs: configuration
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 100
-    environment: ${{ inputs.repository }}
+    environment: ${{ needs.configuration.outputs.environment }}
     env:
       RELEASE_REPOSITORY: ${{ inputs.repository }}
+      RELEASE_PUBLISHER: ${{ needs.configuration.outputs.publisher }}
       MAVEN_REPOSITORY_URL: ${{ vars.MAVEN_REPOSITORY_URL }}
       MAVEN_REPOSITORY_USERNAME: ${{ secrets.MAVEN_REPOSITORY_USERNAME }}
       MAVEN_REPOSITORY_PASSWORD: ${{ secrets.MAVEN_REPOSITORY_PASSWORD }}
@@ -47,27 +71,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python3 -m pip install -r scripts/requirements-setup.txt
       - name: Configure release identity
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-      - name: Check required secrets before reserving a version
+      - name: Check required settings before reserving a version
         env:
-          CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_IN_MEMORY_KEY }}
-        run: |
-          case "$RELEASE_REPOSITORY" in
-            maven-central) required=(CENTRAL_USERNAME CENTRAL_PASSWORD SIGNING_KEY) ;;
-            apexfission-maven) required=(MAVEN_REPOSITORY_URL MAVEN_REPOSITORY_USERNAME MAVEN_REPOSITORY_PASSWORD SIGNING_KEY) ;;
-            *) echo 'Unknown repository'; exit 1 ;;
-          esac
-          for name in "${required[@]}"; do
-            if [[ -z "${!name}" ]]; then
-              echo "Missing required secret for $name; no release reservation created." >&2
-              exit 1
-            fi
-          done
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          SIGNING_IN_MEMORY_KEY: ${{ secrets.SIGNING_IN_MEMORY_KEY }}
+        run: python3 scripts/publishing_config.py preflight
       - name: Choose release version
         id: release
         env:
@@ -129,9 +143,9 @@ jobs:
           set -euo pipefail
           # The Gradle guard creates a durable upload-started marker before any upload task.
           # Preserve plugin deployment output for Central Portal investigation; no debug logging.
-          case "$RELEASE_REPOSITORY" in
-            maven-central) task=publishAndReleaseToMavenCentral ;;
-            apexfission-maven) task=publishAllPublicationsToApexfissionRepository ;;
+          case "$RELEASE_PUBLISHER" in
+            central) task=publishAndReleaseToMavenCentral ;;
+            maven) task=publishAllPublicationsToSelectedMavenRepository ;;
             *) echo 'Unknown repository'; exit 1 ;;
           esac
           ./gradlew ":$RELEASE_MODULE:$task" "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon --console=plain 2>&1 | tee "$RUNNER_TEMP/repository-publish.log"
@@ -152,8 +166,8 @@ jobs:
 
   propagation-delay:
     name: Wait for Maven Central propagation (15 minutes)
-    needs: publish
-    if: inputs.repository == 'maven-central'
+    needs: [publish, configuration]
+    if: needs.configuration.outputs.publisher == 'central'
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     permissions: {}

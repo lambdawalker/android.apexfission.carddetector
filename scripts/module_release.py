@@ -15,6 +15,7 @@ import time
 import urllib.error
 import xml.etree.ElementTree as ET
 import release as common
+from publishing_config import load_config, validate_url, ID
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = {'carddetector': 'core', 'tfmodel': 'sentinel-card-model'}
@@ -23,19 +24,13 @@ ARTIFACTS = {'carddetector': ('core', 'card-detector'), 'tfmodel': ('sentinel-ca
 def git(*args): return subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
 def repository():
     value=os.environ.get('RELEASE_REPOSITORY','maven-central')
-    if value not in ('maven-central','apexfission-maven'): raise ValueError('Unknown release repository')
+    if value not in load_config(): raise ValueError('Unknown release repository')
     return value
 
 def repository_url():
-    if repository()=='maven-central': return common.CENTRAL
-    return validate_url(os.environ.get('MAVEN_REPOSITORY_URL',''))
-
-def validate_url(value):
-    url=urllib.parse.urlsplit(value)
-    if (url.scheme!='https' or not url.hostname or url.username or url.password
-            or url.query or url.fragment or re.search(r'[\s<>"`\\]',value)):
-        raise ValueError('MAVEN_REPOSITORY_URL must be an HTTPS repository URL without credentials, query or fragment')
-    return value.rstrip('/')
+    # Keep the old Central default for unsigned local builds and historical recovery.
+    default=common.CENTRAL if repository()=='maven-central' else ''
+    return validate_url(os.environ.get('MAVEN_REPOSITORY_URL','') or default)
 
 def scope(): return '' if repository()=='maven-central' else repository()+'/'
 def metadata_path(module): return f'docs/releases/{scope()}{module}.json'
@@ -71,7 +66,7 @@ def fetch(url,missing=False):
         time.sleep(2**attempt)
 
 def published_versions(group,artifact):
-    if repository()=='maven-central':return common.published_versions(group,artifact)
+    if repository()=='maven-central' and repository_url()==common.CENTRAL:return common.published_versions(group,artifact)
     data=fetch(artifact_base(group,artifact)+'/maven-metadata.xml',missing=True)
     if data is None:return []
     xml=ET.fromstring(data)
@@ -118,11 +113,11 @@ def ensure_available(module,tags):
 
 def validate_record(record,module,check_destination=True):
     target=record.get('repository','maven-central')
-    if target not in ('maven-central','apexfission-maven'):raise ValueError('Invalid journal repository')
-    if target=='apexfission-maven':validate_url(record.get('repository_url',''))
+    if not isinstance(target,str) or not ID.fullmatch(target):raise ValueError('Invalid journal repository')
+    if target!='maven-central' or 'repository_url' in record:validate_url(record.get('repository_url',''))
     if check_destination:
         if target!=repository():raise ValueError('Journal repository differs from selection')
-        if target=='apexfission-maven' and record['repository_url']!=repository_url():raise ValueError('Journal destination differs from configured URL')
+        if record.get('repository_url',common.CENTRAL)!=repository_url():raise ValueError('Journal destination differs from configured URL')
     if module not in MODULES or record.get('module')!=module or record.get('artifact') not in ARTIFACTS[module] or record.get('companions'):
         raise ValueError('Journal must contain exactly the selected module')
     common.version_key(record['version'])
@@ -163,7 +158,7 @@ def prepare(module,requested=''):
     refresh(); tags=remote_tags(); ensure_available(module,tags)
     group,artifact=identity(module)
     history=published_versions(group,artifact)
-    confirmed=json.loads((ROOT/metadata_path(module)).read_text())
+    confirmed=confirmed_record(module)
     if confirmed:
         validate_record(confirmed,module)
         history=list(set(history+[confirmed['version']]))
@@ -183,11 +178,11 @@ def prepare_finalization(module,version,source=''):
         r=read_record(module,version)
         if source and source!=r['source']: raise ValueError('Conflicting source')
         git('merge-base','--is-ancestor',r['source'],'origin/main')
-        current=json.loads(git('show',f'origin/main:{metadata_path(module)}'))
+        current=confirmed_record(module,remote=True)
         if current and common.version_key(current['version'])>=common.version_key(version): raise ValueError('Pending release would overwrite newer documentation')
         return common.outputs(dict(module=module,version=version,source=r['source'],skip='false'))
     stable=tag(module,version)
-    current=json.loads(git('show',f'origin/main:{metadata_path(module)}'))
+    current=confirmed_record(module,remote=True)
     # Preserve legacy v0.1.0 provenance without inventing new migration tags.
     if current and current['version']==version and current.get('legacy_tag'): stable=current['legacy_tag']
     if not remote_ref(stable) or remote_ref(uploading(module,version)): raise ValueError('No matching pending or completed release')
@@ -220,7 +215,7 @@ def local_record(module,version,source):
     git('diff','--exit-code',source,'--','.')
     group,artifact=identity(module)
     r=dict(module=module,version=version,source=source,group=group,artifact=artifact,sha256={},phase='reserved-before-upload',workflow_run=os.environ.get('GITHUB_RUN_ID','local'))
-    if scope():r.update(repository=repository(),repository_url=repository_url())
+    r.update(repository=repository(),repository_url=repository_url())
     if module=='tfmodel':
         r['core_version']=properties()['modelCoreVersion'];common.version_key(r['core_version'])
         r['core_artifact']=properties().get('modelCoreArtifact','core')
@@ -274,8 +269,19 @@ def confirm(module,version,timeout=2400):
     path=ROOT/f'build/{scope()}confirmed-{module}.json';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(r,indent=2,sort_keys=True)+'\n')
     return r
 
+def confirmed_record(module,remote=False):
+    path=metadata_path(module)
+    if remote:
+        if not git('ls-tree','--name-only','origin/main','--',path):return None
+        return json.loads(git('show',f'origin/main:{path}'))
+    local=ROOT/path
+    return json.loads(local.read_text()) if local.exists() else None
+
 def documentation(verify=False):
-    records={(target,module):json.loads((ROOT/f'docs/releases/{prefix}{module}.json').read_text()) for target,prefix in [('maven-central',''),('apexfission-maven','apexfission-maven/')] for module in MODULES if (ROOT/f'docs/releases/{prefix}{module}.json').exists()}
+    # Preserve historical records even when a destination is later removed from the registry.
+    targets=['maven-central']+sorted({p.parent.name for p in (ROOT/'docs/releases').glob('*/*.json')})
+    records={(target,module):json.loads(path.read_text()) for target in targets for module in MODULES
+             if (path:=ROOT/'docs/releases'/('' if target=='maven-central' else target)/f'{module}.json').exists()}
     sections=[]
     for (target,module),r in records.items():
         if r is None and target!='maven-central':continue
@@ -341,10 +347,11 @@ def finalize(module,version,source):
     if {**journal,'phase':'confirmed-public'}!=r:raise ValueError('Confirmation differs from reservation')
     refresh();git('merge-base','--is-ancestor',source,'origin/main')
     # Another module's finalized metadata is deliberately excluded; read it from latest main below.
-    git('diff','--exit-code',source,'origin/main','--','scripts','gradle.properties','build.gradle.kts',f'{module}/build.gradle.kts','settings.gradle.kts','gradle/libs.versions.toml','docs/templates/MODULE_IMPORT.md.template','.github/workflows/publish-card-detection.yml','.github/workflows/finalize-carddetector.yml')
+    git('diff','--exit-code',source,'origin/main','--','scripts','publishing','gradle.properties','build.gradle.kts',f'{module}/build.gradle.kts','settings.gradle.kts','gradle/libs.versions.toml','docs/templates/MODULE_IMPORT.md.template','.github/workflows/publish-card-detection.yml','.github/workflows/finalize-carddetector.yml')
     git('switch','-C',f'finalize-{module}','origin/main')
-    current=json.loads((ROOT/metadata_path(module)).read_text())
+    current=confirmed_record(module)
     if current and common.version_key(current['version'])>=common.version_key(version):raise ValueError('Refusing to replace same/newer module metadata')
+    (ROOT/metadata_path(module)).parent.mkdir(parents=True,exist_ok=True)
     (ROOT/metadata_path(module)).write_text(json.dumps(r,indent=2,sort_keys=True)+'\n');documentation()
     git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
     git('add',metadata_path(module),'IMPORT.md');git('commit','-m',f'docs: confirm {module} {version}')

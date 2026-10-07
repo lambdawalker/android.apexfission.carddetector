@@ -17,7 +17,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        if (providers.environmentVariable("RELEASE_REPOSITORY").orNull == "apexfission-maven") {
+        if (providers.environmentVariable("RELEASE_REPOSITORY").orElse("maven-central").get() != "maven-central") {
             providers.environmentVariable("MAVEN_REPOSITORY_URL").orNull?.takeIf { it.isNotBlank() }?.let { endpoint ->
                 maven {
                     url = uri(endpoint)

@@ -8,7 +8,9 @@ on:
         type: choice
         required: true
         default: maven-central
-        options: [maven-central, apexfission-maven]
+        # BEGIN GENERATED REPOSITORIES
+        options: ["maven-central", "apexfission-maven"]
+        # END GENERATED REPOSITORIES
       version:
         description: 'Optional X.Y.Z. Blank: first release 0.1.0, otherwise next patch.'
         required: false

@@ -17,6 +17,72 @@ Module version histories continue across the rename: with confirmed 0.1.0 and no
 
 The model currently pins `modelCoreArtifact=core` and `modelCoreVersion=0.1.0`, an already published dependency. To move it to the renamed detector, first publish and finalize `card-detector`, then update both pin properties to that confirmed artifact/version. Publishing the model first remains supported with its existing dependency. Avoid adding both old and renamed detector artifacts to one app: their classes overlap.
 
+## Configure publishing repositories
+
+[`publishing/repositories.yml`](../publishing/repositories.yml) is the source of truth for available destinations. Each entry has a stable repository ID, a GitHub environment name, and a publishing protocol:
+
+```yaml
+repositories:
+  maven-central:
+    environment: maven-central
+    publisher: central
+  apexfission-maven:
+    environment: apexfission-maven
+    publisher: maven
+  another-repository:
+    environment: another-repository-production
+    publisher: maven
+```
+
+Use `central` only for the existing `maven-central` ID. Other Maven-compatible services use `maven`. IDs identify immutable release history, so do not rename an ID after publishing. Give each destination a separate environment. URLs and credentials belong in those environments, not in this file.
+
+After editing the registry, run:
+
+```bash
+python -m pip install -r scripts/requirements-publishing.txt
+python scripts/publishing_config.py generate
+python scripts/publishing_config.py check
+```
+
+Commit the YAML, generated `publishing/repositories.properties`, and changes to both publish workflows and the Finalize workflow. GitHub's manual dropdown cannot read an external file at display time; its choices are generated ahead of time. CI rejects stale generated configuration. The Gradle properties file is generated public configuration, keeping YAML dependencies out of ordinary Android builds. New destinations need no manually seeded release records.
+
+## Interactive environment setup
+
+The Python **Textual** wizard reads the same YAML and guides you through every configured environment. It runs on Windows, Linux, and macOS with Python 3.10 or newer. Run it locally from the repository root.
+
+Windows (Command Prompt or PowerShell; activation is not needed):
+
+```text
+py -3 -m venv .venv
+.venv\Scripts\python -m pip install -r scripts/requirements-setup.txt
+.venv\Scripts\python scripts/setup_github_environments.py
+```
+
+Linux/macOS:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r scripts/requirements-setup.txt
+.venv/bin/python scripts/setup_github_environments.py
+```
+
+The defaults target this GitHub repository and `publishing/repositories.yml`. For another GitHub repository or registry, use `--repo OWNER/REPOSITORY --config path/to/repositories.yml`.
+
+The first screen asks for a GitHub token in a masked field. Use a fine-grained token restricted to the target repository with **Administration: read and write** (environment creation) and **Environments: read and write** (variables/secrets). Your account must have repository administration access. A classic token with `repo` scope also works; organization approval or SSO may be required. The setup token is separate from Maven credentials and is never stored in the GitHub environments or a local configuration file.
+
+The wizard:
+
+1. Inspects each environment and its existing variables and secret names.
+2. Prompts for each required setting. Existing variable values are shown; GitHub does not disclose secret values.
+3. Preserves an existing setting when you leave its input blank. Missing required values must be supplied; the missing Central URL offers its standard default. A missing signing-key password may remain unset for an unencrypted key.
+4. Accepts a path to your ASCII-armored private signing key file, preserving its multiline contents. Other secret inputs are masked too.
+5. Shows a review screen before creating environments or saving changes. Cancel exits without applying the pending changes.
+6. Creates missing environments and updates only entered settings. Existing environment protection rules remain untouched. Secret values are encrypted with GitHub's environment public key before upload.
+
+Tokens and entered secret values stay in process memory and are excluded from summaries. Writes are not atomic: if a request fails or is interrupted, the wizard lists completed setting names and the failed or uncertain operation. Rerun it to inspect current state and finish the remaining settings; completed secret values cannot be read back or rolled back automatically.
+
+The wizard manages the registry's Maven environments. Keep the separate `delayed-docs` environment's 15-minute timer configured as described below.
+
 ## Run a release
 
 1. Merge the intended source to `main`. Review the selected module's changes and, for model releases, its `modelCoreVersion` compatibility pin.
@@ -31,14 +97,14 @@ Only the selected module is staged for local publication verification and upload
 
 ## GitHub environments and configuration
 
-Create these environments in **Settings → Environments**. The dropdown value is the environment name.
+Create these environments in **Settings → Environments**. The selected repository ID resolves to the environment named in the registry.
 
 | Environment | Environment secrets | Environment variables |
 | --- | --- | --- |
-| `maven-central` | `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, `SIGNING_IN_MEMORY_KEY_PASSWORD` | None required |
+| `maven-central` | `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, `SIGNING_IN_MEMORY_KEY_PASSWORD` | `MAVEN_REPOSITORY_URL` |
 | `apexfission-maven` | `MAVEN_REPOSITORY_USERNAME`, `MAVEN_REPOSITORY_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, `SIGNING_IN_MEMORY_KEY_PASSWORD` | `MAVEN_REPOSITORY_URL` |
 
-Add **MAVEN_REPOSITORY_URL** under the `apexfission-maven` environment's **Environment variables** (not in the workflow form). Set it to the canonical HTTPS Maven repository base URL, including the repository path, for example `https://maven.example.com/releases`. This example is a placeholder. Do not include a username, password, query string, or fragment. The endpoint must support standard Maven uploads and artifact/metadata reads at that same URL. Redirects are rejected during verification. A signing-key password can be empty for an unencrypted key.
+Add **MAVEN_REPOSITORY_URL** under **Environment variables** in every Maven environment (not in the workflow form). Set it to the canonical HTTPS Maven repository base URL, including the repository path, for example `https://maven.example.com/releases`. This example is a placeholder. For `maven-central`, use `https://repo.maven.apache.org/maven2`; it is the artifact read/verification endpoint. Central uploads continue through its publishing service, not this URL. Do not include a username, password, query string, or fragment. For a `maven` publisher, the endpoint must support standard Maven uploads and artifact/metadata reads at that same URL. Redirects are rejected during verification. A signing-key password can be empty for an unencrypted key.
 
 The self-hosted credentials are used for upload and artifact verification; signing remains enabled for both destinations. The repository URL is public configuration and is recorded in release metadata and installation instructions. For a private repository, consumers need their own read credentials; never copy publishing credentials into application source.
 
@@ -81,6 +147,8 @@ The initial records were split from the already confirmed 0.1.0 pair; their hash
 ## Local verification
 
 ```bash
+python3 -m pip install -r scripts/requirements-setup.txt
+python3 scripts/publishing_config.py check
 python3 -m unittest discover -s scripts/tests -v
 python3 scripts/module_release.py verify
 

@@ -8,7 +8,9 @@ on:
         type: choice
         required: true
         default: maven-central
-        options: [maven-central, apexfission-maven]
+        # BEGIN GENERATED REPOSITORIES
+        options: ["maven-central", "apexfission-maven"]
+        # END GENERATED REPOSITORIES
       module:
         description: 'Module whose existing publication should be finalized'
         type: choice
@@ -40,11 +42,34 @@ permissions:
   contents: write
 
 jobs:
+  configuration:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      environment: ${{ steps.repository.outputs.environment }}
+      publisher: ${{ steps.repository.outputs.publisher }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install -r scripts/requirements-publishing.txt
+      - run: python3 scripts/publishing_config.py check
+      - id: repository
+        env:
+          RELEASE_REPOSITORY: ${{ inputs.repository }}
+        run: python3 scripts/publishing_config.py resolve
+
   finalize:
+    needs: configuration
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 50
-    environment: ${{ inputs.repository }}
+    environment: ${{ needs.configuration.outputs.environment }}
     env:
       RELEASE_REPOSITORY: ${{ inputs.repository }}
       MAVEN_REPOSITORY_URL: ${{ vars.MAVEN_REPOSITORY_URL }}
@@ -66,6 +91,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python3 -m pip install -r scripts/requirements-publishing.txt
       - name: Recheck remote release state after acquiring the lock
         id: release
         env:

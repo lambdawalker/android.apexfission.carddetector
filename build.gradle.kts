@@ -26,12 +26,16 @@ subprojects {
         else providers.gradleProperty(if (name == "tfmodel") "modelVersion" else "coreVersion").orElse("0.0.0-SNAPSHOT").get()
 }
 val releaseRepository = providers.environmentVariable("RELEASE_REPOSITORY").orElse("maven-central")
-require(releaseRepository.get() in listOf("maven-central", "apexfission-maven")) { "Unknown RELEASE_REPOSITORY" }
+val publishingRepositories = java.util.Properties().apply {
+    rootProject.file("publishing/repositories.properties").inputStream().use { load(it) }
+}
+val releasePublisher = publishingRepositories.getProperty("${releaseRepository.get()}.publisher")
+require(releasePublisher in listOf("central", "maven")) { "Unknown RELEASE_REPOSITORY; regenerate publishing configuration" }
 // Reject accidental multi-module or cross-repository invocations before any reservation is consumed.
 gradle.taskGraph.whenReady {
-    allTasks.filter { it.name.contains("MavenCentral", ignoreCase = true) || it.name.endsWith("ToApexfissionRepository") }.forEach {
-        val taskRepository = if (it.name.contains("MavenCentral", ignoreCase = true)) "maven-central" else "apexfission-maven"
-        require(taskRepository == releaseRepository.get()) { "Upload task does not match RELEASE_REPOSITORY: ${it.path}" }
+    allTasks.filter { it.name.contains("MavenCentral", ignoreCase = true) || it.name.endsWith("ToSelectedMavenRepository") }.forEach {
+        val taskPublisher = if (it.name.contains("MavenCentral", ignoreCase = true)) "central" else "maven"
+        require(taskPublisher == releasePublisher) { "Upload task does not match RELEASE_REPOSITORY: ${it.path}" }
         require(it.project.name == releaseModule.get()) { "Only the selected releaseModule may publish: ${it.path}" }
     }
 }
@@ -40,8 +44,8 @@ tasks.register<Exec>("verifyPublicationReservation") {
     commandLine("python3", "scripts/module_release.py", "guard", "--module", releaseModule.get(), "--version", releaseVersion.get())
     doFirst {
         require(releaseModule.get().isNotBlank()) { "Set releaseModule to carddetector or tfmodel" }
-        val credentials = if (releaseRepository.get() == "maven-central") listOf("mavenCentralUsername", "mavenCentralPassword", "signingInMemoryKey") else listOf("signingInMemoryKey")
-        if (releaseRepository.get() == "apexfission-maven") {
+        val credentials = if (releasePublisher == "central") listOf("mavenCentralUsername", "mavenCentralPassword", "signingInMemoryKey") else listOf("signingInMemoryKey")
+        if (releasePublisher == "maven") {
             listOf("MAVEN_REPOSITORY_URL", "MAVEN_REPOSITORY_USERNAME", "MAVEN_REPOSITORY_PASSWORD").forEach {
                 require(!providers.environmentVariable(it).orNull.isNullOrBlank()) { "Missing repository setting: $it" }
             }

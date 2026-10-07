@@ -108,7 +108,7 @@ tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
 extensions.configure<PublishingExtension> {
     providers.environmentVariable("MAVEN_REPOSITORY_URL").orNull?.takeIf { it.isNotBlank() }?.let { endpoint ->
         repositories.maven {
-            name = "apexfission"
+            name = "selectedMaven"
             url = uri(endpoint)
             credentials {
                 username = providers.environmentVariable("MAVEN_REPOSITORY_USERNAME").orNull
@@ -122,7 +122,7 @@ extensions.configure<PublishingExtension> {
     }
 }
 tasks.configureEach {
-    if (name.contains("MavenCentral", ignoreCase = true) || name.endsWith("ToApexfissionRepository")) {
+    if (name.contains("MavenCentral", ignoreCase = true) || name.endsWith("ToSelectedMavenRepository")) {
         dependsOn(rootProject.tasks.named("verifyPublicationReservation"))
     }
 }
