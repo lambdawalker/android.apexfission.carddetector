@@ -17,6 +17,7 @@ import xml.etree.ElementTree as ET
 import release as common
 import release_identity
 import import_docs
+import documentation_history
 import jitpack_release
 from publishing_config import load_config, validate_url, ID
 
@@ -166,8 +167,8 @@ def ensure_core_public(version):
 def all_records(remote=False):
     if remote:
         paths=git('ls-tree','-r','--name-only','origin/main','--','docs/releases').splitlines()
-        return [json.loads(git('show',f'origin/main:{p}')) for p in paths if p.endswith('.json')]
-    return [json.loads(p.read_text()) for p in (ROOT/'docs/releases').rglob('*.json')]
+        return [json.loads(git('show',f'origin/main:{p}')) for p in paths if p.endswith('.json') and not p.startswith('docs/releases/history/')]
+    return list(documentation_history.latest_records(ROOT))
 
 def prepare(module,requested=''):
     refresh(); tags=remote_tags(); ensure_available(module,tags)
@@ -351,10 +352,12 @@ def finalize(module,version,source):
     git('switch','-C',f'finalize-{module}','origin/main')
     current=confirmed_record(module)
     if current and common.version_key(current['version'])>=common.version_key(version):raise ValueError('Refusing to replace same/newer module metadata')
+    documentation_history.seed(ROOT)
+    documentation_history.archive_record(ROOT,r)
     (ROOT/metadata_path(module)).parent.mkdir(parents=True,exist_ok=True)
     (ROOT/metadata_path(module)).write_text(json.dumps(r,indent=2,sort_keys=True)+'\n');documentation()
     git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
-    git('add',metadata_path(module),'IMPORT.md');git('commit','-m',f'docs: confirm {module} {version}')
+    git('add',metadata_path(module),'IMPORT.md',str(documentation_history.HISTORY));git('commit','-m',f'docs: confirm {module} {version}')
     stable=tag(module,version)
     updates=['HEAD:refs/heads/main',f':refs/tags/{pending(module,version)}']
     if remote_ref(stable):

@@ -87,3 +87,5 @@ build/docs-media/
 
 # Local Python tooling environment
 .venv/
+
+sites/src/versions.json

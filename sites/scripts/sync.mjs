@@ -1,3 +1,4 @@
+import {buildVersioned} from './build-versioned.mjs';
 import {readFile,writeFile,mkdir,rm,readdir,copyFile} from 'node:fs/promises';
 import {resolve,dirname,relative} from 'node:path';
 import {execFileSync} from 'node:child_process';
@@ -9,6 +10,7 @@ for(const script of ['module_release','docs','media'])execFileSync('python3',[`s
 const read=p=>readFile(resolve(root,p),'utf8');
 async function put(p,s){await mkdir(dirname(p),{recursive:true});await writeFile(p,s);}
 async function walk(dir){let out=[];for(const e of await readdir(dir,{withFileTypes:true})){const p=resolve(dir,e.name);out.push(...e.isDirectory()?await walk(p):[p]);}return out;}
+await rm('dist',{recursive:true,force:true});
 await rm('public',{recursive:true,force:true});
 await rm('src/content/docs',{recursive:true,force:true});
 await mkdir('public/agents',{recursive:true});
@@ -39,3 +41,5 @@ await put('public/IMPORT.md',rewriteMarkdown(await read('IMPORT.md'),'IMPORT.md'
 for(const [source,slug] of [['docs/overview.md','index'],['IMPORT.md','installation'],['docs/maintenance.md','development'],['docs/coverage.md','coverage'],['docs/releases.md','releases'],['docs/screenshots/README.md','media']])await human(source,slug);
 await put('public/llms.txt',`# Card Detector\n\nMain documentation at ${process.env.DOCS_REF}.\n\n- [Agent entry](${base}/agents/index.md)\n- [Installation](${base}/IMPORT.md)\n- [API](${base}/agents/api.md)\n- [Quickstart](${base}/agents/quickstart.md)\n- [Ownership](${base}/agents/concepts.md)\n- [Limitations](${base}/agents/limitations.md)\n`);
 console.log('Synchronized human guides, raw Markdown, exact examples and historical media.');
+
+await buildVersioned(root);

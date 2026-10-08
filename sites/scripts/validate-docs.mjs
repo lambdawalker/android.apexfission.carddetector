@@ -20,6 +20,7 @@ function inspect(text, html) {
     function walk(node) {
       for (const {name,value} of node.attrs ?? []) {
         if (name === 'id') ids.add(value);
+        if (node.tagName === 'option' && name === 'value' && value.startsWith(base + '/')) links.push(value);
         if (['href','src','poster'].includes(name) && !(node.tagName === 'link' && node.attrs.some(a => a.name === 'rel' && a.value === 'canonical'))) links.push(value);
       }
       for (const child of node.childNodes ?? []) walk(child);
@@ -30,6 +31,7 @@ function inspect(text, html) {
     const plain = node => node.value ?? (node.children ?? []).map(plain).join('');
     visit(tree, node => {
       if (node.type === 'heading') ids.add(slugger.slug(plain(node)));
+      if (node.type === 'html') for (const match of node.value.matchAll(/\bid="([^"]+)"/g)) ids.add(match[1]);
       if (['link','image','definition'].includes(node.type)) links.push(node.url);
     });
   }

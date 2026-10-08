@@ -1,0 +1,32 @@
+{
+  "destinations": {
+    "maven-central": {
+      "artifact": "card-detector-model",
+      "core_artifact": "core",
+      "core_version": "0.1.0",
+      "group": "com.apexfission.android.carddetector",
+      "model_assets": {
+        "assets/cdl/tflite/Y11-640E197F16.tflite": "473f497ca45b4ab2f66ef59b3da1c0e27a0ac11227279ba6d89a19566c450e1e"
+      },
+      "module": "tfmodel",
+      "phase": "confirmed-public",
+      "sha256": {
+        "-javadoc.jar": "a261e40e8ac9223a5949d2addbb0e6af388fe38a1f714796539e5b91e51ef301",
+        "-sources.jar": "eda1bf6fcbc500c5107533e4c58b4c9d033dba2df8c057fedd96596baa289f58",
+        ".aar": "d3f23db6eb1928c5940e75e7e78ec2effa3b3cc70a664c45be4aaffe0e56384a",
+        ".module": "8170ca3b99351e568366f5fc5b198a269b3aec24da8cc1db34539d3cca89b9ff",
+        ".pom": "34ab9bfa1f25f9c4278b7da4c5cb38db800a4393d3f50fe431a2577ddff736f3"
+      },
+      "source": "acb0035aee1a0aec0c6886617243514a040fa650",
+      "version": "0.1.1",
+      "workflow_run": "37378084884"
+    }
+  },
+  "documentation_note": "Spanish translation added after release and pinned by its Git tree. Each page is used only when its English source hash matches; otherwise the archived English page is shown.",
+  "documentation_ref": "acb0035aee1a0aec0c6886617243514a040fa650",
+  "module": "tfmodel",
+  "schema": 1,
+  "source": "acb0035aee1a0aec0c6886617243514a040fa650",
+  "translation_tree": "b8a965185322811cefe8408dc80b42176498a624",
+  "version": "0.1.1"
+}
