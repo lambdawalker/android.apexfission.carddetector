@@ -1,4 +1,5 @@
 """Offline coverage for secure GitHub environment setup."""
+from contextlib import asynccontextmanager
 import base64
 import json
 from pathlib import Path
@@ -9,7 +10,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import httpx
 from nacl.public import PrivateKey, SealedBox
-from textual.widgets import Input, Static
+from textual.widgets import Button, Input, Static
 from github_environment_api import GitHubAPI, SetupError
 from setup_github_environments import SetupWizard, Setting, choose_value, apply_changes
 
@@ -114,6 +115,17 @@ class ValueTests(unittest.TestCase):
 
 
 class WizardTests(unittest.IsolatedAsyncioTestCase):
+    @asynccontextmanager
+    async def run_wizard(self, app):
+        async with app.run_test() as pilot:
+            # Textual ignores clicks during a button's 200 ms active effect.
+            # Fast Windows pilots can click again before that timer expires;
+            # pause() drains messages but does not wait for this animation.
+            # Keep real click/event handling while removing cosmetic timing.
+            for button in app.query(Button):
+                button.active_effect_duration = 0
+            yield pilot
+
     async def test_review_before_writes_blank_preserves_and_token_masked(self):
         calls = []
         class Fake:
@@ -124,7 +136,7 @@ class WizardTests(unittest.IsolatedAsyncioTestCase):
             async def write_secret(self, *args): calls.append(args)
         settings = [Setting('prod','URL','variable',True), Setting('prod','TOKEN','secret',True)]
         app = SetupWizard('owner/repo', settings, api_factory=lambda repo,token: Fake())
-        async with app.run_test() as pilot:
+        async with self.run_wizard(app) as pilot:
             self.assertTrue(app.query_one('#value', Input).password)
             app.query_one('#value', Input).value = 'sensitive'
             await pilot.click('#next'); await pilot.pause()
@@ -144,7 +156,7 @@ class WizardTests(unittest.IsolatedAsyncioTestCase):
             async def snapshot(self, env): return True, {'URL':'https://old'}, set()
             async def aclose(self): pass
         app = SetupWizard('owner/repo',[Setting('prod','URL','variable',True)],api_factory=lambda r,t: Fake())
-        async with app.run_test() as pilot:
+        async with self.run_wizard(app) as pilot:
             app.query_one('#value', Input).value = 'access-token'
             await pilot.click('#next'); await pilot.pause()
             app.query_one('#value', Input).value = 'https://new'
@@ -159,7 +171,7 @@ class WizardTests(unittest.IsolatedAsyncioTestCase):
             async def ensure_environment(self, env): calls.append(('create',env)); return False
             async def write_secret(self, env, name, value): calls.append((env,name,value))
         app = SetupWizard('owner/repo',[Setting('new','TOKEN','secret',True)],api_factory=lambda r,t: Fake())
-        async with app.run_test() as pilot:
+        async with self.run_wizard(app) as pilot:
             app.query_one('#value', Input).value = 'access-token'
             await pilot.click('#next'); await pilot.pause()
             app.query_one('#value', Input).value = 'publishing-secret'
@@ -178,7 +190,7 @@ class WizardTests(unittest.IsolatedAsyncioTestCase):
             async def snapshot(self, env): return False, {}, set()
             async def aclose(self): pass
         app = SetupWizard('owner/repo',[Setting('new','TOKEN','secret',True)],api_factory=lambda r,t: Fake())
-        async with app.run_test() as pilot:
+        async with self.run_wizard(app) as pilot:
             app.query_one('#value', Input).value = 'token'
             await pilot.click('#next'); await pilot.pause()
             await pilot.click('#next'); await pilot.pause()
