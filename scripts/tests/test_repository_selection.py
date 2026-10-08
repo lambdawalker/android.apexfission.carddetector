@@ -7,6 +7,11 @@ import module_release as m
 HOST = {'RELEASE_REPOSITORY': 'apexfission-maven', 'MAVEN_REPOSITORY_URL': 'https://maven.example/releases/'}
 
 class RepositoryTests(unittest.TestCase):
+    def setUp(self):
+        entries={**m.load_config(), 'apexfission-maven': {'publisher':'maven','environment':'apexfission-maven'}}
+        registry=patch.object(m,'load_config',return_value=entries)
+        registry.start();self.addCleanup(registry.stop)
+
     def test_self_hosted_history_does_not_consume_central_versions_or_attempts(self):
         with patch.dict(os.environ, HOST):
             self.assertEqual(m.next_version('carddetector', ['carddetector/v9.0.0'], []), '0.1.0')
