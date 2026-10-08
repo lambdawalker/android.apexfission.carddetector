@@ -6,7 +6,10 @@ model, or the model artifact for bundled assets and its pinned detector dependen
 An explicit detector dependency can select a newer version only when its artifact ID matches the model's pin; verify compatibility before overriding it.
 Do not combine `core` and `card-detector` in one app: they contain overlapping classes. Check the model's exported coordinate below before adding a detector dependency.
 
-Add `google()` and `mavenCentral()` to your dependency repositories.
+Only the newest confirmed semantic version of each module is shown. When that release
+is available from multiple destinations, choose one destination; the examples include
+all repositories needed by that artifact and its pinned dependencies. Unconfirmed
+uploads and older destination releases are never installation recommendations.
 
 {{INSTALLATION}}
 

@@ -15,6 +15,9 @@ import time
 import urllib.error
 import xml.etree.ElementTree as ET
 import release as common
+import release_identity
+import import_docs
+import jitpack_release
 from publishing_config import load_config, validate_url, ID
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,12 +32,13 @@ def repository():
 
 def repository_url():
     # Keep the old Central default for unsigned local builds and historical recovery.
+    if repository()=='jitpack': return jitpack_release.REPOSITORY
     default=common.CENTRAL if repository()=='maven-central' else ''
     return validate_url(os.environ.get('MAVEN_REPOSITORY_URL','') or default)
 
 def scope(): return '' if repository()=='maven-central' else repository()+'/'
 def metadata_path(module): return f'docs/releases/{scope()}{module}.json'
-def tag(module, version): return f'{scope()}{module}/v{version}'
+def tag(module, version): return release_identity.canonical(module,version)
 def pending(module, version): return f'release-pending/{scope()}{module}/{version}'
 def uploading(module, version): return f'release-uploading/{scope()}{module}/{version}'
 def artifact_base(group,artifact):
@@ -51,7 +55,7 @@ def fetch(url,missing=False):
     request=urllib.request.Request(url)
     username=os.environ.get('MAVEN_REPOSITORY_USERNAME','')
     password=os.environ.get('MAVEN_REPOSITORY_PASSWORD','')
-    if username and password:
+    if repository()!='jitpack' and username and password:
         token=base64.b64encode(f'{username}:{password}'.encode()).decode()
         request.add_header('Authorization','Basic '+token)
     opener=urllib.request.build_opener(NoRepositoryRedirects())
@@ -118,12 +122,16 @@ def validate_record(record,module,check_destination=True):
     if check_destination:
         if target!=repository():raise ValueError('Journal repository differs from selection')
         if record.get('repository_url',common.CENTRAL)!=repository_url():raise ValueError('Journal destination differs from configured URL')
-    if module not in MODULES or record.get('module')!=module or record.get('artifact') not in ARTIFACTS[module] or record.get('companions'):
+    if module not in MODULES or record.get('module')!=module or (target!='jitpack' and record.get('artifact') not in ARTIFACTS[module]) or record.get('companions'):
         raise ValueError('Journal must contain exactly the selected module')
     common.version_key(record['version'])
     if not re.fullmatch('[0-9a-f]{40}',record['source']): raise ValueError('Invalid source')
-    if set(record['sha256'])!=set(common.SUFFIXES) or any(not re.fullmatch('[0-9a-f]{64}',v) for v in record['sha256'].values()):
+    expected=set(common.SUFFIXES)
+    actual=set(record['sha256'])
+    valid_hashes=actual==expected or (target=='jitpack' and actual==expected-{'.module'})
+    if not valid_hashes or any(not re.fullmatch('[0-9a-f]{64}',v) for v in record['sha256'].values()):
         raise ValueError('Incomplete publication hashes')
+    if target=='jitpack': jitpack_release.artifact_base(record)
     if module=='tfmodel':
         common.version_key(record['core_version'])
         if record.get('core_artifact','core') not in ARTIFACTS['carddetector']: raise ValueError('Invalid core artifact pin')
@@ -143,32 +151,44 @@ def ensure_core_public(version):
     if artifact not in ARTIFACTS["carddetector"]: raise ValueError("Invalid core artifact pin")
     common.version_key(version)
     group,_=identity('carddetector')
-    read=fetch; base=artifact_base(group,artifact)
+    read=fetch; base=artifact_base(group,artifact); endpoint=repository_url()
     if repository()!='maven-central' and version in common.published_versions(group,artifact):
-        read=common.fetch; base=common.artifact_base(group,artifact)
-    elif version not in published_versions(group,artifact):raise ValueError('Pinned model core dependency is not published')
+        read=common.fetch; base=common.artifact_base(group,artifact); endpoint=common.CENTRAL
+    elif repository()=='jitpack' or version not in published_versions(group,artifact):raise ValueError('Pinned model core dependency is not published')
     base=f'{base}/{version}/{artifact}-{version}'
     xml=ET.fromstring(read(base+'.pom'))
     for node in xml.iter(): node.tag=node.tag.split('}')[-1]
     if tuple(xml.findtext(k) for k in ('groupId','artifactId','version','packaging'))!=(group,artifact,version,'aar'):
         raise ValueError('Pinned core POM mismatch')
     if not read(base+'.aar'): raise ValueError('Pinned core AAR is unavailable')
+    return endpoint
+
+def all_records(remote=False):
+    if remote:
+        paths=git('ls-tree','-r','--name-only','origin/main','--','docs/releases').splitlines()
+        return [json.loads(git('show',f'origin/main:{p}')) for p in paths if p.endswith('.json')]
+    return [json.loads(p.read_text()) for p in (ROOT/'docs/releases').rglob('*.json')]
 
 def prepare(module,requested=''):
     refresh(); tags=remote_tags(); ensure_available(module,tags)
-    group,artifact=identity(module)
-    history=published_versions(group,artifact)
-    confirmed=confirmed_record(module)
-    if confirmed:
-        validate_record(confirmed,module)
-        history=list(set(history+[confirmed['version']]))
-    version=next_version(module,tags,history,requested)
     source=git('rev-parse','HEAD');git('merge-base','--is-ancestor',source,'origin/main')
-    for name in tags:
-        if re.fullmatch(re.escape(scope()+module+'/v')+common.SEMVER,name) and git('rev-parse',f'{name}^{{commit}}')==source:
-            raise ValueError('Selected module already released from this source')
+    records=all_records(remote=True)
+    for r in records:
+        if r:validate_record(r,r['module'],check_destination=False)
+    version,source=release_identity.select(module,source,git,tags,records,requested.strip())
+    current=confirmed_record(module,remote=True)
+    if current and current['version']==version:
+        validate_record(current,module)
+        if current['source']!=source:raise ValueError('Destination version has conflicting source')
+        return common.outputs(dict(module=module,version=version,source=source,skip='true'))
+    if repository()!='jitpack':
+        group,artifact=identity(module)
+        published=published_versions(group,artifact)
+        if version in published:raise ValueError('Version exists at destination without a matching confirmed record; investigate before upload')
+        if any(re.fullmatch(common.SEMVER,v) and common.version_key(v)>common.version_key(version) for v in published):
+            raise ValueError('Destination has newer untracked releases; reconcile provenance')
     if module=='tfmodel': ensure_core_public(properties()['modelCoreVersion'])
-    return common.outputs(dict(module=module,version=version,source=source))
+    return common.outputs(dict(module=module,version=version,source=source,skip='false'))
 
 def prepare_finalization(module,version,source=''):
     common.version_key(version)
@@ -182,15 +202,18 @@ def prepare_finalization(module,version,source=''):
         if current and common.version_key(current['version'])>=common.version_key(version): raise ValueError('Pending release would overwrite newer documentation')
         return common.outputs(dict(module=module,version=version,source=r['source'],skip='false'))
     stable=tag(module,version)
+    if not remote_ref(stable):stable=f'{scope()}{module}/v{version}'
     current=confirmed_record(module,remote=True)
     # Preserve legacy v0.1.0 provenance without inventing new migration tags.
     if current and current['version']==version and current.get('legacy_tag'): stable=current['legacy_tag']
     if not remote_ref(stable) or remote_ref(uploading(module,version)): raise ValueError('No matching pending or completed release')
     tagged=git('rev-parse',f'{stable}^{{commit}}')
     if source and tagged!=source: raise ValueError('Conflicting source')
+    if not current:raise ValueError('Stable tag lacks confirmed docs')
     validate_record(current,module)
     if current['phase']!='confirmed-public' or common.version_key(current['version'])<common.version_key(version): raise ValueError('Stable tag lacks confirmed docs')
     current_tag=current.get('legacy_tag') or tag(module,current['version'])
+    if not remote_ref(current_tag):current_tag=f'{scope()}{module}/v{current["version"]}'
     if not remote_ref(current_tag) or git('rev-parse',f'{current_tag}^{{commit}}')!=current['source']: raise ValueError('Confirmed source differs from stable tag')
     git('merge-base','--is-ancestor',tagged,current['source']);git('merge-base','--is-ancestor',current['source'],'origin/main')
     return common.outputs(dict(module=module,version=version,source=tagged,skip='true'))
@@ -199,7 +222,7 @@ def model_assets():
     return {'assets/'+p.relative_to(ROOT/'tfmodel/src/main/assets').as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in (ROOT/'tfmodel/src/main/assets').rglob('*.tflite')}
 
 def verify_bytes(data,suffix,r):
-    common.verify_artifact(data,suffix,r['group'],r['artifact'],r['version'],model_core_version=r.get('core_version'),model_assets=r.get('model_assets'),model_core_artifact=r.get('core_artifact','core'))
+    common.verify_artifact(data,suffix,r['group'],r['artifact'],r.get('consumer_version',r['version']),model_core_version=r.get('core_version'),model_assets=r.get('model_assets'),model_core_artifact=r.get('core_artifact','core'),model_core_group=r.get('core_group'))
 
 def verify_documentation_contents(data):
     # Apply to new local candidates only; historical releases may contain media.
@@ -216,14 +239,20 @@ def local_record(module,version,source):
     group,artifact=identity(module)
     r=dict(module=module,version=version,source=source,group=group,artifact=artifact,sha256={},phase='reserved-before-upload',workflow_run=os.environ.get('GITHUB_RUN_ID','local'))
     r.update(repository=repository(),repository_url=repository_url())
+    if repository()=='jitpack':
+        group,artifact,consumer=jitpack_release.coordinates(module,version,artifact)
+        r.update(group=group,artifact=artifact,consumer_version=consumer)
     if module=='tfmodel':
         r['core_version']=properties()['modelCoreVersion'];common.version_key(r['core_version'])
         r['core_artifact']=properties().get('modelCoreArtifact','core')
+        r['core_group']=properties()['GROUP']
+        r['core_repository_url']=ensure_core_public(r['core_version'])
         r['model_assets']=model_assets()
         if not r['model_assets']: raise ValueError('No model assets')
-    directory=ROOT/'build/verification-repository'/group.replace('.','/')/artifact/version
+    consumer=r.get('consumer_version',version)
+    directory=ROOT/'build/verification-repository'/group.replace('.','/')/artifact/consumer
     for suffix in common.SUFFIXES:
-        data=(directory/f'{artifact}-{version}{suffix}').read_bytes();verify_bytes(data,suffix,r)
+        data=(directory/f'{artifact}-{consumer}{suffix}').read_bytes();verify_bytes(data,suffix,r)
         if suffix=='-javadoc.jar':verify_documentation_contents(data)
         r['sha256'][suffix]=hashlib.sha256(data).hexdigest()
     validate_record(r,module);return r
@@ -232,21 +261,33 @@ def reserve(module,version,source):
     r=local_record(module,version,source)
     if module=='tfmodel':ensure_core_public(r['core_version'])
     base=f'{artifact_base(r["group"],r["artifact"])}/{version}/{r["artifact"]}-{version}'
-    if any(fetch(base+s,missing=True) is not None for s in common.SUFFIXES): raise ValueError('Immutable version already has public artifacts')
+    if repository()!='jitpack' and any(fetch(base+s,missing=True) is not None for s in common.SUFFIXES): raise ValueError('Immutable version already has public artifacts')
     refresh();ensure_available(module,remote_tags());git('merge-base','--is-ancestor',source,'origin/main')
-    if remote_ref(tag(module,version)): raise ValueError('Stable tag already exists')
-    name=pending(module,version);git('tag','-a',name,source,'-m',json.dumps(r,sort_keys=True));git('push','origin',f'refs/tags/{name}')
+    stable=tag(module,version)
+    updates=[]
+    if remote_ref(stable):
+        if git('rev-parse',f'{stable}^{{commit}}')!=source:raise ValueError('Canonical tag has different source')
+    else:
+        git('tag','-a',stable,source,'-m',f'Module release {module} {version}; publication tracked separately')
+        updates.append(f'refs/tags/{stable}')
+    name=pending(module,version);git('tag','-a',name,source,'-m',json.dumps(r,sort_keys=True))
+    git('push','--atomic','origin',*updates,f'refs/tags/{name}')
 
 def guard(module,version):
     common.version_key(version);r=read_record(module,version)
     if r['source']!=git('rev-parse','HEAD') or (r['group'],r['artifact'])!=identity(module): raise ValueError('Reservation differs from source/module')
     if module=='tfmodel' and (r['core_version']!=properties()['modelCoreVersion'] or r.get('core_artifact','core')!=properties().get('modelCoreArtifact','core')): raise ValueError('Pinned core differs from reservation')
-    if remote_ref(tag(module,version)): raise ValueError('Version already finalized')
+    current=confirmed_record(module,remote=True)
+    if current and current['version']==version: raise ValueError('Version already finalized at destination')
     marker=uploading(module,version)
     if remote_ref(marker): raise ValueError('Upload already started; finalize without re-uploading')
     git('tag','-a',marker,r['source'],'-m',f'Upload may have started: {pending(module,version)}');git('push','origin',f'refs/tags/{marker}')
 
 def verify_public(r):
+    if repository()=='jitpack':
+        # Requesting the artifact starts JitPack's build; API lookup alone does not.
+        fetch(jitpack_release.artifact_base(r)+'.pom')
+        return jitpack_release.verify(r,fetch)
     base=f'{artifact_base(r["group"],r["artifact"])}/{r["version"]}/{r["artifact"]}-{r["version"]}'
     for suffix in common.SUFFIXES:
         data=fetch(base+suffix);verify_bytes(data,suffix,r)
@@ -258,7 +299,10 @@ def confirm(module,version,timeout=2400):
     if r['source']!=git('rev-parse','HEAD'): raise ValueError('Confirmation requires immutable source checkout')
     deadline=time.monotonic()+timeout
     while True:
-        try:verify_public(r);break
+        try:
+            hashes=verify_public(r)
+            if repository()=='jitpack':r['sha256']=hashes
+            break
         except urllib.error.HTTPError as e:
             if e.code not in (404,429) and e.code<500: raise
             last=e
@@ -282,56 +326,9 @@ def documentation(verify=False):
     targets=['maven-central']+sorted({p.parent.name for p in (ROOT/'docs/releases').glob('*/*.json')})
     records={(target,module):json.loads(path.read_text()) for target in targets for module in MODULES
              if (path:=ROOT/'docs/releases'/('' if target=='maven-central' else target)/f'{module}.json').exists()}
-    sections=[]
-    for (target,module),r in records.items():
-        if r is None and target!='maven-central':continue
-        if r is None:sections.append(f'## {MODULES[module]}\n\nNo confirmed release.');continue
-        validate_record(r,module,check_destination=False)
-        if r.get('repository','maven-central')!=target:raise ValueError('Metadata repository mismatch')
-        if r['phase']!='confirmed-public':raise ValueError('Installation can only advertise confirmed releases')
-        configured=identity(module)
-        notice=''
-        if target!='maven-central':
-            notice+=f'\nRepository: **{target}**. Add `maven {{ url = uri("{r["repository_url"]}") }}` alongside `google()` and `mavenCentral()` in dependency repositories.\n'
-        if (r['group'],r['artifact'])!=configured:
-            notice+=f'\nConfigured next publication: `{configured[0]}:{configured[1]}` — not yet confirmed here. The dependency below remains the last confirmed publication.\n'
-        gav=f'{r["group"]}:{r["artifact"]}:{r["version"]}'
-        dep=f"\nExports `{r['group']}:{r.get('core_artifact','core')}:{r['core_version']}`; the model version is independent.\n" if module=='tfmodel' else ''
-        sections.append(f'''## {r['artifact']}
-
-Confirmed version: **{r['version']}**. Source: [{r['source']}](https://github.com/lambdawalker/android.apexfission.carddetector/commit/{r['source']}).
-{notice}{dep}
-### Gradle Kotlin DSL
-
-```kotlin
-implementation("{gav}")
-```
-
-### Gradle Groovy DSL
-
-```groovy
-implementation '{gav}'
-```
-
-### Version catalog
-
-```toml
-[libraries]
-{module} = {{ module = "{r['group']}:{r['artifact']}", version = "{r['version']}" }}
-```
-
-### Maven
-
-```xml
-<dependency>
-  <groupId>{r['group']}</groupId>
-  <artifactId>{r['artifact']}</artifactId>
-  <version>{r['version']}</version>
-  <type>aar</type>
-</dependency>
-```''')
+    sections=import_docs.render(records,{module:identity(module) for module in MODULES})
     template=(ROOT/'docs/templates/MODULE_IMPORT.md.template').read_text()
-    expected=template.replace('{{INSTALLATION}}','\n\n'.join(sections))
+    expected=template.replace('{{INSTALLATION}}',sections)
     if '{{' in expected:raise ValueError('Unknown template placeholder')
     path=ROOT/'IMPORT.md'
     if verify:
@@ -344,10 +341,13 @@ def finalize(module,version,source):
     r=json.loads((ROOT/f'build/{scope()}confirmed-{module}.json').read_text());validate_record(r,module)
     if (r['version'],r['source'],r['phase'])!=(version,source,'confirmed-public'):raise ValueError('Confirmation mismatch')
     journal=read_record(module,version)
-    if {**journal,'phase':'confirmed-public'}!=r:raise ValueError('Confirmation differs from reservation')
+    expected={**journal,'phase':'confirmed-public'}
+    if repository()=='jitpack':expected['sha256']=r['sha256']
+    if expected!=r:raise ValueError('Confirmation differs from reservation')
     refresh();git('merge-base','--is-ancestor',source,'origin/main')
-    # Another module's finalized metadata is deliberately excluded; read it from latest main below.
-    git('diff','--exit-code',source,'origin/main','--','scripts','publishing','gradle.properties','build.gradle.kts',f'{module}/build.gradle.kts','settings.gradle.kts','gradle/libs.versions.toml','docs/templates/MODULE_IMPORT.md.template','.github/workflows/publish-card-detection.yml','.github/workflows/finalize-carddetector.yml')
+    # Artifact inputs may advance while a verified older release propagates.
+    # Only changes to the executing protocol/renderer require reconciliation.
+    git('diff','--exit-code',source,'origin/main','--','scripts',':(exclude)scripts/tests','publishing','docs/templates/MODULE_IMPORT.md.template')
     git('switch','-C',f'finalize-{module}','origin/main')
     current=confirmed_record(module)
     if current and common.version_key(current['version'])>=common.version_key(version):raise ValueError('Refusing to replace same/newer module metadata')
@@ -356,9 +356,12 @@ def finalize(module,version,source):
     git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
     git('add',metadata_path(module),'IMPORT.md');git('commit','-m',f'docs: confirm {module} {version}')
     stable=tag(module,version)
-    if remote_ref(stable):raise ValueError('Stable tag already exists; reconcile before finalization')
-    git('tag','-a',stable,source,'-m',f'{repository()} {module} {version}')
-    updates=['HEAD:refs/heads/main',f'refs/tags/{stable}',f':refs/tags/{pending(module,version)}']
+    updates=['HEAD:refs/heads/main',f':refs/tags/{pending(module,version)}']
+    if remote_ref(stable):
+        if git('rev-parse',f'{stable}^{{commit}}')!=source:raise ValueError('Stable tag source mismatch')
+    else:
+        git('tag','-a',stable,source,'-m',f'Module release {module} {version}')
+        updates.append(f'refs/tags/{stable}')
     if remote_ref(uploading(module,version)):
         if git('rev-parse',f'{uploading(module,version)}^{{commit}}')!=source:raise ValueError('Upload marker source mismatch')
         updates.append(f':refs/tags/{uploading(module,version)}')

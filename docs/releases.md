@@ -11,7 +11,7 @@ Publishing core does not publish the model. Publishing the model does not publis
 
 ## Artifact rename status
 
-`gradle.properties` selects `card-detector` and `card-detector-model`. Validation accepts these names and the historical `core` / `sentinel-card-model` records. Installation examples continue to show the last confirmed publication until a renamed release is verified on Central; pending names are explicitly labeled.
+`gradle.properties` selects `card-detector` and `card-detector-model`. Validation accepts these names and the historical `core` / `sentinel-card-model` records. Installation examples use the newest confirmed semantic release of each module across all destinations. A configured rename alone does not change confirmed coordinates; pending names are explicitly labeled.
 
 Module version histories continue across the rename: with confirmed 0.1.0 and no later history, the next version is 0.1.1 even if the new artifact has no Maven history. Leave `version` blank. Existing journal and tag safeguards still apply.
 
@@ -29,12 +29,12 @@ repositories:
   apexfission-maven:
     environment: apexfission-maven
     publisher: maven
-  another-repository:
-    environment: another-repository-production
-    publisher: maven
+  jitpack:
+    environment: jitpack
+    publisher: jitpack
 ```
 
-Use `central` only for the existing `maven-central` ID. Other Maven-compatible services use `maven`. IDs identify immutable release history, so do not rename an ID after publishing. Give each destination a separate environment. URLs and credentials belong in those environments, not in this file.
+Use `central` only for the existing `maven-central` ID. Other Maven-compatible services use `maven`; the `jitpack` ID uses `jitpack` for its public build service. IDs identify immutable release history, so do not rename an ID after publishing. Give each destination a separate environment. Maven URLs and credentials belong in those environments, not in this file. JitPack uses its fixed public endpoint and needs no publishing credentials or signing key.
 
 After editing the registry, run:
 
@@ -81,19 +81,20 @@ The wizard:
 
 Tokens and entered secret values stay in process memory and are excluded from summaries. Writes are not atomic: if a request fails or is interrupted, the wizard lists completed setting names and the failed or uncertain operation. Rerun it to inspect current state and finish the remaining settings; completed secret values cannot be read back or rolled back automatically.
 
-The wizard manages the registry's Maven environments. Keep the separate `delayed-docs` environment's 15-minute timer configured as described below.
+The wizard manages all configured environments. JitPack has no required variables or secrets; its environment can still have approval/protection rules. Keep the separate `delayed-docs` environment's 15-minute timer configured as described below.
 
 ## Run a release
 
 1. Merge the intended source to `main`. Review the selected module's changes and, for model releases, its `modelCoreVersion` compatibility pin.
 2. Open **Actions → Publish card-detector** for the detector or **Actions → Publish card-detector-model** for the bundled model.
-3. Choose **Run workflow** on `main` and select **repository**: `maven-central` or `apexfission-maven`. Each entry fixes its own module; there is no module selector.
-4. Leave **version** blank for automatic numbering: 0.1.0 when the selected module/repository has no history, otherwise the latest version with its patch incremented by one (for example, 1.2.9 → 1.2.10). On Maven Central these modules already have confirmed 0.1.0 history, so their next automatic version is 0.1.1 unless a newer release exists.
-5. To choose a version yourself, enter a stable **X.Y.Z** such as **1.0.0**. It must be newer than the latest release. Existing versions cannot be republished; use the Finalize workflow for recovery.
+3. Choose **Run workflow** on `main` and select a configured **repository**, including `maven-central`, `apexfission-maven`, or `jitpack`. Each workflow fixes its own module; there is no module selector.
+4. Leave **version** blank for automatic selection. With no module history anywhere, it starts at 0.1.0. If the selected module's release inputs match its latest immutable source, the workflow reuses that semantic version and original source when publishing to another destination. If release inputs changed, it increments the latest module patch (for example, 1.2.9 → 1.2.10). Changing only the destination does not allocate another version.
+5. To choose a version yourself, enter stable **X.Y.Z**. An existing latest version may only identify the same release inputs and original source; an older version or conflicting source is rejected. A new explicit version must be greater than the module's latest version. To recover a destination whose upload may already have started, use Finalize instead of publishing again.
 
+Each module has one shared semantic version/source identity across destinations. Detector and model versions remain independent. The release fingerprint covers the selected module, build inputs and release tooling; sibling module or generated installation metadata changes alone do not create a new release. Existing history, including historical destination-scoped tags, must agree on the source of a given module/version. Conflicting legacy identities fail closed and require maintainer reconciliation.
 Both dedicated workflows call `publish-card-detection.yml`, a reusable implementation with no manual entry point. They select the matching GitHub environment and retain the shared release lock and publication safeguards. Only Maven Central uses delayed finalization. The documentation workflow listens for either dedicated publication to finish.
 
-Only the selected module is staged for local publication verification and uploaded to the selected repository. Common tests and the demo still build as integration checks. Attempting a Gradle upload for both modules, for the wrong repository, or without `releaseModule`, fails before upload.
+Only the selected module is staged for local publication verification. Maven destinations upload it; JitPack builds it from the immutable module source tag when its artifact is requested. Common tests and the demo still build as integration checks. Attempting a Gradle upload for both modules, for the wrong repository, or without `releaseModule`, fails before upload.
 
 ## GitHub environments and configuration
 
@@ -103,46 +104,62 @@ Create these environments in **Settings → Environments**. The selected reposit
 | --- | --- | --- |
 | `maven-central` | `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, `SIGNING_IN_MEMORY_KEY_PASSWORD` | `MAVEN_REPOSITORY_URL` |
 | `apexfission-maven` | `MAVEN_REPOSITORY_USERNAME`, `MAVEN_REPOSITORY_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, `SIGNING_IN_MEMORY_KEY_PASSWORD` | `MAVEN_REPOSITORY_URL` |
+| `jitpack` | None | None |
 
 Add **MAVEN_REPOSITORY_URL** under **Environment variables** in every Maven environment (not in the workflow form). Set it to the canonical HTTPS Maven repository base URL, including the repository path, for example `https://maven.example.com/releases`. This example is a placeholder. For `maven-central`, use `https://repo.maven.apache.org/maven2`; it is the artifact read/verification endpoint. Central uploads continue through its publishing service, not this URL. Do not include a username, password, query string, or fragment. For a `maven` publisher, the endpoint must support standard Maven uploads and artifact/metadata reads at that same URL. Redirects are rejected during verification. A signing-key password can be empty for an unencrypted key.
 
-The self-hosted credentials are used for upload and artifact verification; signing remains enabled for both destinations. The repository URL is public configuration and is recorded in release metadata and installation instructions. For a private repository, consumers need their own read credentials; never copy publishing credentials into application source.
+The self-hosted credentials are used for upload and artifact verification; signing remains enabled for both Maven upload destinations. JitPack artifacts are unsigned and are verified through immutable source provenance, artifact contents and pinned dependencies. The repository URL is public configuration and is recorded in release metadata and installation instructions. For a private repository, consumers need their own read credentials; never copy publishing credentials into application source.
 
 Keep **delayed-docs** with the **15-minute wait timer**. After a Central upload, the automatic flow waits there without holding a runner or the release lock, then polls for up to **40 minutes** for the selected artifact's POM, AAR, sources, documentation, Gradle metadata, and signatures. Self-hosted uploads skip that environment delay and begin the same verification immediately. Neither upload success alone nor a pending release updates installation claims.
 
-Version history is independent per module **and destination**. A first self-hosted release defaults to **0.1.0**, even if Central already has later versions. A blank version subsequently increments that destination's latest patch. The model's pinned detector must already exist on Central or the selected repository; Central is checked first, matching Gradle resolution. Keep the same GAV consistent across repositories if you choose to publish it to both.
+Version identity is independent per module and shared across destinations. Publication attempts, confirmed records, credentials and recovery remain destination-specific. The model's pinned detector must already exist on Central or the selected Maven repository; Central is checked first, matching Gradle resolution. JitPack model releases require the detector pin on Maven Central.
 
+## JitPack build and consumer coordinates
+
+`jitpack.yml` invokes `scripts/jitpack_build.py` for a module tag such as `carddetector/v1.2.3` or `tfmodel/v2.0.0`. The build selects exactly that module for `publishToMavenLocal`, uses the pinned Android/Gradle toolchains, and makes model assets available for a model release. JitPack does not publish the sibling module as part of this build.
+
+JitPack's single-publication coordinate uses the GitHub repository name as its artifact ID. Its consumer version encodes the slash in the source tag as `~`:
+
+| Module | Example JitPack dependency |
+| --- | --- |
+| `carddetector` | `com.github.lambdawalker:android.apexfission.carddetector:carddetector~v1.2.3` |
+| `tfmodel` | `com.github.lambdawalker:android.apexfission.carddetector:tfmodel~v2.0.0` |
+
+These are coordinate examples, not claims that those releases exist. No live JitPack build has been verified as part of this implementation. `IMPORT.md` advertises JitPack only after finalization confirms a public build at the reserved source and verifies its POM, AAR, sources, documentation and any available Gradle metadata. The model's POM must export the exact Central detector pin; the AAR must contain the expected model assets. A successful build status alone is insufficient.
+
+The two JitPack module tags use the same artifact ID with different versions. Choose the detector **or** the bundled model coordinate; use the model's exported Central detector dependency when choosing the bundled model. Gradle would otherwise resolve their shared JitPack artifact ID as competing versions. The generated examples include `google()`, `mavenCentral()` and `https://jitpack.io`, plus any separately recorded dependency repository.
 ## Recovery and races
 
 Use **Actions → Finalize CardDetector release → Run workflow**, choosing the original **repository**, **module**, and **version**. It checks and finalizes an existing publication; it never uploads. Publishing has the repository dropdown and optional version field; use this dedicated Finalize workflow to recover an interrupted release without another upload.
 
 Automatic and manual publication/finalization share the existing repository-wide lock, with `cancel-in-progress: false`. This intentionally serializes jobs that can update `main`, while keeping module versions and attempt state independent. The wait job is outside that lock. GitHub can replace queued jobs in a concurrency group; if a queued finalization is displaced, manually run Finalize for its module/version. Durable journals prevent lost upload state.
 
-Maven Central keeps its existing per-module immutable refs:
+Canonical source tags are destination-independent and become immutable at reservation, before upload or a JitPack build. A tag proves source identity, not publication availability.
 
-| State | Core example | Model example |
+| State | Detector example | Model example |
 | --- | --- | --- |
-| Reserved source and artifact hashes | `release-pending/carddetector/0.1.1` | `release-pending/tfmodel/0.1.1` |
-| Upload may have begun | `release-uploading/carddetector/0.1.1` | `release-uploading/tfmodel/0.1.1` |
-| Confirmed source release | `carddetector/v0.1.1` | `tfmodel/v0.1.1` |
+| Reserved canonical source identity | `carddetector/v1.2.3` | `tfmodel/v2.0.0` |
+| Central reservation journal | `release-pending/carddetector/1.2.3` | `release-pending/tfmodel/2.0.0` |
+| Central upload may have begun | `release-uploading/carddetector/1.2.3` | `release-uploading/tfmodel/2.0.0` |
+| JitPack reservation journal | `release-pending/jitpack/carddetector/1.2.3` | `release-pending/jitpack/tfmodel/2.0.0` |
+| JitPack build may have been requested | `release-uploading/jitpack/carddetector/1.2.3` | `release-uploading/jitpack/tfmodel/2.0.0` |
 
-Self-hosted refs add `apexfission-maven/` before the module: for example `release-pending/apexfission-maven/carddetector/0.1.0`, `release-uploading/apexfission-maven/carddetector/0.1.0`, and `apexfission-maven/carddetector/v0.1.0`. The journal pins the repository URL; changing it while a release is pending stops recovery until the original URL is restored. Attempts on one destination do not block the other.
-
+Other destinations use the same destination prefix in their attempt refs, for example `release-pending/apexfission-maven/carddetector/1.2.3`. Historical tags such as `apexfission-maven/carddetector/v1.2.3` are still accepted as provenance; new releases use canonical module tags. The journal pins the repository URL; changing it while a release is pending stops recovery until the original URL is restored. Attempts on one destination do not block another destination from publishing the same reserved identity.
 A pending model attempt does not block allocating a core release, and vice versa. An upload-started marker rejects any second upload for that module/version. A retry after completed finalization exits successfully; it does not move documentation backwards.
 
-Finalization verifies reserved hashes/signatures against the immutable source, then reads latest `main`, updates only the selected module's confirmed metadata, and regenerates the combined installation document. It preserves a sibling release that finished during the wait. Metadata, stable tag creation, and attempt-marker removal are pushed atomically without force. A race or branch-protection rejection preserves remote state for investigation and retry.
+Finalization verifies Maven hashes/signatures, or JitPack build provenance and public artifact contents, against the immutable source, then reads latest `main`, updates only the selected module's confirmed metadata, and regenerates the combined installation document. It preserves a sibling release that finished during the wait. Confirmed metadata and attempt-marker removal are pushed atomically without force. The canonical source tag remains unchanged; legacy recovery can create it if missing. A race or branch-protection rejection preserves remote state for investigation and retry.
 
-If relevant build/release tooling changed during the wait, finalization stops instead of mixing source assumptions. Inspect and reconcile deliberately. If artifacts are partial, rejected or in an unknown Central Portal state, keep the attempt refs and logs; do not delete markers merely to retry an upload. The Finalize workflow can be retried after propagation. A known rejected upload that never became public requires maintainer investigation before any marker removal or version reuse.
+Finalization permits `main` to advance with application source, Gradle build configuration, tests and sibling releases during the wait: it verifies the reserved source and preserves current `main`. Changes to the release protocol in `scripts/` (excluding `scripts/tests/`), `publishing/`, or the installation template stop finalization instead of mixing protocol assumptions. Inspect and reconcile those changes deliberately. If artifacts are partial, rejected or in an unknown Central Portal state, keep the attempt refs and logs; do not delete markers merely to retry an upload. The Finalize workflow can be retried after propagation. A known rejected upload that never became public requires maintainer investigation before any marker removal or version reuse.
 
 ## Confirmed metadata and migration
 
-- `docs/releases/carddetector.json`: latest confirmed core release.
-- `docs/releases/tfmodel.json`: latest confirmed model release and its `core_version`.
-- `docs/releases/apexfission-maven/carddetector.json` and `tfmodel.json`: independent self-hosted confirmed records (initially null).
-- `IMPORT.md`: generated from all confirmed records and `docs/templates/MODULE_IMPORT.md.template`.
+- `docs/releases/carddetector.json`: latest confirmed detector release on Central.
+- `docs/releases/tfmodel.json`: latest confirmed model release on Central and its `core_version`.
+- `docs/releases/<repository>/carddetector.json` and `tfmodel.json`: destination-specific confirmed records, including self-hosted Maven and JitPack. Missing or null records make no publication claim.
+- `IMPORT.md`: generated from confirmed records and `docs/templates/MODULE_IMPORT.md.template`. For each module, it shows only the highest confirmed semantic version. It offers multiple destinations only when that exact version has the same confirmed source; a source conflict fails generation. Older destinations and pending releases are omitted. A newer pending attempt cannot replace the last confirmed release. Each destination has choose-one Kotlin, Groovy, version-catalog and Maven examples using its actual consumer coordinate and required repositories.
 - `docs/release.json`, `scripts/release.py` legacy journal commands, and `scripts/finalize-release.sh`: preserved for old paired-release provenance/recovery. New workflows use `scripts/module_release.py`. Shared artifact-validation helpers remain in `release.py`.
 
-The initial records were split from the already confirmed 0.1.0 pair; their hashes and source were preserved. They refer to the existing `v0.1.0` tag through `legacy_tag`. No new tag, package upload, or registry claim is created by this migration. Later releases use module-prefixed tags. Old unscoped pending/uploading markers block new Central releases until resolved using the original paired-release tooling. See the [legacy runbook](legacy-releases.md) only for that historical recovery case.
+The initial records were split from the already confirmed 0.1.0 pair; their hashes and source were preserved. They refer to the existing `v0.1.0` tag through `legacy_tag`. No new tag, package upload, or registry claim is created by this migration. Later releases use module-prefixed tags; the new shared identity allocator also accepts the historical destination-scoped module tags. Old unscoped pending/uploading markers block new Central releases until resolved using the original paired-release tooling. See the [legacy runbook](legacy-releases.md) only for that historical recovery case.
 
 ## Local verification
 

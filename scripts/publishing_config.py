@@ -46,10 +46,11 @@ def load_config(path=DEFAULT_CONFIG):
         if environment.casefold() in environments:
             raise ValueError('Each repository must use its own environment')
         environments.add(environment.casefold())
-        if entry['publisher'] not in ('central', 'maven'):
-            raise ValueError('Publisher must be central or maven')
+        if entry['publisher'] not in ('central', 'maven', 'jitpack'):
+            raise ValueError('Publisher must be central, maven or jitpack')
         if (entry['publisher'] == 'central') != (name == 'maven-central'):
             raise ValueError('Keep the maven-central ID for Central provenance; other IDs use maven')
+        if (entry['publisher']=='jitpack') != (name=='jitpack'):raise ValueError('Use the jitpack ID for JitPack')
     if 'maven-central' not in entries:
         raise ValueError('Keep maven-central for existing release history and workflow defaults')
     return entries
@@ -66,6 +67,7 @@ def validate_url(value):
     return value.rstrip('/')
 
 def settings_for(entry):
+    if entry['publisher']=='jitpack': return []
     prefix = 'MAVEN_CENTRAL' if entry['publisher'] == 'central' else 'MAVEN_REPOSITORY'
     return [
         {'name': 'MAVEN_REPOSITORY_URL', 'kind': 'variable', 'required': True,
@@ -122,7 +124,7 @@ def main():
         for setting in settings_for(entry):
             if setting['required'] and not os.environ.get(setting['name'], '').strip():
                 parser.error('Missing required setting: ' + setting['name'])
-        validate_url(os.environ['MAVEN_REPOSITORY_URL'])
+        if entry['publisher']!='jitpack': validate_url(os.environ['MAVEN_REPOSITORY_URL'])
         return
     output = '\n'.join(f'{key}={entry[key]}' for key in ('environment', 'publisher')) + '\n'
     if os.environ.get('GITHUB_OUTPUT'):

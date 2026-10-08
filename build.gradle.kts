@@ -12,6 +12,7 @@ plugins {
 }
 
 // A release invocation selects exactly one publication. The sibling keeps its development version.
+val jitpackBuild = providers.gradleProperty("jitpackBuild").orElse("false").map { it.toBoolean() }
 val releaseModule = providers.gradleProperty("releaseModule").orElse("")
 val releaseVersion = providers.gradleProperty("releaseVersion").orElse("0.0.0-SNAPSHOT")
 require(releaseModule.get() in listOf("", "carddetector", "tfmodel")) { "Unknown releaseModule" }
@@ -20,6 +21,7 @@ if (releaseModule.get().isNotBlank()) {
         "Selected module requires a stable releaseVersion"
     }
 }
+require(!jitpackBuild.get() || releaseModule.get().isNotBlank()) { "JitPack requires one releaseModule" }
 subprojects {
     group = rootProject.providers.gradleProperty("GROUP").get()
     version = if (name == releaseModule.get()) releaseVersion.get()
@@ -30,9 +32,17 @@ val publishingRepositories = java.util.Properties().apply {
     rootProject.file("publishing/repositories.properties").inputStream().use { load(it) }
 }
 val releasePublisher = publishingRepositories.getProperty("${releaseRepository.get()}.publisher")
-require(releasePublisher in listOf("central", "maven")) { "Unknown RELEASE_REPOSITORY; regenerate publishing configuration" }
+require(releasePublisher in listOf("central", "maven", "jitpack")) { "Unknown RELEASE_REPOSITORY; regenerate publishing configuration" }
 // Reject accidental multi-module or cross-repository invocations before any reservation is consumed.
 gradle.taskGraph.whenReady {
+    if (jitpackBuild.get()) {
+        allTasks.filter { it is org.gradle.api.publish.maven.tasks.PublishToMavenLocal }.forEach {
+            require(it.project.name == releaseModule.get()) { "Only the selected JitPack module may publish: ${it.path}" }
+        }
+        require(allTasks.none { (it is org.gradle.api.publish.maven.tasks.PublishToMavenRepository && it.repository.name != "verification") || it.name.contains("MavenCentral", ignoreCase = true) }) {
+            "JitPack may only publish to MavenLocal"
+        }
+    }
     allTasks.filter { it.name.contains("MavenCentral", ignoreCase = true) || it.name.endsWith("ToSelectedMavenRepository") }.forEach {
         val taskPublisher = if (it.name.contains("MavenCentral", ignoreCase = true)) "central" else "maven"
         require(taskPublisher == releasePublisher) { "Upload task does not match RELEASE_REPOSITORY: ${it.path}" }

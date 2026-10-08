@@ -26,7 +26,10 @@ class IndependentGitTests(unittest.TestCase):
             r=self.record(module,'0.1.0',self.initial);r.update(phase='confirmed-public',legacy_tag='v0.1.0')
             (self.repo/m.metadata_path(module)).write_text(json.dumps(r))
         self.patcher=patch.object(m,'ROOT',self.repo);self.patcher.start();self.addCleanup(self.patcher.stop)
-        m.documentation();self.git('add','.');self.git('commit','-m','seed independent metadata');self.source=self.git('rev-parse','HEAD')
+        m.documentation()
+        for module in m.MODULES:
+            path=self.repo/module/'src/main/source.kt';path.parent.mkdir(parents=True);path.write_text('new release input')
+        self.git('add','.');self.git('commit','-m','seed independent metadata');self.source=self.git('rev-parse','HEAD')
         self.git('push','origin','main','--tags')
 
     def call(self,cwd,*args):return subprocess.check_output(['git',*args],cwd=cwd,text=True,stderr=subprocess.PIPE).strip()
@@ -77,6 +80,17 @@ class IndependentGitTests(unittest.TestCase):
         result=m.prepare_finalization('carddetector','0.1.1',self.source)
         self.assertEqual(result['skip'],'true')
 
+    def test_finalization_allows_tests_and_build_inputs_to_advance(self):
+        r=self.journal();self.confirmed(r)
+        p=self.repo/'gradle.properties';p.write_text(p.read_text().replace('modelCoreVersion=0.1.0','modelCoreVersion=0.1.2'))
+        p=self.repo/'scripts/tests/test_new.py';p.parent.mkdir(parents=True);p.write_text('# new tests')
+        (self.repo/'carddetector/src/main/source.kt').write_text('later source')
+        self.git('add','gradle.properties','scripts','carddetector');self.git('commit','-m','work after release');self.git('push','origin','main')
+        self.git('checkout','--detach',self.source)
+        m.finalize('carddetector','0.1.1',self.source)
+        self.assertEqual(json.loads(self.remote_git('show','main:docs/releases/carddetector.json'))['source'],self.source)
+        self.assertEqual(self.remote_git('show','main:carddetector/src/main/source.kt'),'later source')
+
     def test_atomic_rejection_preserves_pending_and_main(self):
         r=self.journal();self.confirmed(r);before=self.remote_git('rev-parse','main')
         hook=self.remote/'hooks/pre-receive';hook.write_text('#!/bin/sh\nexit 1\n');hook.chmod(0o755)
@@ -121,19 +135,19 @@ class IndependentGitTests(unittest.TestCase):
         self.journal('carddetector','0.1.1')  # Central remains pending throughout.
         with patch.dict(os.environ,env):
             with patch.object(m,'published_versions',return_value=[]):
-                self.assertEqual(m.prepare('carddetector')['version'],'0.1.0')
-            r=self.record('carddetector','0.1.0',self.source)
+                self.assertEqual(m.prepare('carddetector')['version'],'0.1.1')
+            r=self.record('carddetector','0.1.1',self.source)
             r.update(repository='apexfission-maven',repository_url='https://maven.example/releases')
-            self.git('tag','-a',m.pending('carddetector','0.1.0'),self.source,'-m',json.dumps(r));self.git('push','origin','--tags')
-            m.guard('carddetector','0.1.0')
-            with self.assertRaisesRegex(ValueError,'already started'):m.guard('carddetector','0.1.0')
-            with patch.object(m,'verify_public'):m.confirm('carddetector','0.1.0',0)
-            m.finalize('carddetector','0.1.0',self.source)
-            self.assertEqual(m.prepare_finalization('carddetector','0.1.0')['skip'],'true')
+            self.git('tag','-a',m.pending('carddetector','0.1.1'),self.source,'-m',json.dumps(r));self.git('push','origin','--tags')
+            m.guard('carddetector','0.1.1')
+            with self.assertRaisesRegex(ValueError,'already started'):m.guard('carddetector','0.1.1')
+            with patch.object(m,'verify_public'):m.confirm('carddetector','0.1.1',0)
+            m.finalize('carddetector','0.1.1',self.source)
+            self.assertEqual(m.prepare_finalization('carddetector','0.1.1')['skip'],'true')
         self.assertEqual((self.repo/'docs/releases/carddetector.json').read_bytes(),central)
         self.assertIsNotNone(m.remote_ref('release-pending/carddetector/0.1.1'))
-        self.assertIsNone(m.remote_ref('release-pending/apexfission-maven/carddetector/0.1.0'))
-        self.assertEqual(self.remote_git('rev-parse','apexfission-maven/carddetector/v0.1.0^{commit}'),self.source)
+        self.assertIsNone(m.remote_ref('release-pending/apexfission-maven/carddetector/0.1.1'))
+        self.assertEqual(self.remote_git('rev-parse','carddetector/v0.1.1^{commit}'),self.source)
         self.assertIn('https://maven.example/releases',(self.repo/'IMPORT.md').read_text())
         m.documentation(verify=True)  # Generating docs needs no environment credentials.
 
@@ -141,15 +155,43 @@ class IndependentGitTests(unittest.TestCase):
         entries={'maven-central':{'publisher':'central','environment':'maven-central'},'third-party':{'publisher':'maven','environment':'third-party-production'}}
         with patch.object(m,'load_config',return_value=entries),patch.dict(os.environ,{'RELEASE_REPOSITORY':'third-party','MAVEN_REPOSITORY_URL':'https://third.example/releases'}):
             with patch.object(m,'published_versions',return_value=[]):
-                self.assertEqual(m.prepare('carddetector')['version'],'0.1.0')
-            r=self.record('carddetector','0.1.0',self.source)
+                self.assertEqual(m.prepare('carddetector')['version'],'0.1.1')
+            r=self.record('carddetector','0.1.1',self.source)
             r.update(repository='third-party',repository_url='https://third.example/releases')
-            self.git('tag','-a',m.pending('carddetector','0.1.0'),self.source,'-m',json.dumps(r));self.git('push','origin','--tags')
-            self.assertEqual(m.prepare_finalization('carddetector','0.1.0')['skip'],'false')
-            m.guard('carddetector','0.1.0')
-            with patch.object(m,'verify_public'):m.confirm('carddetector','0.1.0',0)
-            m.finalize('carddetector','0.1.0',self.source)
-            self.assertEqual(m.prepare_finalization('carddetector','0.1.0')['skip'],'true')
+            self.git('tag','-a',m.pending('carddetector','0.1.1'),self.source,'-m',json.dumps(r));self.git('push','origin','--tags')
+            self.assertEqual(m.prepare_finalization('carddetector','0.1.1')['skip'],'false')
+            m.guard('carddetector','0.1.1')
+            with patch.object(m,'verify_public'):m.confirm('carddetector','0.1.1',0)
+            m.finalize('carddetector','0.1.1',self.source)
+            self.assertEqual(m.prepare_finalization('carddetector','0.1.1')['skip'],'true')
             self.assertEqual(json.loads((self.repo/'docs/releases/third-party/carddetector.json').read_text())['repository'],'third-party')
         m.documentation(verify=True)
         self.assertIn('https://third.example/releases',(self.repo/'IMPORT.md').read_text())
+
+    def test_catch_up_reuses_global_tag_and_original_source_then_noops(self):
+        # First destination has already confirmed this source at a higher version.
+        r=self.record('carddetector','0.1.5',self.source)
+        r.update(repository='apexfission-maven',repository_url='https://maven.example/releases',phase='confirmed-public')
+        folder=self.repo/'docs/releases/apexfission-maven';folder.mkdir()
+        (folder/'carddetector.json').write_text(json.dumps(r))
+        self.git('tag','-a','carddetector/v0.1.5',self.source,'-m','canonical source')
+        m.documentation();self.git('add','.');self.git('commit','-m','only publication docs');self.git('push','origin','main','--tags')
+        with patch.object(m,'published_versions',return_value=['0.1.0']):
+            result=m.prepare('carddetector')
+        self.assertEqual((result['version'],result['source'],result['skip']),('0.1.5',self.source,'false'))
+        self.git('checkout','--detach',self.source)
+        journal=self.record('carddetector','0.1.5',self.source)
+        with patch.object(m,'local_record',return_value=journal),patch.object(m,'fetch',return_value=None):
+            m.reserve('carddetector','0.1.5',self.source)
+        m.guard('carddetector','0.1.5')
+        self.confirmed(journal);m.finalize('carddetector','0.1.5',self.source)
+        self.assertEqual(self.remote_git('rev-parse','carddetector/v0.1.5^{commit}'),self.source)
+        self.assertIn('apexfission-maven',(self.repo/'IMPORT.md').read_text())
+        with patch.object(m,'published_versions',side_effect=AssertionError('no upload lookup on completed run')):
+            self.assertEqual(m.prepare('carddetector')['skip'],'true')
+
+    def test_tag_only_does_not_change_installation_document(self):
+        before=(self.repo/'IMPORT.md').read_bytes()
+        self.git('tag','carddetector/v7.0.0')
+        m.documentation()
+        self.assertEqual((self.repo/'IMPORT.md').read_bytes(),before)

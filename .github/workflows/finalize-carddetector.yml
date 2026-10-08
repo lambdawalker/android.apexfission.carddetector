@@ -9,7 +9,7 @@ on:
         required: true
         default: maven-central
         # BEGIN GENERATED REPOSITORIES
-        options: ["maven-central", "apexfission-maven"]
+        options: ["maven-central", "apexfission-maven", "jitpack"]
         # END GENERATED REPOSITORIES
       module:
         description: 'Module whose existing publication should be finalized'

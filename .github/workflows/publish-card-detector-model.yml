@@ -9,10 +9,10 @@ on:
         required: true
         default: maven-central
         # BEGIN GENERATED REPOSITORIES
-        options: ["maven-central", "apexfission-maven"]
+        options: ["maven-central", "apexfission-maven", "jitpack"]
         # END GENERATED REPOSITORIES
       version:
-        description: 'Optional X.Y.Z. Blank: first release 0.1.0, otherwise next patch.'
+        description: 'Optional X.Y.Z. Blank: reuse unchanged module version, otherwise next patch.'
         required: false
         default: ''
         type: string
