@@ -158,13 +158,18 @@ tasks.register<Copy>("runTestsAndExtractImages") {
 
 
 
+val jitpackBuild = providers.gradleProperty("jitpackBuild").orElse("false").map { it.toBoolean() }
 val artifact = providers.gradleProperty("POM_ARTIFACT_ID").get()
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.carddetector"
 mavenPublishing {
-    coordinates(providers.gradleProperty("GROUP").get(), artifact, project.version.toString())
+    coordinates(
+        if (jitpackBuild.get()) "com.github.lambdawalker" else providers.gradleProperty("GROUP").get(),
+        if (jitpackBuild.get()) "android.apexfission.carddetector" else artifact,
+        if (jitpackBuild.get()) "${providers.gradleProperty("releaseModule").get()}~v${project.version}" else project.version.toString()
+    )
     configure(AndroidSingleVariantLibrary(variant = "release", javadocJar = JavadocJar.Empty(), sourcesJar = SourcesJar.Sources()))
-    publishToMavenCentral()
-    if (providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
+    if (!jitpackBuild.get()) publishToMavenCentral()
+    if (!jitpackBuild.get() && providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
     pom {
         name.set("Card Detector")
         description.set("Compose and CameraX card detection, tracking, overlays, and image extraction.")

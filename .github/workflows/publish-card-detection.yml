@@ -12,7 +12,7 @@ on:
         type: string
         required: true
       version:
-        description: 'Optional X.Y.Z. Blank: first release 0.1.0, otherwise next patch.'
+        description: 'Optional X.Y.Z. Blank: reuse unchanged module version, otherwise next patch.'
         required: false
         default: ''
         type: string
@@ -43,9 +43,18 @@ jobs:
           RELEASE_REPOSITORY: ${{ inputs.repository }}
         run: python3 scripts/publishing_config.py resolve
 
+  jitpack:
+    needs: configuration
+    if: needs.configuration.outputs.publisher == 'jitpack'
+    uses: ./.github/workflows/publish-jitpack.yml
+    with:
+      environment: ${{ needs.configuration.outputs.environment }}
+      module: ${{ inputs.module }}
+      version: ${{ inputs.version }}
+
   publish:
     needs: configuration
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && needs.configuration.outputs.publisher != 'jitpack'
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     environment: ${{ needs.configuration.outputs.environment }}
@@ -60,6 +69,7 @@ jobs:
       group: maven-central-card-detection
       cancel-in-progress: false
     outputs:
+      skip: ${{ steps.release.outputs.skip }}
       version: ${{ steps.release.outputs.version }}
       source: ${{ steps.release.outputs.source }}
     steps:
@@ -89,25 +99,31 @@ jobs:
           REQUESTED_VERSION: ${{ inputs.version }}
         run: python3 scripts/module_release.py prepare --module "$RELEASE_MODULE" --version "$REQUESTED_VERSION"
       - name: Check out immutable artifact source
+        if: steps.release.outputs.skip != 'true'
         env:
           SOURCE_SHA: ${{ steps.release.outputs.source }}
         run: git checkout --detach "$SOURCE_SHA"
       - uses: actions/setup-java@v4
+        if: steps.release.outputs.skip != 'true'
         with:
           distribution: temurin
           java-version: |
             17
             21
       - uses: gradle/actions/setup-gradle@v4
+        if: steps.release.outputs.skip != 'true'
         with:
           cache-disabled: true
       - uses: actions/setup-node@v4
+        if: steps.release.outputs.skip != 'true'
         with:
           node-version: '24'
       - name: Validate documentation at immutable release source
+        if: steps.release.outputs.skip != 'true'
         working-directory: sites
         run: npm ci && npm run check
       - name: Test and validate complete unsigned publication locally
+        if: steps.release.outputs.skip != 'true'
         env:
           RELEASE_MODULE: ${{ inputs.module }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
@@ -118,18 +134,21 @@ jobs:
           ./gradlew verifyImportDocs :carddetector:testDebugUnitTest :carddetector:lintRelease :carddetector:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon
           python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Upload demo APK
+        if: steps.release.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: card-detection-demo
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
       - name: Reserve immutable version, source, and artifact hashes
+        if: steps.release.outputs.skip != 'true'
         env:
           RELEASE_MODULE: ${{ inputs.module }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SOURCE_SHA: ${{ steps.release.outputs.source }}
         run: python3 scripts/module_release.py reserve --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Publish and release signed artifacts
+        if: steps.release.outputs.skip != 'true'
         timeout-minutes: 35
         env:
           RELEASE_MODULE: ${{ inputs.module }}
@@ -167,7 +186,7 @@ jobs:
   propagation-delay:
     name: Wait for Maven Central propagation (15 minutes)
     needs: [publish, configuration]
-    if: needs.configuration.outputs.publisher == 'central'
+    if: needs.configuration.outputs.publisher == 'central' && needs.publish.outputs.skip != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     permissions: {}
@@ -181,7 +200,7 @@ jobs:
     name: Verify public artifacts and finalize release
     needs: [publish, propagation-delay]
     if: >-
-      ${{ !cancelled() && needs.publish.result == 'success' &&
+      ${{ !cancelled() && needs.publish.result == 'success' && needs.publish.outputs.skip != 'true' &&
           (needs.propagation-delay.result == 'success' ||
            needs.propagation-delay.result == 'skipped') }}
     uses: ./.github/workflows/finalize-carddetector.yml

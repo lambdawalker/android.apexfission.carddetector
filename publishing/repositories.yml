@@ -6,3 +6,6 @@ repositories:
   apexfission-maven:
     environment: apexfission-maven
     publisher: maven
+  jitpack:
+    environment: jitpack
+    publisher: jitpack

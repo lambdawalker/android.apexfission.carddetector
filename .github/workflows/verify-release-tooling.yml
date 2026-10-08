@@ -49,6 +49,12 @@ jobs:
           ./gradlew generateImportDocs verifyImportDocs :carddetector:testDebugUnitTest :carddetector:lintRelease :carddetector:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" "-PreleaseModule=$RELEASE_MODULE" -PreleaseVersion=9.8.7 --no-daemon
           git diff --exit-code -- IMPORT.md docs/releases/
           python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version 9.8.7 --source "$(git rev-parse HEAD)"
+      - name: Verify JitPack coordinates and unsigned artifacts without publishing
+        env:
+          RELEASE_REPOSITORY: jitpack
+        run: |
+          ./gradlew ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" -PjitpackBuild=true "-PreleaseModule=$RELEASE_MODULE" -PreleaseVersion=9.8.7 --no-daemon
+          python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version 9.8.7 --source "$(git rev-parse HEAD)"
       - name: Validate self-hosted Gradle task graph without uploading
         env:
           RELEASE_REPOSITORY: apexfission-maven

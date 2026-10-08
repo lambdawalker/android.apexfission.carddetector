@@ -63,13 +63,18 @@ dependencies {
 }
 
 
+val jitpackBuild = providers.gradleProperty("jitpackBuild").orElse("false").map { it.toBoolean() }
 val artifact = providers.gradleProperty("MODEL_ARTIFACT_ID").get()
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.carddetector"
 mavenPublishing {
-    coordinates(providers.gradleProperty("GROUP").get(), artifact, project.version.toString())
+    coordinates(
+        if (jitpackBuild.get()) "com.github.lambdawalker" else providers.gradleProperty("GROUP").get(),
+        if (jitpackBuild.get()) "android.apexfission.carddetector" else artifact,
+        if (jitpackBuild.get()) "${providers.gradleProperty("releaseModule").get()}~v${project.version}" else project.version.toString()
+    )
     configure(AndroidSingleVariantLibrary(variant = "release", javadocJar = JavadocJar.Empty(), sourcesJar = SourcesJar.Sources()))
-    publishToMavenCentral()
-    if (providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
+    if (!jitpackBuild.get()) publishToMavenCentral()
+    if (!jitpackBuild.get() && providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
     pom {
         name.set("Sentinel Card Model")
         description.set("Sentinel YOLO card model assets and catalog extensions for Card Detector.")
