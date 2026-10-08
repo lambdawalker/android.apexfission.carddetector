@@ -113,15 +113,17 @@ Add these repositories and dependency to `pom.xml`:
 </dependencies>
 ```
 
-## tfmodel: card-detector-model
+## tfmodel: android.apexfission.carddetector
 
-Confirmed version: **0.1.1**. Source: [acb0035aee1a0aec0c6886617243514a040fa650](https://github.com/lambdawalker/android.apexfission.carddetector/commit/acb0035aee1a0aec0c6886617243514a040fa650).
+Confirmed version: **0.1.2**. Source: [f8ba3438cf6750592b2e620020f8b9d9a81945ea](https://github.com/lambdawalker/android.apexfission.carddetector/commit/f8ba3438cf6750592b2e620020f8b9d9a81945ea).
 
 Choose **one** destination below and **one** dependency syntax. Each destination provides this same release; do not add duplicate dependencies.
 
-### maven-central
+### jitpack
 
-Repository: **maven-central**.
+Repository: **jitpack**.
+
+Choose either the detector or the model dependency. Their module tags share one JitPack artifact ID; adding both creates a version conflict. The model already includes its pinned detector dependency.
 
 Exports `com.apexfission.android.carddetector:core:0.1.0`; the model version is independent. The repository examples include its pinned detector repository.
 
@@ -134,6 +136,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
     }
 }
 ```
@@ -142,7 +145,7 @@ In the app's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.apexfission.android.carddetector:card-detector-model:0.1.1")
+    implementation("com.github.lambdawalker:android.apexfission.carddetector:tfmodel~v0.1.2")
 }
 ```
 
@@ -155,6 +158,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 ```
@@ -163,7 +167,7 @@ In the app's `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'com.apexfission.android.carddetector:card-detector-model:0.1.1'
+    implementation 'com.github.lambdawalker:android.apexfission.carddetector:tfmodel~v0.1.2'
 }
 ```
 
@@ -173,7 +177,7 @@ Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
 
 ```toml
 [libraries]
-tfmodel = { module = "com.apexfission.android.carddetector:card-detector-model", version = "0.1.1" }
+tfmodel = { module = "com.github.lambdawalker:android.apexfission.carddetector", version = "tfmodel~v0.1.2" }
 ```
 
 Then use this instead of the direct dependency in the app's `build.gradle.kts`:
@@ -198,12 +202,16 @@ Add these repositories and dependency to `pom.xml`:
     <id>central</id>
     <url>https://repo.maven.apache.org/maven2</url>
   </repository>
+  <repository>
+    <id>confirmed-2</id>
+    <url>https://jitpack.io</url>
+  </repository>
 </repositories>
 <dependencies>
   <dependency>
-    <groupId>com.apexfission.android.carddetector</groupId>
-    <artifactId>card-detector-model</artifactId>
-    <version>0.1.1</version>
+    <groupId>com.github.lambdawalker</groupId>
+    <artifactId>android.apexfission.carddetector</artifactId>
+    <version>tfmodel~v0.1.2</version>
     <type>aar</type>
   </dependency>
 </dependencies>

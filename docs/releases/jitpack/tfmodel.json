@@ -1,0 +1,26 @@
+{
+  "artifact": "android.apexfission.carddetector",
+  "consumer_version": "tfmodel~v0.1.2",
+  "core_artifact": "core",
+  "core_group": "com.apexfission.android.carddetector",
+  "core_repository_url": "https://repo.maven.apache.org/maven2",
+  "core_version": "0.1.0",
+  "group": "com.github.lambdawalker",
+  "model_assets": {
+    "assets/cdl/tflite/Y11-640E197F16.tflite": "473f497ca45b4ab2f66ef59b3da1c0e27a0ac11227279ba6d89a19566c450e1e"
+  },
+  "module": "tfmodel",
+  "phase": "confirmed-public",
+  "repository": "jitpack",
+  "repository_url": "https://jitpack.io",
+  "sha256": {
+    "-javadoc.jar": "f4d428012e6adf0ad8e3b954eef79cdc8c99aac496bec0a50bb0d106bdd6381c",
+    "-sources.jar": "eda1bf6fcbc500c5107533e4c58b4c9d033dba2df8c057fedd96596baa289f58",
+    ".aar": "d3f23db6eb1928c5940e75e7e78ec2effa3b3cc70a664c45be4aaffe0e56384a",
+    ".module": "45df2ab9129d90ba171c44c1467425cc28ea77bf8f62a6415338789cbd568b72",
+    ".pom": "5d1848bd154e9dd87f4a9e27fbdb62dfc12c038f9332668e7463f4f89801d841"
+  },
+  "source": "f8ba3438cf6750592b2e620020f8b9d9a81945ea",
+  "version": "0.1.2",
+  "workflow_run": "37762001363"
+}
