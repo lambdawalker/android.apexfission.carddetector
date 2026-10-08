@@ -1,0 +1,27 @@
+{
+  "destinations": {
+    "maven-central": {
+      "artifact": "card-detector",
+      "group": "com.apexfission.android.carddetector",
+      "module": "carddetector",
+      "phase": "confirmed-public",
+      "sha256": {
+        "-javadoc.jar": "07c7b594f8cdc145fe76208770cf347ce16e0e1980eea9f236f0f43c39e56d37",
+        "-sources.jar": "e748f42851a4baa286ccd078d0f61eb66c94b2c475a20706136ade99980e4bf7",
+        ".aar": "8003d0265497462d16339c6588a6a619b26e8a5aa42a6f2ab72b3dd44e2b4d8b",
+        ".module": "f6ba39648fc7a38aee735941130f8a0f8972ad10e85303307e3d83fc3be6da99",
+        ".pom": "50c957411c4df0450c978187cd5bafef321441b470e500e6fc93684f68952b2d"
+      },
+      "source": "acb0035aee1a0aec0c6886617243514a040fa650",
+      "version": "0.1.1",
+      "workflow_run": "37376198689"
+    }
+  },
+  "documentation_note": "Spanish translation added after release and pinned by its Git tree. Each page is used only when its English source hash matches; otherwise the archived English page is shown.",
+  "documentation_ref": "acb0035aee1a0aec0c6886617243514a040fa650",
+  "module": "carddetector",
+  "schema": 1,
+  "source": "acb0035aee1a0aec0c6886617243514a040fa650",
+  "translation_tree": "b8a965185322811cefe8408dc80b42176498a624",
+  "version": "0.1.1"
+}

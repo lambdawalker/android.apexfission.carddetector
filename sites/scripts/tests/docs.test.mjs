@@ -38,3 +38,12 @@ test('renamed recording links target the hosted media file',()=>{
   assert.ok(out.includes(mode === 'raw' ? '../media/card-detection.mp4' : `${base}/media/card-detection.mp4`));
  }
 });
+
+test('validator rejects broken version selector destinations',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'docs-selector-'));
+ try {
+  await writeFile(join(dir,'index.html'),`<select data-doc-navigation><option value="${base}/en/carddetector/0.1.2/">0.1.2</option></select>`);
+  const errors=await validateSite(dir);
+  assert.equal(errors.length,1);assert.ok(errors[0].includes('missing target'));
+ }finally{await rm(dir,{recursive:true,force:true});}
+});

@@ -62,3 +62,26 @@ Do not rerun package upload to fix a site failure. Retry Documentation instead. 
 Local Android compilation was attempted but blocked while downloading `gradle-9.6.0-bin.zip` (`Network is unreachable`). No emulator/device run or new app screen capture is claimed. The added quickstart and ownership helper are part of `:app` and therefore included in existing CI compilation. Check that CI result before treating them as compiled on the project toolchain.
 
 Browser-based desktop/mobile and playback inspection was also blocked locally: no browser binary was installed and the browser download returned an invalid/truncated archive. HTML/media/link checks and decoded still inspection are separate checks; they do not substitute for browser visual QA.
+
+## Versioned documentation and Spanish
+
+The English consumer source remains `docs/agents/`, shared by humans and agents. Spanish prose lives at matching paths under `docs/es/`; code blocks, dependency coordinates and API names stay unchanged. `docs/es/translations.json` maps each guide to the SHA-256 of its English source bytes. Update that hash only after reviewing the translation. Missing or stale translations visibly show the English page from the selected documentation revision; they never borrow a newer API page. English heading anchors remain usable in translated pages.
+
+The version catalog is `docs/releases/history/<module>/<version>.json`. Each entry records the immutable code `source`, `documentation_ref`, and complete confirmed metadata for each destination. Finalization preserves previous pointer values before replacing them and adds its new confirmation to this archive in the same atomic Git push. Publishing the same module/version to another destination extends installation availability without changing its code identity. `IMPORT.md` continues to show the latest confirmed version of each module.
+
+The initial catalog contains only the four module releases represented by confirmed records at adoption: `carddetector` and `tfmodel`, each at `0.1.1` and `0.1.2`. This is not a complete history of older releases. Do not infer confirmation from a tag or invent older installation facts. To import independently verified older metadata, use `archive_record` from `scripts/documentation_history.py`, then review the JSON diff.
+
+```bash
+python3 scripts/documentation_history.py seed    # Archive current confirmed pointers; retains older entries
+python3 scripts/documentation_history.py verify  # Read-only consistency check
+```
+
+Every site build reads the archived guides from Git and regenerates **all** cataloged versions, plus English/Spanish development guides and raw Markdown. Routes are `/en/<module>/<version>/` and `/es/<module>/<version>/`; each scope has `installation/` and `raw/`. `/en/` and `/es/` list available versions. Existing development and raw-agent URLs remain valid. The model scope shows its own model contract/catalog declarations and its exact detector dependency pin; it does not substitute the newest detector API. A module switch selects that module's latest confirmed release; version and language switches preserve the current page when it exists.
+
+Use a full-history checkout (`git fetch --unshallow` if needed); the Documentation workflow uses `fetch-depth: 0`. A missing revision fails the build instead of substituting current content. Old scripts are never executed: the current renderer consumes old Markdown as data. Generated HTML, copied assets, navigation data and raw guides remain ignored. No previous Pages deployment or expiring workflow artifact is needed to retain old versions.
+
+For reviewed corrections to an old guide, first merge the corrected documentation, then set the entry's `documentation_ref` to that existing main-branch commit's full SHA in a follow-up change. Keep `source` and confirmed destination facts unchanged. Review the guides against the original release; the page discloses both revisions. Do not pin an unmerged correction commit that could disappear after squash merging.
+
+To add translations after release without changing the original English guides, an entry may pin `translation_tree` to the Git tree for `docs/es` (obtain it with `git rev-parse HEAD:docs/es` after committing the translations). The tree must be present in committed history on main; unchanged content trees survive squash merging. This records the exact translated content separately from the code commit. English source hashes still gate each translated page. The seeded releases use this mechanism; the older `0.1.1` demo guide falls back to English because its recording filename differs. New releases naturally capture their own translations at the source revision. Later translation edits do not silently rewrite archived versions.
+
+Documentation publication remains independently retryable through the **Documentation** action. A failed JitPack build creates no confirmed catalog entry. A successful finalization triggers the existing documentation workflow; no extra token or publishing environment is required for these pages.
