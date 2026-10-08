@@ -19,6 +19,8 @@ The model currently pins `modelCoreArtifact=core` and `modelCoreVersion=0.1.0`, 
 
 ## Configure publishing repositories
 
+Only Maven Central and JitPack are enabled. The retired `apexfission-maven` service is no longer offered in publish or finalization dropdowns; historical metadata remains intact.
+
 [`publishing/repositories.yml`](../publishing/repositories.yml) is the source of truth for available destinations. Each entry has a stable repository ID, a GitHub environment name, and a publishing protocol:
 
 ```yaml
@@ -26,9 +28,6 @@ repositories:
   maven-central:
     environment: maven-central
     publisher: central
-  apexfission-maven:
-    environment: apexfission-maven
-    publisher: maven
   jitpack:
     environment: jitpack
     publisher: jitpack
@@ -87,7 +86,7 @@ The wizard manages all configured environments. JitPack has no required variable
 
 1. Merge the intended source to `main`. Review the selected module's changes and, for model releases, its `modelCoreVersion` compatibility pin.
 2. Open **Actions → Publish card-detector** for the detector or **Actions → Publish card-detector-model** for the bundled model.
-3. Choose **Run workflow** on `main` and select a configured **repository**, including `maven-central`, `apexfission-maven`, or `jitpack`. Each workflow fixes its own module; there is no module selector.
+3. Choose **Run workflow** on `main` and select a configured **repository**, `maven-central` or `jitpack`. Each workflow fixes its own module; there is no module selector.
 4. Leave **version** blank for automatic selection. With no module history anywhere, it starts at 0.1.0. If the selected module's release inputs match its latest immutable source, the workflow reuses that semantic version and original source when publishing to another destination. If release inputs changed, it increments the latest module patch (for example, 1.2.9 → 1.2.10). Changing only the destination does not allocate another version.
 5. To choose a version yourself, enter stable **X.Y.Z**. An existing latest version may only identify the same release inputs and original source; an older version or conflicting source is rejected. A new explicit version must be greater than the module's latest version. To recover a destination whose upload may already have started, use Finalize instead of publishing again.
 
@@ -103,7 +102,6 @@ Create these environments in **Settings → Environments**. The selected reposit
 | Environment | Environment secrets | Environment variables |
 | --- | --- | --- |
 | `maven-central` | `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, `SIGNING_IN_MEMORY_KEY_PASSWORD` | `MAVEN_REPOSITORY_URL` |
-| `apexfission-maven` | `MAVEN_REPOSITORY_USERNAME`, `MAVEN_REPOSITORY_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, `SIGNING_IN_MEMORY_KEY_PASSWORD` | `MAVEN_REPOSITORY_URL` |
 | `jitpack` | None | None |
 
 Add **MAVEN_REPOSITORY_URL** under **Environment variables** in every Maven environment (not in the workflow form). Set it to the canonical HTTPS Maven repository base URL, including the repository path, for example `https://maven.example.com/releases`. This example is a placeholder. For `maven-central`, use `https://repo.maven.apache.org/maven2`; it is the artifact read/verification endpoint. Central uploads continue through its publishing service, not this URL. Do not include a username, password, query string, or fragment. For a `maven` publisher, the endpoint must support standard Maven uploads and artifact/metadata reads at that same URL. Redirects are rejected during verification. A signing-key password can be empty for an unencrypted key.
@@ -187,5 +185,9 @@ python3 scripts/module_release.py check-local --module tfmodel \
 CI validates each selection in a matrix. Checks include model POM and both Gradle consumption variants exporting the pinned core, complete artifact contents, source consistency and independent Git journal/finalization races. Model asset hashes come from the selected source and are recorded with the release; replacing a model does not require editing a hardcoded old asset hash.
 
 ## Website deployment
+
+A successful JitPack publication verifies the public artifacts, commits the confirmed metadata and regenerated `IMPORT.md`, then completes the module's publish workflow. The **Documentation** workflow listens for that completion, checks out latest `main` (including the new installation instructions), builds the site, and deploys it to GitHub Pages. This also applies when the **Finalize CardDetector release** recovery workflow completes successfully. No additional token or manual documentation run is needed.
+
+The trigger watches the two manually launched module workflows, which call the reusable JitPack workflow. It does not depend on the bot's metadata commit producing a `push` event. Failed publications do not trigger this successful-release rebuild.
 
 Documentation still deploys separately from Maven publication. Completion of publication/finalization rebuilds the site with the current independently confirmed installation facts. Retry **Documentation** for site failures; do not publish another package. No package is published by this change alone.

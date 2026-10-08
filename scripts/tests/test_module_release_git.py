@@ -12,6 +12,9 @@ from test_module_release import m
 
 class IndependentGitTests(unittest.TestCase):
     def setUp(self):
+        entries={**m.load_config(), 'apexfission-maven': {'publisher':'maven','environment':'apexfission-maven'}}
+        registry=patch.object(m,'load_config',return_value=entries)
+        registry.start();self.addCleanup(registry.stop)
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.base=Path(self.temp.name);self.remote=self.base/'remote.git';self.repo=self.base/'repo'
         self.call(self.base,'init','--bare','--initial-branch=main',str(self.remote))

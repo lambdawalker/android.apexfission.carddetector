@@ -3,9 +3,6 @@ repositories:
   maven-central:
     environment: maven-central
     publisher: central
-  apexfission-maven:
-    environment: apexfission-maven
-    publisher: maven
   jitpack:
     environment: jitpack
     publisher: jitpack
