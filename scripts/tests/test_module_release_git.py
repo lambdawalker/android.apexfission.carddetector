@@ -50,6 +50,93 @@ class IndependentGitTests(unittest.TestCase):
         r=dict(r,phase='confirmed-public');(self.repo/'build').mkdir(exist_ok=True)
         (self.repo/f'build/confirmed-{r["module"]}.json').write_text(json.dumps(r))
 
+    def failed_jitpack_attempt(self):
+        r=self.record('carddetector','0.1.1',self.source)
+        r.update(repository='jitpack',repository_url=m.jitpack_release.REPOSITORY,
+                 group=m.jitpack_release.GROUP,artifact=m.jitpack_release.ARTIFACT,
+                 consumer_version='carddetector~v0.1.1')
+        name=m.pending('carddetector','0.1.1')
+        self.git('tag','-a',name,self.source,'-m',json.dumps(r))
+        self.git('tag','-a',m.tag('carddetector','0.1.1'),self.source,'-m','immutable source')
+        self.git('push','origin','--tags')
+        original=self.git('rev-parse',name)
+        (self.repo/'carddetector/src/main/source.kt').write_text('fixed build inputs')
+        self.git('add','.');self.git('commit','-m','fix build');self.git('push','origin','main')
+        return r,original
+
+    def test_prepare_archives_proven_failed_jitpack_attempt_and_advances(self):
+        with patch.dict(os.environ,{'RELEASE_REPOSITORY':'jitpack'}):
+            r,original=self.failed_jitpack_attempt()
+            before=(self.repo/'IMPORT.md').read_bytes()
+            status=json.dumps(dict(status='Error',commit=r['source'],version=r['consumer_version'])).encode()
+            with patch.object(m,'fetch',side_effect=lambda url,missing=False: None if missing else status):
+                result=m.prepare('carddetector')
+            self.assertEqual(result['version'],'0.1.2')
+            self.assertIsNone(m.remote_ref(m.pending('carddetector','0.1.1')))
+            self.assertEqual(m.remote_ref('release-failed/jitpack/carddetector/0.1.1'),original)
+            self.assertEqual(self.remote_git('rev-parse','carddetector/v0.1.1^{commit}'),r['source'])
+            self.assertEqual((self.repo/'IMPORT.md').read_bytes(),before)
+
+    def test_jitpack_recovery_keeps_pending_for_uncertain_or_public_builds(self):
+        with patch.dict(os.environ,{'RELEASE_REPOSITORY':'jitpack'}):
+            r,original=self.failed_jitpack_attempt()
+            tags=m.remote_tags();source=self.git('rev-parse','HEAD')
+            for status in ('ok','none','queued','building','running','unknown',None):
+                data=json.dumps(dict(status=status,commit=r['source'])).encode()
+                with self.subTest(status=status),patch.object(m,'fetch',return_value=data),self.assertRaises(ValueError):
+                    m.recover_failed_jitpack('carddetector',tags,'0.1.2',source)
+            for suffix in m.common.SUFFIXES:
+                def read(url,missing=False):
+                    return (b'published' if url==m.jitpack_release.artifact_base(r)+suffix else None) if missing else json.dumps(dict(status='Error',commit=r['source'])).encode()
+                with self.subTest(suffix=suffix),patch.object(m,'fetch',side_effect=read),self.assertRaisesRegex(ValueError,'artifact'):
+                    m.recover_failed_jitpack('carddetector',tags,'0.1.2',source)
+            with patch.object(m,'fetch',side_effect=urllib.error.URLError('offline')),self.assertRaises(urllib.error.URLError):
+                m.recover_failed_jitpack('carddetector',tags,'0.1.2',source)
+            self.assertEqual(m.remote_ref(m.pending('carddetector','0.1.1')),original)
+            self.assertIsNone(m.remote_ref('release-failed/jitpack/carddetector/0.1.1'))
+
+    def test_failed_jitpack_recovery_requires_new_source_and_matching_provenance(self):
+        with patch.dict(os.environ,{'RELEASE_REPOSITORY':'jitpack'}):
+            r,original=self.failed_jitpack_attempt()
+            tags=m.remote_tags();source=self.git('rev-parse','HEAD')
+            with patch.object(m,'fetch') as read:
+                for version,revision in [('0.1.1',source),('0.1.2',r['source'])]:
+                    with self.assertRaises(ValueError):m.recover_failed_jitpack('carddetector',tags,version,revision)
+                read.assert_not_called()
+            for commit in (None,'a'*40):
+                data=json.dumps(dict(status='Error',commit=commit)).encode()
+                with patch.object(m,'fetch',return_value=data),self.assertRaisesRegex(ValueError,'source'):
+                    m.recover_failed_jitpack('carddetector',tags,'0.1.2',source)
+            self.assertEqual(m.remote_ref(m.pending('carddetector','0.1.1')),original)
+
+    def test_failed_jitpack_archive_and_pending_removal_are_atomic(self):
+        with patch.dict(os.environ,{'RELEASE_REPOSITORY':'jitpack'}):
+            r,original=self.failed_jitpack_attempt()
+            hook=self.remote/'hooks/pre-receive';hook.write_text('#!/bin/sh\nexit 1\n');hook.chmod(0o755)
+            status=json.dumps(dict(status='Error',commit=r['source'])).encode()
+            with patch.object(m,'fetch',side_effect=lambda url,missing=False:None if missing else status),self.assertRaises(subprocess.CalledProcessError):
+                m.recover_failed_jitpack('carddetector',m.remote_tags(),'0.1.2',self.git('rev-parse','HEAD'))
+            self.assertEqual(m.remote_ref(m.pending('carddetector','0.1.1')),original)
+            self.assertIsNone(m.remote_ref('release-failed/jitpack/carddetector/0.1.1'))
+
+    def test_failed_jitpack_recovery_lease_rejects_a_changed_reservation(self):
+        with patch.dict(os.environ,{'RELEASE_REPOSITORY':'jitpack'}):
+            r,original=self.failed_jitpack_attempt()
+            name=m.pending('carddetector','0.1.1')
+            self.git('tag','-a','raced-journal',r['source'],'-m','changed journal')
+            self.git('push','origin','refs/tags/raced-journal')
+            changed=self.git('rev-parse','raced-journal')
+            real_git=m.git
+            def race(*args):
+                if args[0]=='push' and '--atomic' in args:
+                    self.remote_git('update-ref',f'refs/tags/{name}',changed,original)
+                return real_git(*args)
+            status=json.dumps(dict(status='Error',commit=r['source'])).encode()
+            with patch.object(m,'fetch',side_effect=lambda url,missing=False:None if missing else status),patch.object(m,'git',side_effect=race),self.assertRaises(subprocess.CalledProcessError):
+                m.recover_failed_jitpack('carddetector',m.remote_tags(),'0.1.2',self.git('rev-parse','HEAD'))
+            self.assertEqual(m.remote_ref(name),changed)
+            self.assertIsNone(m.remote_ref('release-failed/jitpack/carddetector/0.1.1'))
+
     def test_prepare_queries_only_core_despite_pending_model(self):
         self.journal('tfmodel')
         with patch.object(m.common,'published_versions',return_value=['0.1.0']) as fetch:
