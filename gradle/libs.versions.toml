@@ -18,7 +18,9 @@ media3 = "1.11.1"
 materialIconsExtended = "1.7.8"
 textRecognition = "16.0.1"
 coroutines = "1.11.0"
-litert = "2.3.2"
+# YOLO 0.1.0 uses the Interpreter/GpuDelegate API from LiteRT 1.x.
+# Upgrade together with YOLO; LiteRT 2.x GPU artifacts do not provide that API.
+litert = "1.4.2"
 foundation = "1.12.1"
 uiGraphics = "1.12.1"
 appcompat = "1.8.0"
