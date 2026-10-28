@@ -1,3 +1,4 @@
+import ast
 import hashlib
 import io
 import json
@@ -22,6 +23,21 @@ def zipped(entries):
 
 
 class JitpackTests(unittest.TestCase):
+    def test_entrypoint_parses_on_jitpack_python_35(self):
+        # The default JitPack image may provide Python older than f-strings.
+        tree = ast.parse(Path(build.__file__).read_text(), feature_version=(3, 5))
+        self.assertFalse(any(isinstance(node, ast.JoinedStr) for node in ast.walk(tree)))
+
+    def test_git_output_uses_python_35_subprocess_options(self):
+        def legacy_check_output(args, cwd, universal_newlines=False):
+            self.assertEqual(args, ('git', 'rev-parse', 'HEAD'))
+            self.assertEqual(cwd, build.ROOT)
+            self.assertTrue(universal_newlines)
+            return 'a' * 40 + '\n'
+
+        with patch.object(build.subprocess, 'check_output', side_effect=legacy_check_output):
+            self.assertEqual(build.run('git', 'rev-parse', 'HEAD'), 'a' * 40)
+
     def test_selection(self):
         for separator in ('/', '~'):
             self.assertEqual(build.selection(f'tfmodel{separator}v1.2.3'), ('tfmodel', '1.2.3'))
