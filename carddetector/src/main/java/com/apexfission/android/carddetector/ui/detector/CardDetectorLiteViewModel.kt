@@ -129,6 +129,7 @@ class CardDetectorLiteViewModel(
         onDetection: (CardDetection, Bitmap) -> Unit,
         onEvaluation: ((CardDetection?, Bitmap?) -> Unit)? = null,
     ) {
+        val observedAt = SystemClock.elapsedRealtime()
         if (!detector.enabled) {
             imageProxy.close()
             return
@@ -167,7 +168,8 @@ class CardDetectorLiteViewModel(
                         val adjustedFeatures = detection.features.map { it.copy(box = it.box.offset(croppedResult.xOffset, croppedResult.yOffset)) }
                         detection.copy(
                             card = detection.card.copy(box = adjustedBox),
-                            features = adjustedFeatures
+                            features = adjustedFeatures,
+                            observedAtElapsedRealtimeMs = observedAt
                         )
                     }
 

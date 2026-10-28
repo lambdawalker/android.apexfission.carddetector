@@ -19,7 +19,7 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/DefaultCardDetector.kt",
-    "sha256": "59eaf832bca1191126bdbcc139641275dfd55be61cfab0b816b7522b8fa192f3",
+    "sha256": "1d35b94c21a7a2a4897b1dd3f23f05ec819768bdde1893585bee8337c8df1c85",
     "guide": null,
     "visibility": "internal/private"
   },
@@ -181,7 +181,7 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLiteViewModel.kt",
-    "sha256": "acbd49c82711c0bd316d8cac1ae2267b094d19a64ede7e6c1220bdcee88ed0dc",
+    "sha256": "5512635563e7a0ffc8aabd21a4ee8047e694ac62bb1c4dfd056af291632a7731",
     "guide": "docs/agents/api/adapters.md",
     "visibility": "public"
   },
