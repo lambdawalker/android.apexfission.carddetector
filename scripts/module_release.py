@@ -170,13 +170,62 @@ def all_records(remote=False):
         return [json.loads(git('show',f'origin/main:{p}')) for p in paths if p.endswith('.json') and not p.startswith('docs/releases/history/')]
     return list(documentation_history.latest_records(ROOT))
 
+def recover_failed_jitpack(module,tags,version,source):
+    """Archive a terminal, artifact-free attempt before selecting newer source."""
+    if repository()!='jitpack':return
+    prefix=f'release-pending/jitpack/{module}/'
+    attempts=[name for name in tags if name.startswith(prefix)]
+    if not attempts:return
+    if len(attempts)!=1 or any(name.startswith(f'release-uploading/jitpack/{module}/') for name in tags):
+        raise ValueError('Multiple or upload-started JitPack attempts require manual reconciliation')
+    name=attempts[0];old_version=name[len(prefix):]
+    r=read_record(module,old_version)
+    if common.version_key(version)<=common.version_key(old_version) or source==r['source']:
+        raise ValueError('Failed JitPack recovery requires a newer version and corrected source')
+    git('merge-base','--is-ancestor',r['source'],source)
+    canonical=tag(module,old_version)
+    if not remote_ref(canonical) or git('rev-parse',f'{canonical}^{{commit}}')!=r['source']:
+        raise ValueError('Failed JitPack canonical source does not match its journal')
+    current=confirmed_record(module,remote=True)
+    if current and common.version_key(current['version'])>=common.version_key(old_version):
+        raise ValueError('Confirmed JitPack history requires manual reconciliation')
+    base=jitpack_release.artifact_base(r)
+    def check_failure():
+        status=json.loads(fetch(f'{jitpack_release.API_BASE}/{r["consumer_version"]}'))
+        if str(status.get('status','')).lower() not in ('error','failed'):
+            raise ValueError('JitPack attempt is not a proven terminal failure; preserve pending journal')
+        if status.get('commit')!=r['source']:
+            raise ValueError('JitPack failure source does not match the reserved source')
+        expected={'group':r['group'],'artifact':r['artifact'],'version':r['consumer_version']}
+        if any(key in status and status[key]!=value for key,value in expected.items()):
+            raise ValueError('JitPack failure identity differs from the reservation')
+    check_failure()
+    # Even a partial publication must keep its reservation for investigation.
+    if any(fetch(base+suffix,missing=True) is not None for suffix in common.SUFFIXES):
+        raise ValueError('JitPack attempt has public artifacts; preserve pending journal')
+    check_failure()
+    original=git('rev-parse',f'refs/tags/{name}')
+    archive=f'release-failed/jitpack/{module}/{old_version}'
+    if remote_ref(archive):raise ValueError('JitPack failure archive already exists; reconcile history')
+    # Preserve the exact annotated journal object. Leases and an atomic push
+    # prevent clearing a changed reservation or overwriting an existing archive.
+    git('push','--atomic',f'--force-with-lease=refs/tags/{name}:{original}',
+        f'--force-with-lease=refs/tags/{archive}:','origin',
+        f'{original}:refs/tags/{archive}',f':refs/tags/{name}')
+    git('update-ref','-d',f'refs/tags/{name}',original)
+    print(f'Archived failed JitPack {module} {old_version}; canonical tag retained; advancing to {version}')
+
 def prepare(module,requested=''):
-    refresh(); tags=remote_tags(); ensure_available(module,tags)
+    refresh(); tags=remote_tags()
+    if repository()!='jitpack':ensure_available(module,tags)
     source=git('rev-parse','HEAD');git('merge-base','--is-ancestor',source,'origin/main')
     records=all_records(remote=True)
     for r in records:
         if r:validate_record(r,r['module'],check_destination=False)
     version,source=release_identity.select(module,source,git,tags,records,requested.strip())
+    if repository()=='jitpack':
+        recover_failed_jitpack(module,tags,version,source)
+        ensure_available(module,remote_tags())
     current=confirmed_record(module,remote=True)
     if current and current['version']==version:
         validate_record(current,module)
