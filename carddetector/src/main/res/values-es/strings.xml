@@ -3,8 +3,8 @@
     <string name="card_capture_title">Escanea tu documento</string>
     <string name="card_capture_front">Frente de tu identificación</string>
     <string name="card_capture_back">Reverso de tu identificación</string>
-    <string name="card_capture_front_instruction">Coloca el frente dentro del recuadro. Mantén el documento derecho.</string>
-    <string name="card_capture_back_instruction">Coloca el reverso dentro del recuadro. Mantén visibles los cuatro bordes.</string>
+    <string name="card_capture_front_instruction">Coloca el frente de tu identificación dentro del recuadro.</string>
+    <string name="card_capture_back_instruction">Coloca el reverso de tu identificación dentro del recuadro.</string>
     <string name="card_capture_front_saved">Frente capturado</string>
     <string name="card_capture_turn_over">Voltea tu identificación para capturar el reverso.</string>
     <string name="card_capture_continue">Continuar al reverso</string>

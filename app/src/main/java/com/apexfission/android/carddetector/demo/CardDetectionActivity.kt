@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
@@ -49,53 +50,55 @@ class CardDetectionActivity : ComponentActivity() {
             CardDetectorDemoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
-                    HandlePermissions(
-                        permissions = listOf(
-                            PermissionDescription(
-                                permission = Manifest.permission.CAMERA,
-                                autoAdvanceDelayMillis = estimateReadingDelayMillis(
-                                    "$CAMERA_TITLE $CAMERA_BODY", ReadingPace.Slow
-                                )
-                            ){
-                                DefaultPermissionPage(
-                                    label = "Camera",
-                                    heroImage = Icons.Default.PhotoCamera,
-                                    title = CAMERA_TITLE,
-                                    body = CAMERA_BODY,
-                                )
-                            }
-                        ),
-                        onBack = { finish() },
-                        onNotNow = { finish() },
-                    ) {
-                        val navigateBack by mainViewModel.navigateBack.collectAsStateWithLifecycle()
-
-                        LaunchedEffect(navigateBack) {
-                            if (navigateBack) {
-                                finish()
-                                mainViewModel.onBackHandled()
-                            }
-                        }
-
-                        TwoSidedCardCapture(
-                            modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding),
-                            instanceKey = "card-detection-camera",
-                            modelPath = ModelCatalog.TfLite.modelPath,
-                            classLabels = ModelCatalog.TfLite.classes,
-                            cardClasses = ModelCatalog.TfLite.cardClasses,
-                            detectorPreset = CardDetectorPreset.HighPerformance.copy(scoreThreshold = 0.5f),
-                            cameraPreset = CameraPreset.Default,
-                            config = CardCaptureConfig(
-                                autoCaptureEnabled = intent.getBooleanExtra(EXTRA_AUTO_CAPTURE, true),
+                    Box(Modifier.fillMaxSize().padding(innerPadding).consumeWindowInsets(innerPadding)) {
+                        HandlePermissions(
+                            permissions = listOf(
+                                PermissionDescription(
+                                    permission = Manifest.permission.CAMERA,
+                                    autoAdvanceDelayMillis = estimateReadingDelayMillis(
+                                        "$CAMERA_TITLE $CAMERA_BODY", ReadingPace.Slow
+                                    )
+                                ){
+                                    DefaultPermissionPage(
+                                        label = "Camera",
+                                        heroImage = Icons.Default.PhotoCamera,
+                                        title = CAMERA_TITLE,
+                                        body = CAMERA_BODY,
+                                    )
+                                }
                             ),
-                            onBack = mainViewModel::onBackRequested,
-                            onComplete = { result ->
-                                // Demo consumes both images; production hosts can enqueue OCR/upload here.
-                                result.front.bitmap.recycle()
-                                result.back.bitmap.recycle()
-                                finish()
+                            onBack = { finish() },
+                            onNotNow = { finish() },
+                        ) {
+                            val navigateBack by mainViewModel.navigateBack.collectAsStateWithLifecycle()
+
+                            LaunchedEffect(navigateBack) {
+                                if (navigateBack) {
+                                    finish()
+                                    mainViewModel.onBackHandled()
+                                }
                             }
-                        )
+
+                            TwoSidedCardCapture(
+                                modifier = Modifier.fillMaxSize(),
+                                instanceKey = "card-detection-camera",
+                                modelPath = ModelCatalog.TfLite.modelPath,
+                                classLabels = ModelCatalog.TfLite.classes,
+                                cardClasses = ModelCatalog.TfLite.cardClasses,
+                                detectorPreset = CardDetectorPreset.HighPerformance.copy(scoreThreshold = 0.5f),
+                                cameraPreset = CameraPreset.Default,
+                                config = CardCaptureConfig(
+                                    autoCaptureEnabled = intent.getBooleanExtra(EXTRA_AUTO_CAPTURE, true),
+                                ),
+                                onBack = mainViewModel::onBackRequested,
+                                onComplete = { result ->
+                                    // Demo consumes both images; production hosts can enqueue OCR/upload here.
+                                    result.front.bitmap.recycle()
+                                    result.back.bitmap.recycle()
+                                    finish()
+                                }
+                            )
+                        }
                     }
                 }
             }
