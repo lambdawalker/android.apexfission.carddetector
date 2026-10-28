@@ -31,6 +31,7 @@ data class CardCaptureStrings(
     val stepBack: String,
     val complete: String,
     val done: String,
+    val autoToggle: String = "Toggle automatic capture",
 )
 
 @Composable
@@ -60,4 +61,5 @@ fun defaultCardCaptureStrings() = CardCaptureStrings(
     stepBack = stringResource(R.string.card_capture_step_back),
     complete = stringResource(R.string.card_capture_complete),
     done = stringResource(R.string.card_capture_done),
+    autoToggle = stringResource(R.string.card_capture_auto_toggle),
 )

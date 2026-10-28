@@ -123,6 +123,7 @@ data class CardCaptureStrings(
     val stepBack: String,
     val complete: String,
     val done: String,
+    val autoToggle: String = "Toggle automatic capture",
 )
 
 @Composable
@@ -146,6 +147,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoMode
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier

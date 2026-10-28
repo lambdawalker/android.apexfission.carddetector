@@ -25,4 +25,5 @@
     <string name="card_capture_step_back">2 / 2 · Back</string>
     <string name="card_capture_complete">2 / 2 · Complete</string>
     <string name="card_capture_done">Photos ready</string>
+    <string name="card_capture_auto_toggle">Toggle automatic capture</string>
 </resources>

@@ -14,6 +14,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CardDetectorDemo">
+        <activity android:name=".WelcomeActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".DocumentationQuickstartActivity" android:exported="true" />
         <activity
             android:name=".CardDetectionSimulationActivity"
@@ -25,12 +31,7 @@
             android:name=".CardDetectionActivity"
             android:exported="true"
             android:label="@string/demo"
-            android:theme="@style/Theme.CardDetectorDemo">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.CardDetectorDemo" />
     </application>
 
 </manifest>
