@@ -7,6 +7,7 @@ The library detects and tracks a primary card, publishes metadata and cropped bi
 | Task | API | Read next |
 | --- | --- | --- |
 | First integration, permissions | `CardDetectorLite` | [Quickstart](quickstart.md) |
+| Capture front and back with review | `TwoSidedCardCapture`, `CardCaptureConfig` | [Both-side capture](recipes.md#capture-both-sides) |
 | Replay a video | `CardTrackingSimulator` | [Demos](demos.md) |
 | Tune detection and crop | `CardDetectorPreset`, `CardValidator` | [Configuration](configuration.md) |
 | Customize UI or capture | `CardDetectorOverlayScope`, `IdCaptureOverlayConfig` | [Recipes](recipes.md) |
@@ -21,7 +22,8 @@ Critical invariants:
 - Provide stable, distinct, nonblank `instanceKey` values within a ViewModel owner.
 - Both callback bitmaps are host-owned; recycle after final use, including failures and cancelled handoffs. Always provide consuming/recycling callbacks; defaults do not clean up delivered images.
 - Detection callbacks are serial, worker-thread, latest-pending delivery, not a lossless frame stream. Do not rely on observing every `NewCard` transition.
-- Capture copies retained best pixels, which can outlive a missed frame or detection pause. It is not a new still capture.
+- Single-side capture copies retained best pixels, which can outlive a missed frame or detection pause. It is not a new still capture.
+- Two-sided capture uses fresh crops and transfers both confirmed images once on the main thread. The flow owns images until confirmation; the host owns them afterward.
 - Metadata boxes describe the upright source frame, not cutout-local or screen coordinates.
 - Use YOLO's `PreProcessingImageTransformation` with `CardDetectorPreset`; the similarly named legacy carddetector type is distinct.
 

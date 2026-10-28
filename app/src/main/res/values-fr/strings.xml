@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">CardDetectorDemo</string>
     <string name="demo">Démo</string>
+    <string name="welcome_eyebrow">DÉMOS DE LA BIBLIOTHÈQUE</string>
+    <string name="welcome_title">Card Detector</string>
+    <string name="welcome_description">Choisissez une démo pour découvrir la détection, la capture et le suivi.</string>
+    <string name="welcome_single_title">Capture d’un seul côté</string>
+    <string name="welcome_single_description">Essayez l’intégration minimale de la caméra avec un guide en direct et un déclencheur manuel.</string>
+    <string name="welcome_single_action">Ouvrir la démo d’un seul côté</string>
+    <string name="welcome_manual_title">Deux côtés · manuel</string>
+    <string name="welcome_manual_description">Capturez le recto et le verso, vérifiez les deux images et reprenez l’un des côtés si nécessaire.</string>
+    <string name="welcome_manual_action">Essayer la capture manuelle</string>
+    <string name="welcome_auto_title">Deux côtés · automatique</string>
+    <string name="welcome_auto_description">Découvrez comment les contrôles de netteté et de stabilité déclenchent automatiquement la capture de chaque côté.</string>
+    <string name="welcome_auto_action">Essayer la capture automatique</string>
+    <string name="welcome_video_title">Suivi vidéo</string>
+    <string name="welcome_video_description">Suivez une carte dans la vidéo d’exemple incluse. Aucune autorisation de caméra requise.</string>
+    <string name="welcome_video_action">Lire la démo vidéo</string>
+    <string name="welcome_footer">Ces démos traitent les images sur l’appareil sans les envoyer. Les démos utilisant la caméra demandent une autorisation à l’ouverture.</string>
 </resources>

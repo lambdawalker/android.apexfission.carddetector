@@ -14,16 +14,17 @@ The supplied portrait recording shows the scanning screen, card guide, and shutt
 
 | Need | Start with | Host responsibility |
 | --- | --- | --- |
-| Live camera | `CardDetectorLite` | Runtime permission, session lifecycle, callback images |
+| Front/back capture | `TwoSidedCardCapture` | Camera permission, confirmed pair ownership, downstream processing |
+| Single-side live camera | `CardDetectorLite` | Runtime permission, session lifecycle, callback images |
 | Repeatable input video | `CardTrackingSimulator` | Readable URI, playback/device verification |
 | Your own UI | `CardDetectorOverlayScope` | Layout, actions, app-specific copy |
-| Your own model | `core` plus compatible model assets | Tensor contract, labels, card classes |
-| Included Sentinel model | `sentinel-card-model` | Import model catalog extensions |
+| Your own model | `carddetector` module plus compatible model assets | Tensor contract, labels, card classes |
+| Included Sentinel model | `tfmodel` module | Import model catalog extensions |
 | Pipeline without Compose | `buildCardDetector` | Input ownership, threading, cleanup |
 
 ## What comes out
 
-A detection contains the primary card box, secondary feature metadata, tracking ID/progress, and source (`Yolo` or `Hash`). Compose callbacks also deliver an independently owned card-cutout bitmap. Explicit capture copies the retained best result. It does not request a new camera still.
+A detection contains the primary card box, secondary feature metadata, tracking ID/progress, and source (`Yolo` or `Hash`). Single-side Compose callbacks also deliver an independently owned card-cutout bitmap; explicit capture copies the retained best result. `TwoSidedCardCapture` instead captures a fresh crop for each side, supports review and retakes, and transfers the confirmed pair to the host on the main thread. Neither path requests a new camera still. See [both-side capture](agents/recipes.md#capture-both-sides) for automatic readiness, localization, and cleanup.
 
 Detection and tracking are the first stage of a document pipeline. They do not authenticate documents, decode barcodes, verify people, or provide a complete OCR workflow. Optional OCR returns text blocks. The host decides what to process, where to send it, and when to discard it.
 
