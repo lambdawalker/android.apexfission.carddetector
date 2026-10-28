@@ -5,4 +5,5 @@ jdk:
 env:
   GIT_LFS_SKIP_SMUDGE: "1"
 install:
+  - python3 --version
   - python3 scripts/jitpack_build.py

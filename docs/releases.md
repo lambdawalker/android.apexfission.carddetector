@@ -116,6 +116,10 @@ Version identity is independent per module and shared across destinations. Publi
 
 `jitpack.yml` invokes `scripts/jitpack_build.py` for a module tag such as `carddetector/v1.2.3` or `tfmodel/v2.0.0`. The build selects exactly that module for `publishToMavenLocal`, uses the pinned Android/Gradle toolchains, and makes model assets available for a model release. JitPack does not publish the sibling module as part of this build.
 
+The standalone JitPack entry point supports Python 3.5, since the default build image can provide an older interpreter than GitHub Actions. It must not use f-strings or the Python 3.7 `subprocess` option `text=True`; use `.format()`, `universal_newlines=True`, and string subprocess paths such as `cwd=str(ROOT)`. The build logs the Python version before invoking the script. Other release tools and their tests continue to use Python 3.12 in Actions.
+
+If an existing tag fails before Gradle with a Python `SyntaxError`, fixing `main` does not change that tag's source. Keep the canonical tag immutable and publish a new patch version after merging the fix. For the failed `carddetector/v0.1.3` attempt, the corrected source needs `0.1.4` or later. The pending JitPack reservation blocks a new attempt until it is reconciled: inspect the original log and public artifact availability before removing only the failed destination's pending marker. Preserve the canonical source tag and any unrelated destination records. Retrying Finalize for `0.1.3` cannot apply source changes to its JitPack build.
+
 JitPack's single-publication coordinate uses the GitHub repository name as its artifact ID. Its consumer version encodes the slash in the source tag as `~`:
 
 | Module | Example JitPack dependency |
