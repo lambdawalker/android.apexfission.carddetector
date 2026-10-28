@@ -2,7 +2,7 @@
 
 [Documentation index](README.md) · [Test package map](packages.md)
 
-Run commands from the repository root using the checked-in Gradle wrapper. Android tasks need the configured Android SDK (compileSdk 36), Java toolchain 17, and resolvable dependencies.
+Run commands from the repository root using the checked-in Gradle wrapper. Android tasks need Android SDK 37, JDK 21 for the Gradle daemon, JDK 17 for compilation, and resolvable dependencies. Hydrate model and video fixtures with `git lfs pull`. See [Android verification](../../docs/maintenance.md#android-verification) for dependency compatibility and the full CI command.
 
 ```bash
 ./gradlew :carddetector:testDebugUnitTest
