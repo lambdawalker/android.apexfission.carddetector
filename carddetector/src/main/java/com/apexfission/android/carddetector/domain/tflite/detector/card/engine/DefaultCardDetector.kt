@@ -1,6 +1,7 @@
 package com.apexfission.android.carddetector.domain.tflite.detector.card.engine
 
 import android.graphics.Bitmap
+import com.apexfission.android.carddetector.domain.tflite.image.cardSharpness
 import android.os.SystemClock
 import androidx.camera.core.ImageProxy
 import com.apexfission.android.carddetector.domain.tflite.detector.card.selection.CardCandidateSelector
@@ -103,14 +104,14 @@ internal class DefaultCardDetector internal constructor(
                 card = candidate,
                 bitmap = bitmap,
                 currentTimeMs = currentTime
-            )
+            ).let { it.copy(focusScore = cardSharpness(bitmap, it.card.box), observedAtElapsedRealtimeMs = currentTime) }
         } else {
             val currentTime = SystemClock.elapsedRealtime()
             return stateMachine.giveContinuation(
                 card = hashBasedCandidate,
                 bitmap = bitmap,
                 currentTimeMs = currentTime,
-            )
+            )?.let { it.copy(focusScore = cardSharpness(bitmap, it.card.box), observedAtElapsedRealtimeMs = currentTime) }
         }
     }
 

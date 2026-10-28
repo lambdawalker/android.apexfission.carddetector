@@ -23,7 +23,27 @@ data class CardDetection(
     val features: List<Feature>,
     val lockingStatus: LockingStatus,
     val detectionSource: DetectionSource = DetectionSource.Yolo,
-)
+    /** Card-region Laplacian variance (0..255 luminance), null when unavailable.
+     * This is image sharpness, not camera AF success or OCR readability. */
+    val focusScore: Float? = null,
+    /** Monotonic evaluation time; zero for externally constructed/unmeasured detections. */
+    val observedAtElapsedRealtimeMs: Long = 0L,
+) {
+    val focusState: FocusState get() = when {
+        focusScore == null || !focusScore.isFinite() || focusScore < 0f -> FocusState.Unknown
+        focusScore >= DEFAULT_FOCUS_THRESHOLD -> FocusState.Focused
+        else -> FocusState.Unfocused
+    }
+    val isFocused: Boolean get() = focusState == FocusState.Focused
+
+    companion object {
+        /** Starting heuristic; calibrate auto-capture thresholds on target devices/documents. */
+        const val DEFAULT_FOCUS_THRESHOLD = 100f
+    }
+}
+
+enum class FocusState { Unknown, Focused, Unfocused }
+
 
 /**
  * Represents the source mechanism used to generate a card detection.

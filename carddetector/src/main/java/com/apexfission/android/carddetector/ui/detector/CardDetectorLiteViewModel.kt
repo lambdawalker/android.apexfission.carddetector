@@ -127,6 +127,7 @@ class CardDetectorLiteViewModel(
         imageProxy: ImageProxy,
         canvasSize: IntSize = IntSize.Zero,
         onDetection: (CardDetection, Bitmap) -> Unit,
+        onEvaluation: ((CardDetection?, Bitmap?) -> Unit)? = null,
     ) {
         if (!detector.enabled) {
             imageProxy.close()
@@ -172,6 +173,7 @@ class CardDetectorLiteViewModel(
 
                     if (adjustedCard == null) {
                         publishDetectionFrame(null)
+                        onEvaluation?.invoke(null, null)
                         return@launch
                     }
 
@@ -181,13 +183,21 @@ class CardDetectorLiteViewModel(
                         _latestBestDetection.value = adjustedCard
                     }
                     publishDetectionFrame(adjustedCard)
-                    detectionCallbackDispatcher.submit(adjustedCard to detectedCardBitmap) { (detection, bitmap) ->
-                        onDetection(detection, bitmap)
+                    if (onEvaluation != null) {
+                        // Ownership transfers before invocation, including when the receiver throws.
+                        deliveryBitmap = null
+                        onEvaluation(adjustedCard, detectedCardBitmap)
+                    } else {
+                        detectionCallbackDispatcher.submit(adjustedCard to detectedCardBitmap) { (detection, bitmap) ->
+                            onDetection(detection, bitmap)
+                        }
+                        deliveryBitmap = null
                     }
-                    deliveryBitmap = null
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
+                    publishDetectionFrame(null)
+                    onEvaluation?.invoke(null, null)
                     Log.e("YOLO", "Inference failed", e)
                 } finally {
                     if (croppedBitmap != null && croppedBitmap != uprightBitmap) {
@@ -219,7 +229,7 @@ class CardDetectorLiteViewModel(
     override fun onCleared() {
         super.onCleared()
         detectionCallbackDispatcher.close()
-        latestBestDetectionStore.clear()
+        latestBestDetectionStore.close()
         detector.close()
     }
 }

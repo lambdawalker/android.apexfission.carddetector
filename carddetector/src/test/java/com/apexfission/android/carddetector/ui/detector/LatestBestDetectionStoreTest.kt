@@ -199,6 +199,33 @@ class LatestBestDetectionStoreTest {
         }
     }
 
+    @Test
+    fun focusedImageBeatsHigherConfidenceBlurredImage() {
+        val store = LatestBestDetectionStore()
+        store.offer(detection(0.99f).copy(focusScore = 0f), sourceWithCopy().source)
+        assertTrue(store.offer(detection(0.7f).copy(focusScore = 200f), sourceWithCopy().source))
+        assertFalse(store.offer(detection(0.999f).copy(focusScore = 5f), sourceWithCopy().source))
+        assertTrue(store.detection()!!.isFocused)
+    }
+
+    @Test
+    fun unmeasuredFocusIsNotReady() {
+        assertFalse(detection(0.9f).isFocused)
+        assertFalse(detection(0.9f).copy(focusScore = Float.NaN).isFocused)
+    }
+
+    @Test
+    fun closedStoreRejectsInFlightFramesWithoutAllocating() {
+        val store = LatestBestDetectionStore()
+        val retained = sourceWithCopy()
+        store.offer(detection(0.8f), retained.source)
+        store.close()
+        val late = sourceWithCopy()
+        assertFalse(store.offer(detection(0.99f), late.source))
+        verify(late.source, never()).copy(Bitmap.Config.ARGB_8888, false)
+        verify(retained.copy).recycle()
+    }
+
     private data class BitmapPair(val source: Bitmap, val copy: Bitmap)
 
     private fun sourceWithCopy(): BitmapPair {

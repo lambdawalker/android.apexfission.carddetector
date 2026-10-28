@@ -70,6 +70,34 @@ fun CardDetectorLite(
     onCapture: (CardDetection, Bitmap) -> Unit = { _, _ -> },
     controlOverlay: @Composable CardDetectorOverlayScope.() -> Unit = {}
 ) {
+    CardDetectorCamera(
+        modifier, instanceKey, modelPath, classLabels, cardClasses, isDetectionEnabled,
+        detectorPreset, cameraPreset, cardFilters, onCardDetection, onBack, onCapture,
+        controlOverlay = controlOverlay,
+    )
+}
+
+/** Internal adapter with an ordered, owning callback for every evaluation, including misses.
+ * Used by the capture flow so callback conflation cannot hide breaks in stability. */
+@Composable
+internal fun CardDetectorCamera(
+    modifier: Modifier = Modifier,
+    instanceKey: String,
+    modelPath: String,
+    classLabels: Map<Int, String>,
+    cardClasses: Set<Int>,
+    isDetectionEnabled: Boolean = true,
+    detectorPreset: CardDetectorPreset = CardDetectorPreset.HighPerformance,
+    cameraPreset: CameraPreset = CameraPreset.HighResolution,
+    cardFilters: List<CardValidator> = listOf(
+        MarginValidator(), AspectRatioValidator()
+    ),
+    onCardDetection: (CardDetection, Bitmap) -> Unit = { _, _ -> },
+    onBack: () -> Unit = {},
+    onCapture: (CardDetection, Bitmap) -> Unit = { _, _ -> },
+    onFrameEvaluation: ((CardDetection?, Bitmap?) -> Unit)? = null,
+    controlOverlay: @Composable CardDetectorOverlayScope.() -> Unit = {}
+) {
     val context = LocalContext.current
     val captureScope = rememberCoroutineScope()
     val imageSpaceChainFlow = remember { MutableStateFlow<ImageSpaceChain?>(null) }
@@ -134,7 +162,8 @@ fun CardDetectorLite(
                 viewModel.processImage(
                     imageProxy = imageProxy,
                     canvasSize = viewportSize,
-                    onDetection = onCardDetection
+                    onDetection = onCardDetection,
+                    onEvaluation = onFrameEvaluation,
                 )
             },
             onFocusEvent = viewModel::onFocusEvent,

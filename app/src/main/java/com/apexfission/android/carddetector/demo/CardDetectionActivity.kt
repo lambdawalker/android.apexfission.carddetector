@@ -18,9 +18,9 @@ import com.apexfission.android.carddetector.tfmodel.cardClasses
 import com.apexfission.android.carddetector.tfmodel.classes
 import com.apexfission.android.carddetector.tfmodel.modelPath
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
-import com.apexfission.android.carddetector.ui.detector.CardDetectorLite
+import com.apexfission.android.carddetector.ui.capture.TwoSidedCardCapture
+import com.apexfission.android.carddetector.ui.capture.CardCaptureConfig
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
-import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlay
 import com.apexfission.android.carddetector.demo.ui.theme.CardDetectorDemoTheme
 import com.apexfission.android.permission.requester.HandlePermissions
 import com.apexfission.android.permission.ui.DefaultPermissionPage
@@ -63,7 +63,6 @@ class CardDetectionActivity : ComponentActivity() {
                         onBack = { finish() },
                         onNotNow = { finish() },
                     ) {
-                        val isDetectionEnabled by mainViewModel.isDetectionEnabled.collectAsStateWithLifecycle()
                         val navigateBack by mainViewModel.navigateBack.collectAsStateWithLifecycle()
 
                         LaunchedEffect(navigateBack) {
@@ -73,7 +72,7 @@ class CardDetectionActivity : ComponentActivity() {
                             }
                         }
 
-                        CardDetectorLite(
+                        TwoSidedCardCapture(
                             modifier = Modifier.padding(innerPadding),
                             instanceKey = "card-detection-camera",
                             modelPath = ModelCatalog.TfLite.modelPath,
@@ -81,12 +80,13 @@ class CardDetectionActivity : ComponentActivity() {
                             cardClasses = ModelCatalog.TfLite.cardClasses,
                             detectorPreset = CardDetectorPreset.HighPerformance.copy(scoreThreshold = 0.5f),
                             cameraPreset = CameraPreset.Default,
-                            isDetectionEnabled = isDetectionEnabled,
-                            onCardDetection = mainViewModel::onCardDetection,
+                            config = CardCaptureConfig(autoCaptureEnabled = true),
                             onBack = mainViewModel::onBackRequested,
-                            onCapture = mainViewModel::onCapture,
-                            controlOverlay = {
-                                IdCaptureOverlay()
+                            onComplete = { result ->
+                                // Demo consumes both images; production hosts can enqueue OCR/upload here.
+                                result.front.bitmap.recycle()
+                                result.back.bitmap.recycle()
+                                finish()
                             }
                         )
                     }

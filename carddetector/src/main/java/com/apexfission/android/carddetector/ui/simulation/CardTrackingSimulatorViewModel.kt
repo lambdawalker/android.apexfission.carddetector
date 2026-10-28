@@ -192,7 +192,7 @@ class CardTrackingSimulatorViewModel(
     override fun onCleared() {
         super.onCleared()
         detectionCallbackDispatcher.close()
-        latestBestDetectionStore.clear()
+        latestBestDetectionStore.close()
         detector.close()
     }
 }

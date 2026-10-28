@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">Scan your document</string>
+    <string name="card_capture_front">Front of your card</string>
+    <string name="card_capture_back">Back of your card</string>
+    <string name="card_capture_front_instruction">Place the front inside the square. Keep the document upright.</string>
+    <string name="card_capture_back_instruction">Place the back inside the square. Keep all four edges visible.</string>
+    <string name="card_capture_front_saved">Front captured</string>
+    <string name="card_capture_turn_over">Turn your card over to capture the back.</string>
+    <string name="card_capture_continue">Continue to back</string>
+    <string name="card_capture_review">Both sides captured</string>
+    <string name="card_capture_review_instruction">Check that both images are clear and all details are readable.</string>
+    <string name="card_capture_use">Use these photos</string>
+    <string name="card_capture_retake_front">Retake front</string>
+    <string name="card_capture_retake_back">Retake back</string>
+    <string name="card_capture_find">Keep all four edges inside the square</string>
+    <string name="card_capture_focus">Hold steady · finding focus</string>
+    <string name="card_capture_ready">In focus · hold steady</string>
+    <string name="card_capture_manual">Tap to capture</string>
+    <string name="card_capture_auto">Auto-capture on</string>
+    <string name="card_capture_shutter">Capture this side</string>
+    <string name="card_capture_exit">Back</string>
+    <string name="card_capture_flash">Toggle flashlight</string>
+    <string name="card_capture_step_front">1 / 2 · Front</string>
+    <string name="card_capture_step_back">2 / 2 · Back</string>
+    <string name="card_capture_complete">2 / 2 · Complete</string>
+    <string name="card_capture_done">Photos ready</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">Escanea tu documento</string>
+    <string name="card_capture_front">Frente de tu identificación</string>
+    <string name="card_capture_back">Reverso de tu identificación</string>
+    <string name="card_capture_front_instruction">Coloca el frente dentro del recuadro. Mantén el documento derecho.</string>
+    <string name="card_capture_back_instruction">Coloca el reverso dentro del recuadro. Mantén visibles los cuatro bordes.</string>
+    <string name="card_capture_front_saved">Frente capturado</string>
+    <string name="card_capture_turn_over">Voltea tu identificación para capturar el reverso.</string>
+    <string name="card_capture_continue">Continuar al reverso</string>
+    <string name="card_capture_review">Ambos lados capturados</string>
+    <string name="card_capture_review_instruction">Comprueba que ambas imágenes estén claras y todos los detalles sean legibles.</string>
+    <string name="card_capture_use">Usar estas fotos</string>
+    <string name="card_capture_retake_front">Repetir frente</string>
+    <string name="card_capture_retake_back">Repetir reverso</string>
+    <string name="card_capture_find">Mantén los cuatro bordes dentro del recuadro</string>
+    <string name="card_capture_focus">Mantén firme · enfocando</string>
+    <string name="card_capture_ready">Enfocado · mantén firme</string>
+    <string name="card_capture_manual">Toca para capturar</string>
+    <string name="card_capture_auto">Captura automática activada</string>
+    <string name="card_capture_shutter">Capturar este lado</string>
+    <string name="card_capture_exit">Volver</string>
+    <string name="card_capture_flash">Activar o desactivar linterna</string>
+    <string name="card_capture_step_front">1 / 2 · Frente</string>
+    <string name="card_capture_step_back">2 / 2 · Reverso</string>
+    <string name="card_capture_complete">2 / 2 · Completo</string>
+    <string name="card_capture_done">Fotos listas</string>
+</resources>
