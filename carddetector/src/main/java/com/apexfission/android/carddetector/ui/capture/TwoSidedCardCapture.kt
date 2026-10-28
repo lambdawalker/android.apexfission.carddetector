@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.FlashOn
@@ -208,14 +209,12 @@ private fun CardDetectorOverlayScope.CaptureCameraOverlay(
         CaptureHeader(strings, { goBack() })
         Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha=0.65f)).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             CaptureTitle(if (side == CardSide.Front) strings.front else strings.back)
-            Text(if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction,
-                color=Color.White, textAlign=TextAlign.Center)
         }
         Spacer(Modifier.weight(1f))
         Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha=0.75f)).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(if (!canCapture) strings.find else if (focused) strings.ready else strings.focus, color=Color.White, textAlign=TextAlign.Center)
+            Text(if (!canCapture) { if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction } else if (focused) strings.ready else strings.focus, color=Color.White, textAlign=TextAlign.Center)
             Spacer(Modifier.height(12.dp))
-            Text(if (side == CardSide.Front) strings.stepFront else strings.stepBack, color=Color.White, fontWeight=FontWeight.Bold)
+            Text(if (side == CardSide.Front) strings.stepFront else strings.stepBack, color=Color(0xFF75E8CD), fontWeight=FontWeight.Bold)
             Spacer(Modifier.height(12.dp))
             Row(verticalAlignment=Alignment.CenterVertically, horizontalArrangement=Arrangement.Center) {
                 IconToggleButton(checked = autoCaptureEnabled, onCheckedChange = { onToggleAutoCapture() },
@@ -244,14 +243,14 @@ private fun CardDetectorOverlayScope.CaptureCameraOverlay(
 @Composable
 private fun CaptureHeader(strings: CardCaptureStrings, onBack: () -> Unit) {
     Row(Modifier.fillMaxWidth().background(Color.Black.copy(alpha=0.65f)), verticalAlignment=Alignment.CenterVertically) {
-        TextButton(onClick=onBack) { Text(strings.exit, color=Color.White) }
+        IconButton(onClick=onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription=strings.exit, tint=Color.White) }
         Text(strings.title, color=Color.White, fontWeight=FontWeight.Bold)
     }
 }
 
 @Composable
 private fun CaptureTitle(title: String) {
-    Text(title, color=Color.White, fontSize=24.sp, fontWeight=FontWeight.Bold, textAlign=TextAlign.Center)
+    Text(title, color=Color(0xFF75E8CD), fontSize=24.sp, fontWeight=FontWeight.Bold, textAlign=TextAlign.Center)
 }
 
 @Composable
