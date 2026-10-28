@@ -22,7 +22,7 @@ def selection(value):
 
 
 def run(*args):
-    return subprocess.check_output(args, cwd=ROOT, universal_newlines=True).strip()
+    return subprocess.check_output(args, cwd=str(ROOT), universal_newlines=True).strip()
 
 
 def verify_models():
@@ -33,7 +33,7 @@ def verify_models():
         data = (ROOT / path).read_bytes()
         if len(data) < 8 or data[4:8] != b'TFL3':
             raise ValueError('Model is missing, invalid, or an LFS pointer: {}'.format(path))
-        blob = subprocess.check_output(['git', 'show', 'HEAD:{}'.format(path)], cwd=ROOT)
+        blob = subprocess.check_output(['git', 'show', 'HEAD:{}'.format(path)], cwd=str(ROOT))
         if blob.startswith(b'version https://git-lfs.github.com/spec/v1\n'):
             pointer = blob.decode().splitlines()
             oid = next((s[11:] for s in pointer if s.startswith('oid sha256:')), '')
@@ -59,9 +59,9 @@ def main():
         raise ValueError('JitPack GIT_COMMIT differs from checkout')
     if module == 'tfmodel':
         # Never fetch documentation recordings, screenshots, or unrelated LFS data.
-        subprocess.run(['git', 'lfs', 'pull', '--include=' + MODEL_GLOB, '--exclude='], cwd=ROOT, check=True)
+        subprocess.run(['git', 'lfs', 'pull', '--include=' + MODEL_GLOB, '--exclude='], cwd=str(ROOT), check=True)
         verify_models()
-    subprocess.run(command(module, version), cwd=ROOT, check=True)
+    subprocess.run(command(module, version), cwd=str(ROOT), check=True)
 
 
 if __name__ == '__main__':

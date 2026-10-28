@@ -31,7 +31,7 @@ class JitpackTests(unittest.TestCase):
     def test_git_output_uses_python_35_subprocess_options(self):
         def legacy_check_output(args, cwd, universal_newlines=False):
             self.assertEqual(args, ('git', 'rev-parse', 'HEAD'))
-            self.assertEqual(cwd, build.ROOT)
+            self.assertEqual(cwd, str(build.ROOT))
             self.assertTrue(universal_newlines)
             return 'a' * 40 + '\n'
 
@@ -50,7 +50,7 @@ class JitpackTests(unittest.TestCase):
     def test_core_entrypoint_never_pulls_lfs_or_builds_sibling(self):
         with patch.dict(build.os.environ, {'VERSION': 'carddetector~v1.2.3', 'GIT_COMMIT': 'a'*40}), patch.object(build, 'run', return_value='a'*40), patch.object(build.subprocess, 'run') as execute:
             build.main()
-        execute.assert_called_once_with(build.command('carddetector', '1.2.3'), cwd=build.ROOT, check=True)
+        execute.assert_called_once_with(build.command('carddetector', '1.2.3'), cwd=str(build.ROOT), check=True)
 
     def test_model_entrypoint_scopes_lfs_before_build(self):
         with patch.dict(build.os.environ, {'VERSION': 'tfmodel~v1.2.3', 'GIT_COMMIT': 'a'*40}), patch.object(build, 'run', return_value='a'*40), patch.object(build.subprocess, 'run') as execute, patch.object(build, 'verify_models') as validate:
