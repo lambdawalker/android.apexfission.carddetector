@@ -32,12 +32,24 @@ Run `python3 scripts/media.py render`, inspect candidates, `accept` only deliber
 
 Use JDK 21 for the Gradle daemon, JDK 17 compilation toolchain, and the repository Android SDK (compileSdk 37); read checked-in build files before upgrading.
 
+YOLO `0.1.0` was published against LiteRT `1.4.2` and uses `org.tensorflow.lite.Interpreter`, `CompatibilityList`, and `GpuDelegate`. Keep the catalog's LiteRT GPU/support version aligned with that engine. The LiteRT `2.3.2` GPU artifact is a different accelerator API and does not contain the legacy GPU classes. Overriding it breaks instrumentation compilation (`Unresolved reference 'gpu'` / `CompatibilityList`) and can remove the runtime delegate classes. Migrate the engine and its device tests together before moving to LiteRT 2.x; do not remove the GPU test or suppress the compiler error.
+
+The demo permission library resolves from JitPack through the checked-in `settings.gradle.kts`; YOLO and coordinates resolve from Maven Central. A clean checkout also needs hydrated LFS model/video assets (`git lfs pull`).
+
 ```bash
 ./gradlew :carddetector:testDebugUnitTest :app:assembleDebug
 ./gradlew :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest
 ./gradlew :carddetector:connectedDebugAndroidTest
 ./gradlew :app:installDebug
 ```
+
+To reproduce the Android compile, lint, and unit-test gates shared by both release-tooling matrix jobs without uploading artifacts:
+
+```bash
+./gradlew :carddetector:testDebugUnitTest :carddetector:lintRelease :carddetector:assembleRelease :tfmodel:assembleRelease :app:assembleDebug :carddetector:assembleDebugAndroidTest :app:assembleDebugAndroidTest :app:lintDebug --no-daemon
+```
+
+Both matrix jobs build the core instrumentation APK, so one compilation error there fails both `verify (carddetector)` and `verify (tfmodel)`. `assembleDebugAndroidTest` compiles tests; it does not execute them. The workflow additionally verifies unsigned local Maven/JitPack publications. See `.github/workflows/verify-release-tooling.yml` for those commands. The Documentation workflow and Windows setup-wizard checks are independent of Android compilation.
 
 Unit tests and compilation do not establish camera/video correctness. Run the catalog's live permission/denial/capture and simulator flows on a compatible device. The app's OCR methods are placeholders. Historical media is never substituted for current-device release evidence.
 

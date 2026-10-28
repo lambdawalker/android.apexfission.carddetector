@@ -7,6 +7,7 @@ La biblioteca detecta y sigue una tarjeta principal, publica metadatos y mapas d
 | Tarea | API | Siguiente lectura |
 | --- | --- | --- |
 | Primera integración y permisos | `CardDetectorLite` | [Inicio rápido](quickstart.md) |
+| Capturar frente y reverso con revisión | `TwoSidedCardCapture`, `CardCaptureConfig` | [Captura de ambos lados](recipes.md#capture-both-sides) |
 | Reproducir un vídeo | `CardTrackingSimulator` | [Demostraciones](demos.md) |
 | Ajustar la detección y el recorte | `CardDetectorPreset`, `CardValidator` | [Configuración](configuration.md) |
 | Personalizar la interfaz o la captura | `CardDetectorOverlayScope`, `IdCaptureOverlayConfig` | [Recetas](recipes.md) |
@@ -21,7 +22,8 @@ Invariantes fundamentales:
 - Proporcione valores de `instanceKey` estables, distintos y no vacíos dentro de un propietario de ViewModel.
 - La aplicación anfitriona es propietaria de ambos mapas de bits de los callbacks; recíclelos tras su último uso, también en caso de error o transferencia cancelada. Proporcione siempre callbacks que consuman o reciclen las imágenes; los predeterminados no liberan las imágenes entregadas.
 - Los callbacks de detección se ejecutan en serie, en un hilo de trabajo, y entregan el último resultado pendiente; no forman un flujo de fotogramas sin pérdidas. No dependa de observar todas las transiciones `NewCard`.
-- La captura copia los mejores píxeles conservados, que pueden sobrevivir a un fotograma perdido o a una pausa de detección. No realiza una nueva captura fotográfica.
+- La captura de un solo lado copia los mejores píxeles conservados, que pueden sobrevivir a un fotograma perdido o a una pausa de detección. No realiza una nueva captura fotográfica.
+- La captura de ambos lados usa recortes recientes y entrega las dos imágenes confirmadas una sola vez en el hilo principal. El flujo es propietario de las imágenes hasta la confirmación; después pertenecen a la aplicación anfitriona.
 - Los cuadros de los metadatos describen el fotograma de origen con la orientación corregida, no coordenadas locales del recorte ni de la pantalla.
 - Use `PreProcessingImageTransformation` de YOLO con `CardDetectorPreset`; el tipo antiguo de carddetector con un nombre similar es distinto.
 

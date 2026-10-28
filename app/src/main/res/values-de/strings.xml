@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">CardDetectorDemo</string>
     <string name="demo">Demo</string>
+    <string name="welcome_eyebrow">BIBLIOTHEKSDEMOS</string>
+    <string name="welcome_title">Card Detector</string>
+    <string name="welcome_description">Wähle eine Demo, um Erkennung, Aufnahme und Verfolgung auszuprobieren.</string>
+    <string name="welcome_single_title">Einseitige Aufnahme</string>
+    <string name="welcome_single_description">Probiere die minimale Kameraintegration mit Live-Hilfsrahmen und manuellem Auslöser aus.</string>
+    <string name="welcome_single_action">Einseitige Demo öffnen</string>
+    <string name="welcome_manual_title">Zwei Seiten · manuell</string>
+    <string name="welcome_manual_description">Nimm Vorder- und Rückseite auf, prüfe beide Bilder und wiederhole bei Bedarf eine Aufnahme.</string>
+    <string name="welcome_manual_action">Manuelle Aufnahme testen</string>
+    <string name="welcome_auto_title">Zwei Seiten · automatisch</string>
+    <string name="welcome_auto_description">Sieh, wie Schärfe- und Stabilitätsprüfungen die Aufnahme jeder Seite automatisch auslösen.</string>
+    <string name="welcome_auto_action">Automatische Aufnahme testen</string>
+    <string name="welcome_video_title">Videoverfolgung</string>
+    <string name="welcome_video_description">Verfolge eine Karte im mitgelieferten Beispielvideo. Keine Kameraberechtigung erforderlich.</string>
+    <string name="welcome_video_action">Videodemo abspielen</string>
+    <string name="welcome_footer">Diese Demos verarbeiten Bilder auf dem Gerät und laden sie nicht hoch. Kamerademos fragen beim Öffnen nach der Berechtigung.</string>
 </resources>
