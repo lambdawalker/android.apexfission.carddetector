@@ -34,6 +34,10 @@ private const val CAMERA_TITLE = "Scan documents"
 private const val CAMERA_BODY = "Allow camera access to capture a document when you start a scan."
 
 class CardDetectionActivity : ComponentActivity() {
+    companion object {
+        const val EXTRA_AUTO_CAPTURE = "com.apexfission.android.carddetector.demo.AUTO_CAPTURE"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -80,7 +84,9 @@ class CardDetectionActivity : ComponentActivity() {
                             cardClasses = ModelCatalog.TfLite.cardClasses,
                             detectorPreset = CardDetectorPreset.HighPerformance.copy(scoreThreshold = 0.5f),
                             cameraPreset = CameraPreset.Default,
-                            config = CardCaptureConfig(autoCaptureEnabled = true),
+                            config = CardCaptureConfig(
+                                autoCaptureEnabled = intent.getBooleanExtra(EXTRA_AUTO_CAPTURE, true),
+                            ),
                             onBack = mainViewModel::onBackRequested,
                             onComplete = { result ->
                                 // Demo consumes both images; production hosts can enqueue OCR/upload here.

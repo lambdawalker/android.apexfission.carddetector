@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">CardDetectorDemo</string>
     <string name="demo">Demo</string>
+    <string name="welcome_eyebrow">LIBRARY DEMOS</string>
+    <string name="welcome_title">Card Detector</string>
+    <string name="welcome_description">Choose a demo to explore detection, capture, and tracking.</string>
+    <string name="welcome_single_title">Single-side capture</string>
+    <string name="welcome_single_description">Try the minimal camera integration with a live guide and manual shutter.</string>
+    <string name="welcome_single_action">Open single-side demo</string>
+    <string name="welcome_manual_title">Two sides · manual</string>
+    <string name="welcome_manual_description">Capture the front and back, review both images, and retake either side.</string>
+    <string name="welcome_manual_action">Try manual capture</string>
+    <string name="welcome_auto_title">Two sides · automatic</string>
+    <string name="welcome_auto_description">See focus and stability checks trigger capture automatically for each side.</string>
+    <string name="welcome_auto_action">Try automatic capture</string>
+    <string name="welcome_video_title">Video tracking</string>
+    <string name="welcome_video_description">Follow a card in the bundled sample video. No camera permission needed.</string>
+    <string name="welcome_video_action">Play video demo</string>
+    <string name="welcome_footer">These demos process images on the device and do not upload them. Camera demos ask for permission when opened.</string>
 </resources>
