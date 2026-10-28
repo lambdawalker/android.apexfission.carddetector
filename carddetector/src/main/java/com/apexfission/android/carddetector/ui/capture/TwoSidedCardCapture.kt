@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoMode
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +51,7 @@ data class CapturedCardSide(val detection: CardDetection, val bitmap: Bitmap)
 /** Host owns both bitmaps after onComplete; recycle each after its final use. */
 data class TwoSidedCardCaptureResult(val front: CapturedCardSide, val back: CapturedCardSide)
 
-private data class CaptureFrame(val attempt: Long, val card: CapturedCardSide?, val autoReady: Boolean)
+private data class CaptureFrame(val attempt: Long, val card: CapturedCardSide?, val autoReady: Boolean, val autoGeneration: Long, val hasDetected: Boolean)
 private class AttemptOwner : ViewModelStoreOwner {
     override val viewModelStore = ViewModelStore()
 }
@@ -85,6 +89,8 @@ fun TwoSidedCardCapture(
     var receivedAt by remember { mutableLongStateOf(0L) }
     var now by remember { mutableLongStateOf(SystemClock.elapsedRealtime()) }
     val currentConfig by rememberUpdatedState(config)
+    var autoCaptureMode by remember { mutableStateOf(AutoCaptureMode(config.autoCaptureEnabled)) }
+    var detectedAttempt by remember { mutableLongStateOf(-1L) }
 
     fun capture() {
         val image = latest ?: return
@@ -119,7 +125,8 @@ fun TwoSidedCardCapture(
             latest = frame.card
             receivedAt = frame.card?.detection?.observedAtElapsedRealtimeMs ?: 0L
             now = SystemClock.elapsedRealtime()
-            if (currentConfig.autoCaptureEnabled && frame.autoReady) capture()
+            if (frame.hasDetected) detectedAttempt = frame.attempt
+            if (autoCaptureMode.accepts(frame.autoGeneration, frame.autoReady)) capture()
         }
     }
 
@@ -145,9 +152,10 @@ fun TwoSidedCardCapture(
                         cameraPreset = cameraPreset,
                         cardFilters = cardFilters,
                         onFrameEvaluation = { d, bitmap ->
-                            val ready = readiness.evaluate(d, SystemClock.elapsedRealtime())
+                            val mode = autoCaptureMode
+                            val ready = readiness.evaluate(d, SystemClock.elapsedRealtime(), mode)
                             val card = if (d != null && bitmap != null) CapturedCardSide(d, bitmap) else null
-                            val frame = CaptureFrame(attempt, card, ready)
+                            val frame = CaptureFrame(attempt, card, ready, mode.generation, readiness.hasDetected)
                             if (frames.trySend(frame).isFailure) bitmap?.recycle()
                         },
                         onBack = onBack,
@@ -155,7 +163,9 @@ fun TwoSidedCardCapture(
                         CaptureCameraOverlay(
                             side = session.side,
                             strings = strings,
-                            config = config,
+                            autoCaptureEnabled = autoCaptureMode.enabled,
+                            onToggleAutoCapture = { autoCaptureMode = autoCaptureMode.toggled() },
+                            showInitialGuide = detectedAttempt != attempt,
                             canCapture = fresh,
                             focused = fresh && latest?.detection?.focusScore?.let { it >= config.focusThreshold } == true,
                             onCapture = { capture() },
@@ -183,11 +193,12 @@ fun TwoSidedCardCapture(
 
 @Composable
 private fun CardDetectorOverlayScope.CaptureCameraOverlay(
-    side: CardSide, strings: CardCaptureStrings, config: CardCaptureConfig,
+    side: CardSide, strings: CardCaptureStrings, autoCaptureEnabled: Boolean,
+    onToggleAutoCapture: () -> Unit, showInitialGuide: Boolean,
     canCapture: Boolean, focused: Boolean, onCapture: () -> Unit,
 ) {
-    // Square stays visible while the existing animated outline follows the actual document.
-    Canvas(Modifier.fillMaxSize()) {
+    // The initial guide yields permanently to detection for this capture attempt.
+    if (showInitialGuide && detectionState == null) Canvas(Modifier.fillMaxSize()) {
         val edge = minOf(size.width * 0.85f, size.height * 0.48f)
         drawRoundRect(Color.White.copy(alpha = 0.5f), Offset((size.width-edge)/2, (size.height-edge)/2),
             Size(edge, edge), CornerRadius(18.dp.toPx()), style = Stroke(2.dp.toPx()))
@@ -207,16 +218,25 @@ private fun CardDetectorOverlayScope.CaptureCameraOverlay(
             Text(if (side == CardSide.Front) strings.stepFront else strings.stepBack, color=Color.White, fontWeight=FontWeight.Bold)
             Spacer(Modifier.height(12.dp))
             Row(verticalAlignment=Alignment.CenterVertically, horizontalArrangement=Arrangement.Center) {
-                Spacer(Modifier.width(64.dp))
+                IconToggleButton(checked = autoCaptureEnabled, onCheckedChange = { onToggleAutoCapture() },
+                    modifier = Modifier.width(64.dp)) {
+                    Icon(Icons.Default.AutoMode, contentDescription = strings.autoToggle,
+                        tint = if (autoCaptureEnabled) Color(0xFF75E8CD) else Color.White.copy(alpha = 0.6f),
+                        modifier = Modifier.size(28.dp))
+                }
                 Button(onClick=onCapture, enabled=canCapture, shape=CircleShape,
                     contentPadding=PaddingValues(8.dp), colors=ButtonDefaults.buttonColors(containerColor=Color.White),
                     modifier=Modifier.size(76.dp).border(3.dp, Color.White, CircleShape).semantics { contentDescription=strings.shutter }) {}
-                TextButton(onClick={ toggleFlashlight() }, enabled=flashlightAvailable, modifier=Modifier.width(64.dp)) {
-                    Text(if (flashlightEnabled) "●" else "○", color=Color.White, modifier=Modifier.semantics { contentDescription=strings.flash })
+                IconToggleButton(checked = flashlightEnabled, onCheckedChange = { toggleFlashlight() },
+                    enabled = flashlightAvailable, modifier = Modifier.width(64.dp)) {
+                    Icon(if (flashlightEnabled) Icons.Default.FlashOn else Icons.Default.FlashOff,
+                        contentDescription = strings.flash,
+                        tint = Color.White.copy(alpha = if (flashlightAvailable) 1f else 0.38f),
+                        modifier = Modifier.size(28.dp))
                 }
             }
             Spacer(Modifier.height(8.dp))
-            Text(if (config.autoCaptureEnabled) strings.auto else strings.manual, color=Color.White, fontSize=13.sp)
+            Text(if (autoCaptureEnabled) strings.auto else strings.manual, color=Color.White, fontSize=13.sp)
         }
     }
 }

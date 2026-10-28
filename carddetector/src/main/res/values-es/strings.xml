@@ -25,4 +25,5 @@
     <string name="card_capture_step_back">2 / 2 · Reverso</string>
     <string name="card_capture_complete">2 / 2 · Completo</string>
     <string name="card_capture_done">Fotos listas</string>
+    <string name="card_capture_auto_toggle">Activar o desactivar captura automática</string>
 </resources>
