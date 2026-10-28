@@ -95,3 +95,42 @@ suspend fun recognizeOwnedCrop(bitmap: Bitmap): List<OcrResult> {
 ```
 
 Invoke only after your coroutine begins with valid ownership, or use the handoff helper and omit this function's bitmap recycling to keep one owner. OCR returns Latin text blocks and nullable bounding rectangles relative to the input crop, not structured ID fields. For repeated requests reuse a lifecycle-owned wrapper and close it after use.
+
+## Capture both sides
+
+`TwoSidedCardCapture` provides front → explicit “Continue to back” → back → review. It shows the side on the camera feed, a square aiming area with an adaptive document outline, and `1 / 2` or `2 / 2` above the shutter. Review allows independent retakes. Crops retain the detected document rectangle; portrait and landscape documents use the same aiming area. The existing single-side `CardDetectorLite` remains available.
+
+Obtain camera permission first. Use the model imports from the [quickstart](quickstart.md), then compose:
+
+```kotlin
+import com.apexfission.android.carddetector.ui.capture.CardCaptureConfig
+import com.apexfission.android.carddetector.ui.capture.TwoSidedCardCapture
+import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
+
+TwoSidedCardCapture(
+    instanceKey = "identity-document",
+    modelPath = ModelCatalog.TfLite.modelPath,
+    classLabels = ModelCatalog.TfLite.classes,
+    cardClasses = ModelCatalog.TfLite.cardClasses,
+    config = CardCaptureConfig(autoCaptureEnabled = true),
+    strings = defaultCardCaptureStrings(),
+    onBack = onBack,
+    onComplete = { result ->
+        // Example consumes synchronously; transfer ownership safely for async processing.
+        try {
+            // Consume result.front and result.back here.
+        } finally {
+            result.front.bitmap.recycle()
+            result.back.bitmap.recycle()
+        }
+    },
+)
+```
+
+`onComplete` runs once on the **main thread** and transfers both bitmaps to the host. Until confirmation the flow owns them and recycles discarded frames, retaken images, and cancelled sessions. Use a cancellation-safe ownership handoff for asynchronous OCR/upload. Changing `instanceKey`, model metadata, detector/camera settings, validator configuration, or capture configuration restarts the whole flow and releases its previous images. Each side/retake uses a fresh, disposable detector owner; activity recreation starts again. The turn-over screen displays the captured front while the camera is stopped.
+
+Automatic capture is off by default. Enable `CardCaptureConfig(autoCaptureEnabled = true)` to require current lock, card-region focus score of at least `focusThreshold` (default 100), and 600 ms of stable bounds. Gaps above 400 ms, misses, unfocused frames and movement reset readiness. Every detector evaluation updates readiness before UI delivery can conflate frames. The manual shutter stays available for a fresh detected crop, even below the automatic focus threshold. Both modes consume the current crop, not the older best image retained by the single-side API.
+
+`CardDetection.focusScore` is Laplacian variance of luminance on an inset card region, scaled to a longest edge of at most 256 px. `focusState` is Unknown, Focused or Unfocused; `isFocused` uses the default threshold of 100. `observedAtElapsedRealtimeMs` is a monotonic evaluation timestamp, not wall-clock time. These values are also reported by low-level/video detection. This heuristic is **not camera autofocus completion, OCR readability, glare assessment, or side classification**. Noise, lighting and texture affect it; calibrate `focusThreshold` on target devices/documents. An unavailable/invalid score never authorizes automatic capture. A custom capture threshold does not change the detection's default `isFocused` threshold.
+
+English copy is the fallback; Spanish follows the Android locale. Override individual strings with `defaultCardCaptureStrings().copy(frontInstruction = "…", backInstruction = "…")`, or supply a complete `CardCaptureStrings`. The side labels guide users; showing the same side twice is not automatically rejected.

@@ -8,6 +8,8 @@ Los validadores reciben fotogramas prestados y devuelven Boolean. El margen pred
 
 El marcador `ModelCatalog` pertenece al núcleo; las propiedades de extensión de tfmodel requieren el artefacto opcional del modelo e importaciones explícitas. El `PreProcessingImageTransformation` antiguo de carddetector sigue exportándose, pero los preajustes requieren el tipo distinto de YOLO. No los intercambie.
 
+`focusScore`, `focusState` e `isFocused` indican nitidez de la región de la tarjeta independientemente del seguimiento; `observedAtElapsedRealtimeMs` registra el tiempo monótono de evaluación. El enfoque es una heurística, no confirmación del autoenfoque ni validación OCR.
+
 ## Declaraciones
 
 Fragmentos exactos del código fuente; se omiten los cuerpos de implementación. Las importaciones siguientes permiten resolver los tipos e incluyen algunas que solo usa la implementación.
@@ -236,7 +238,26 @@ data class CardDetection(
     val features: List<Feature>,
     val lockingStatus: LockingStatus,
     val detectionSource: DetectionSource = DetectionSource.Yolo,
-)
+    /** Card-region Laplacian variance (0..255 luminance), null when unavailable.
+     * This is image sharpness, not camera AF success or OCR readability. */
+    val focusScore: Float? = null,
+    /** Monotonic evaluation time; zero for externally constructed/unmeasured detections. */
+    val observedAtElapsedRealtimeMs: Long = 0L,
+) {
+    val focusState: FocusState get() = when {
+        focusScore == null || !focusScore.isFinite() || focusScore < 0f -> FocusState.Unknown
+        focusScore >= DEFAULT_FOCUS_THRESHOLD -> FocusState.Focused
+        else -> FocusState.Unfocused
+    }
+
+    val isFocused: Boolean get() = focusState == FocusState.Focused
+
+    companion object {
+        const val DEFAULT_FOCUS_THRESHOLD = 100f
+    }
+}
+
+enum class FocusState { Unknown, Focused, Unfocused }
 
 enum class DetectionSource {
     /** The card was detected via YOLO object detector inference. */

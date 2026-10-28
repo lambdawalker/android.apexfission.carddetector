@@ -1,6 +1,6 @@
 # Detection, models, and validators
 
-`CardDetection` is metadata plus tracking state. Its `card` and `features` are YOLO `Feature` objects, not images. IDs are nullable while locking; `DetectionSource` distinguishes inference from hash continuation. The callback bitmap is delivered separately. Source-frame coordinate contracts are in [concepts](../concepts.md).
+`CardDetection` is metadata plus tracking state. Its `card` and `features` are YOLO `Feature` objects, not images. IDs are nullable while locking; `DetectionSource` distinguishes inference from hash continuation. `focusScore`, `focusState` and `isFocused` report card-region sharpness independently of tracking; `observedAtElapsedRealtimeMs` records monotonic evaluation time. Focus is a heuristic, not camera AF completion or OCR validation. The callback bitmap is delivered separately. Source-frame coordinate contracts are in [concepts](../concepts.md).
 
 `CardDetector.track` is synchronous and returns null on no candidate. Bitmap/proxy inputs remain caller-owned; close proxies after the call. Close the detector to close its YOLO dependency. Both builders use the same defaults and a thread-confined wrapper. An optional shared physical dispatcher is borrowed and must outlive borrowers. After the wrapper is closed, track returns null and enabled reads false. Do not mutate/close the input while a synchronous call is active. See [recipes](../recipes.md).
 
@@ -236,7 +236,26 @@ data class CardDetection(
     val features: List<Feature>,
     val lockingStatus: LockingStatus,
     val detectionSource: DetectionSource = DetectionSource.Yolo,
-)
+    /** Card-region Laplacian variance (0..255 luminance), null when unavailable.
+     * This is image sharpness, not camera AF success or OCR readability. */
+    val focusScore: Float? = null,
+    /** Monotonic evaluation time; zero for externally constructed/unmeasured detections. */
+    val observedAtElapsedRealtimeMs: Long = 0L,
+) {
+    val focusState: FocusState get() = when {
+        focusScore == null || !focusScore.isFinite() || focusScore < 0f -> FocusState.Unknown
+        focusScore >= DEFAULT_FOCUS_THRESHOLD -> FocusState.Focused
+        else -> FocusState.Unfocused
+    }
+
+    val isFocused: Boolean get() = focusState == FocusState.Focused
+
+    companion object {
+        const val DEFAULT_FOCUS_THRESHOLD = 100f
+    }
+}
+
+enum class FocusState { Unknown, Focused, Unfocused }
 
 enum class DetectionSource {
     /** The card was detected via YOLO object detector inference. */

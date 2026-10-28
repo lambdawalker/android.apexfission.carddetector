@@ -94,6 +94,7 @@ def declarations(text):
 
 
 def category(path):
+    if '/ui/capture/' in path: return 'components'
     if '/ui/overlays/' in path: return 'overlays'
     if '/domain/ocr/' in path or '/domain/tflite/image/' in path or '/resource/' in path: return 'utilities'
     if any(path.endswith('/'+n+'.kt') for n in ['CardDetectorLite','CardTrackingSimulator','CardDetectorPreset','CameraPreset','CardDetectorOverlayScope']): return 'components'
@@ -108,11 +109,13 @@ Call composables from a lifecycle-aware Compose host. Obtain camera permission f
 
 `CardDetectorLite` returns Unit and wires CameraX to worker detection; its camera default is HighResolution. Both callback lambdas receive a host-owned cutout; always consume/recycle them. `onBack` is an overlay user action. The default overlay is empty. Simulator uses a readable `videoUri`, requires `onCardDetection`, and names its actions `onCaptureRequested` / `onBackRequested`. It has no torch. See [ownership and lifetime](../concepts.md).
 
+`TwoSidedCardCapture` adds an opt-in front/back flow with a square guide, explicit turn-over, review and retakes. Its `onComplete` transfers two owned bitmaps on the main thread. `CardCaptureConfig` controls optional automatic capture; `CardCaptureStrings` supports localized instruction overrides. See [both-side capture](../recipes.md#capture-both-sides).
+
 Scope `detectionState`/`cardDetection` describe the current evaluation, `detectionSequence` changes on misses too, and `latestBestDetection`/`captureEnabled` refer to retained capture. `capture()` copies retained data, `goBack()` invokes the host action, and `toggleFlashlight()` requests torch state where available. `imageSpaceChain` can be null before preview measurement.
 ''',
  'detection': '''# Detection, models, and validators
 
-`CardDetection` is metadata plus tracking state. Its `card` and `features` are YOLO `Feature` objects, not images. IDs are nullable while locking; `DetectionSource` distinguishes inference from hash continuation. The callback bitmap is delivered separately. Source-frame coordinate contracts are in [concepts](../concepts.md).
+`CardDetection` is metadata plus tracking state. Its `card` and `features` are YOLO `Feature` objects, not images. IDs are nullable while locking; `DetectionSource` distinguishes inference from hash continuation. `focusScore`, `focusState` and `isFocused` report card-region sharpness independently of tracking; `observedAtElapsedRealtimeMs` records monotonic evaluation time. Focus is a heuristic, not camera AF completion or OCR validation. The callback bitmap is delivered separately. Source-frame coordinate contracts are in [concepts](../concepts.md).
 
 `CardDetector.track` is synchronous and returns null on no candidate. Bitmap/proxy inputs remain caller-owned; close proxies after the call. Close the detector to close its YOLO dependency. Both builders use the same defaults and a thread-confined wrapper. An optional shared physical dispatcher is borrowed and must outlive borrowers. After the wrapper is closed, track returns null and enabled reads false. Do not mutate/close the input while a synchronous call is active. See [recipes](../recipes.md).
 

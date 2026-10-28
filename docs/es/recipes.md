@@ -95,3 +95,42 @@ suspend fun recognizeOwnedCrop(bitmap: Bitmap): List<OcrResult> {
 ```
 
 Invoque la función solo después de que su corrutina haya comenzado con propiedad válida, o use la función auxiliar de transferencia y omita el reciclado del mapa de bits de esta función para mantener un único propietario. OCR devuelve bloques de texto latino y rectángulos delimitadores que pueden ser nulos, relativos al recorte de entrada, no campos estructurados de identidad. Para solicitudes repetidas, reutilice un contenedor cuyo propietario gestione su ciclo de vida y ciérrelo después de usarlo.
+
+## Capturar ambos lados
+
+`TwoSidedCardCapture` ofrece frente → “Continuar al reverso” explícito → reverso → revisión. Muestra el lado sobre la cámara, un recuadro cuadrado con un contorno que sigue el documento y `1 / 2` o `2 / 2` encima del obturador. La revisión permite repetir cada lado por separado. Los recortes conservan el rectángulo detectado; los documentos verticales y horizontales usan la misma zona. `CardDetectorLite` sigue disponible para un solo lado.
+
+Obtenga primero el permiso de cámara. Use las importaciones del modelo de la [guía rápida](quickstart.md) y componga:
+
+```kotlin
+import com.apexfission.android.carddetector.ui.capture.CardCaptureConfig
+import com.apexfission.android.carddetector.ui.capture.TwoSidedCardCapture
+import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
+
+TwoSidedCardCapture(
+    instanceKey = "identity-document",
+    modelPath = ModelCatalog.TfLite.modelPath,
+    classLabels = ModelCatalog.TfLite.classes,
+    cardClasses = ModelCatalog.TfLite.cardClasses,
+    config = CardCaptureConfig(autoCaptureEnabled = true),
+    strings = defaultCardCaptureStrings(),
+    onBack = onBack,
+    onComplete = { result ->
+        // Example consumes synchronously; transfer ownership safely for async processing.
+        try {
+            // Consume result.front and result.back here.
+        } finally {
+            result.front.bitmap.recycle()
+            result.back.bitmap.recycle()
+        }
+    },
+)
+```
+
+`onComplete` se ejecuta una vez en el **hilo principal** y transfiere ambos mapas de bits a la aplicación. Hasta confirmar, el flujo los posee y recicla los fotogramas descartados, las imágenes sustituidas y las sesiones canceladas. Para OCR o cargas asíncronas, transfiera la propiedad con protección ante cancelaciones. Cambiar `instanceKey`, metadatos del modelo, ajustes del detector/cámara, configuración de validadores o captura reinicia todo el flujo y libera sus imágenes. Cada lado o repetición usa un propietario del detector nuevo y desechable; recrear la actividad empieza de nuevo. La pantalla de volteo muestra el frente capturado con la cámara detenida.
+
+La captura automática está desactivada de forma predeterminada. `CardCaptureConfig(autoCaptureEnabled = true)` exige fijación actual, nitidez de la región de la tarjeta de al menos `focusThreshold` (100 por defecto) y límites estables durante 600 ms. Intervalos superiores a 400 ms, ausencias, desenfoque y movimiento reinician la espera. Cada evaluación actualiza la preparación antes de que la entrega a la interfaz pueda descartar fotogramas. El obturador manual sigue disponible con un recorte detectado reciente, incluso por debajo del umbral automático. Ambos modos consumen el recorte actual, no la mejor imagen antigua conservada por la API de un lado.
+
+`CardDetection.focusScore` es la varianza del laplaciano de luminancia en una región interior de la tarjeta, escalada a un lado máximo de 256 px. `focusState` es Unknown, Focused o Unfocused; `isFocused` usa el umbral predeterminado de 100. `observedAtElapsedRealtimeMs` es una marca temporal monótona de evaluación, no la hora civil. También se reportan en detección de bajo nivel y vídeo. La heurística **no representa finalización del autoenfoque, legibilidad OCR, evaluación de reflejos ni clasificación del lado**. El ruido, la iluminación y la textura influyen; calibre `focusThreshold` en los dispositivos y documentos objetivo. Una puntuación ausente o inválida nunca autoriza captura automática. Un umbral personalizado no modifica el umbral predeterminado de `isFocused`.
+
+El inglés es el idioma de respaldo; el español sigue la configuración regional de Android. Personalice cadenas con `defaultCardCaptureStrings().copy(frontInstruction = "…", backInstruction = "…")` o proporcione un `CardCaptureStrings` completo. Las etiquetas guían al usuario; mostrar el mismo lado dos veces no se rechaza automáticamente.
