@@ -1,6 +1,8 @@
 package com.apexfission.android.carddetector.domain.tflite.detector.card.engine
 
 import android.graphics.Bitmap
+import com.apexfission.android.math.models.ImageBox
+import com.apexfission.android.carddetector.domain.tflite.image.cardSharpness
 import android.os.SystemClock
 import androidx.camera.core.ImageProxy
 import com.apexfission.android.carddetector.domain.tflite.detector.card.selection.CardCandidateSelector
@@ -18,7 +20,9 @@ internal class DefaultCardDetector internal constructor(
     private val candidateSelector: CardCandidateSelector,
     private val stateMachine: CardLockStateMachine,
     private val differenceHashDistanceLimit: Int = 25,
-    private val hashBasedSearchFrameLimit: Int = 3
+    private val hashBasedSearchFrameLimit: Int = 3,
+    private val elapsedRealtime: () -> Long = SystemClock::elapsedRealtime,
+    private val measureSharpness: (Bitmap, ImageBox) -> Float? = ::cardSharpness
 ) : CardDetector {
 
     constructor(
@@ -34,7 +38,9 @@ internal class DefaultCardDetector internal constructor(
         noDetectionCountLimit: Int = 8,
         differenceHashDistanceLimit: Int = 25,
         allowTemporalDrift: Boolean = true,
-        hashBasedSearchFrameLimit: Int = 3
+        hashBasedSearchFrameLimit: Int = 3,
+        elapsedRealtime: () -> Long = SystemClock::elapsedRealtime,
+        measureSharpness: (Bitmap, ImageBox) -> Float? = ::cardSharpness
     ) : this(
         yoloDetector = yoloDetector,
         candidateSelector = CardCandidateSelector(
@@ -54,7 +60,9 @@ internal class DefaultCardDetector internal constructor(
             )
         ),
         differenceHashDistanceLimit = differenceHashDistanceLimit,
-        hashBasedSearchFrameLimit = hashBasedSearchFrameLimit
+        hashBasedSearchFrameLimit = hashBasedSearchFrameLimit,
+        elapsedRealtime = elapsedRealtime,
+        measureSharpness = measureSharpness
     )
 
     override var enabled: Boolean
@@ -64,16 +72,19 @@ internal class DefaultCardDetector internal constructor(
         }
 
     override fun track(imageProxy: ImageProxy): CardDetection? {
+        val observedAt = elapsedRealtime()
         val bitmap = imageProxy.toUprightBitmap()
 
         return try {
-            track(bitmap)
+            track(bitmap, observedAt)
         } finally {
             bitmap.recycle()
         }
     }
 
-    override fun track(bitmap: Bitmap): CardDetection? {
+    override fun track(bitmap: Bitmap): CardDetection? = track(bitmap, elapsedRealtime())
+
+    private fun track(bitmap: Bitmap, currentTime: Long): CardDetection? {
         val hashBasedCandidate = if (stateMachine.hashDetectionCount < hashBasedSearchFrameLimit) {
             stateMachine.buildCandidateFromLastKnownCoordinates(
                 bitmap,
@@ -86,7 +97,6 @@ internal class DefaultCardDetector internal constructor(
 
         if (hashBasedCandidate == null) {
             val result = yoloDetector.detect(bitmap)
-            val currentTime = SystemClock.elapsedRealtime()
 
             val candidate = candidateSelector.selectCandidate(
                 detections = result,
@@ -103,14 +113,13 @@ internal class DefaultCardDetector internal constructor(
                 card = candidate,
                 bitmap = bitmap,
                 currentTimeMs = currentTime
-            )
+            ).let { it.copy(focusScore = measureSharpness(bitmap, it.card.box), observedAtElapsedRealtimeMs = currentTime) }
         } else {
-            val currentTime = SystemClock.elapsedRealtime()
             return stateMachine.giveContinuation(
                 card = hashBasedCandidate,
                 bitmap = bitmap,
                 currentTimeMs = currentTime,
-            )
+            )?.let { it.copy(focusScore = measureSharpness(bitmap, it.card.box), observedAtElapsedRealtimeMs = currentTime) }
         }
     }
 

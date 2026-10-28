@@ -213,6 +213,7 @@ class CardDetectorLiteViewModel(
         imageProxy: ImageProxy,
         canvasSize: IntSize = IntSize.Zero,
         onDetection: (CardDetection, Bitmap) -> Unit,
+        onEvaluation: ((CardDetection?, Bitmap?) -> Unit)? = null,
     ) /* body omitted */
 
     suspend fun captureLatest(

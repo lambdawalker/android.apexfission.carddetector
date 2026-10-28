@@ -43,9 +43,15 @@ kotlin {
 dependencies {
 
 
-    // tfmodel exposes the selected core through its api dependency.
-    // This keeps model-release builds on the pinned published core.
-    implementation(project(":tfmodel"))
+    // The demo exercises the current capture API. The model module still builds
+    // and publishes against its pinned core when releaseModule=tfmodel.
+    implementation(project(":carddetector"))
+    implementation(project(":tfmodel")) {
+        exclude(
+            group = providers.gradleProperty("GROUP").get(),
+            module = providers.gradleProperty("modelCoreArtifact").get()
+        )
+    }
     implementation(libs.apexfission.permission)
     implementation(libs.apexfission.yolo)
 

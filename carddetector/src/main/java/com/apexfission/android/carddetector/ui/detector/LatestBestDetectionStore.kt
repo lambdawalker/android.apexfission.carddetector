@@ -19,12 +19,13 @@ internal class LatestBestDetectionStore(
 
     private val lock = Any()
     private var entry: Entry? = null
+    private var closed = false
 
     fun offer(detection: CardDetection, source: Bitmap): Boolean {
         var replaced: Entry? = null
         val accepted = synchronized(lock) {
             val current = entry
-            if (!shouldReplace(current?.detection, detection)) {
+            if (closed || !shouldReplace(current?.detection, detection)) {
                 false
             } else {
                 val ownedCopy = checkNotNull(
@@ -77,6 +78,17 @@ internal class LatestBestDetectionStore(
         previous?.bitmap?.recycle()
     }
 
+    /** Permanently reject late inference results after the owning ViewModel is disposed. */
+    fun close() {
+        val previous = synchronized(lock) {
+            closed = true
+            val current = entry
+            entry = null
+            current
+        }
+        previous?.bitmap?.recycle()
+    }
+
     private fun shouldReplace(
         current: CardDetection?,
         candidate: CardDetection,
@@ -85,6 +97,7 @@ internal class LatestBestDetectionStore(
         if (candidate.lockingStatus == LockingStatus.NewCard && candidate.id != current.id) {
             return true
         }
+        if (candidate.isFocused != current.isFocused) return candidate.isFocused
         return candidate.card.confidence > current.card.confidence
     }
 }

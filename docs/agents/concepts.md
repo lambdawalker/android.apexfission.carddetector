@@ -29,7 +29,7 @@ Capture also calls application code on a worker. Dispatch UI actions to the main
 
 ## Capture and lifetime
 
-The first candidate, a higher-confidence candidate, or a newly locked different ID can replace the retained best image. `captureEnabled` reflects retained data, not necessarily a currently visible card. Missing detections and detection pause do not themselves clear the store. Capture can return older retained data; reject it in the host when freshness matters. No capture callback is delivered when there is no retained image.
+The first candidate or a newly locked different ID can replace the retained best image. For the same card, a focused candidate takes priority over an unfocused/unmeasured candidate; otherwise higher confidence wins. `captureEnabled` reflects retained data, not necessarily a currently visible card. Missing detections and detection pause do not themselves clear the store. Capture can return older retained data; reject it in the host when freshness matters. No capture callback is delivered when there is no retained image.
 
 Compose ViewModels live in the current `ViewModelStoreOwner`. Keys include component kind, stable `instanceKey`, model metadata, detector preset, and validator configuration. Callbacks and camera-only settings are excluded. Changing configuration selects a new ViewModel; the old one can remain until its owner is cleared. Scope owners to scanner sessions and avoid continuously changing keys. Removal from composition alone does not imply native detector cleanup.
 
@@ -44,3 +44,5 @@ YOLO reverses letterboxing into its input image. UI ViewModels restore preproces
 `buildCardDetector` and `buildThreadConfinedCardDetector` return synchronous closeable detectors. They confine calls to a physical worker but still block the caller. The card detector closes its supplied YOLO detector. Use one compatible shared `EngineThreadDispatcher` for a GPU-backed stack; close borrowers before the dispatcher. Arbitrary coroutine worker switching does not establish GPU thread affinity.
 
 `OcrWrapper.close()` is idempotent, rejects new calls with `IllegalStateException`, and defers recognizer disposal until active wrapper requests complete. `run` suspends; ML Kit failures propagate. There is no automatic OCR or upload in `CardDetectorLite`.
+
+`TwoSidedCardCapture` has a separate session-owned current-frame capture path and main-thread pair completion. See [both-side capture](recipes.md#capture-both-sides) for ownership, freshness and recreation behavior.

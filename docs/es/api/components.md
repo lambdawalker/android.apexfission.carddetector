@@ -6,6 +6,8 @@ Llame a los composables desde una aplicación Compose que gestione el ciclo de v
 
 Las propiedades de ámbito `detectionState`/`cardDetection` describen la evaluación actual, `detectionSequence` cambia también cuando no hay detección, y `latestBestDetection`/`captureEnabled` se refieren a la captura conservada. `capture()` copia los datos conservados, `goBack()` invoca la acción de la aplicación anfitriona y `toggleFlashlight()` solicita el estado de la linterna cuando está disponible. `imageSpaceChain` puede ser nulo antes de medir la vista previa.
 
+`TwoSidedCardCapture` añade frente y reverso con recuadro cuadrado, volteo explícito, revisión y repeticiones. `onComplete` transfiere dos mapas de bits en el hilo principal. `CardCaptureConfig` configura captura automática opcional; `CardCaptureStrings` permite instrucciones localizadas. Consulte [capturar ambos lados](../recipes.md#capturar-ambos-lados).
+
 ## Declaraciones
 
 Fragmentos exactos del código fuente; se omiten los cuerpos de implementación. Las importaciones siguientes permiten resolver los tipos e incluyen algunas que solo usa la implementación.
@@ -51,6 +53,149 @@ data class CameraPreset(
         )
     }
 }
+```
+
+### CaptureSession (carddetector)
+
+[Código fuente](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CaptureSession.kt)
+
+```kotlin
+package com.apexfission.android.carddetector.ui.capture
+
+
+
+enum class CardSide { Front, Back }
+```
+
+### CardCaptureConfig (carddetector)
+
+[Código fuente](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CardCaptureConfig.kt)
+
+```kotlin
+package com.apexfission.android.carddetector.ui.capture
+
+
+
+data class CardCaptureConfig(
+    val autoCaptureEnabled: Boolean = false,
+    val focusThreshold: Float = 100f,
+    val stableDurationMs: Long = 600L,
+    val maxDetectionGapMs: Long = 400L,
+) {
+
+}
+```
+
+### CardCaptureStrings (carddetector)
+
+[Código fuente](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CardCaptureStrings.kt)
+
+```kotlin
+package com.apexfission.android.carddetector.ui.capture
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.apexfission.android.carddetector.R
+
+data class CardCaptureStrings(
+    val title: String,
+    val front: String,
+    val back: String,
+    val frontInstruction: String,
+    val backInstruction: String,
+    val frontSaved: String,
+    val turnOver: String,
+    val continueToBack: String,
+    val review: String,
+    val reviewInstruction: String,
+    val use: String,
+    val retakeFront: String,
+    val retakeBack: String,
+    val find: String,
+    val focus: String,
+    val ready: String,
+    val manual: String,
+    val auto: String,
+    val shutter: String,
+    val exit: String,
+    val flash: String,
+    val stepFront: String,
+    val stepBack: String,
+    val complete: String,
+    val done: String,
+)
+
+@Composable
+fun defaultCardCaptureStrings() /* expression body omitted */
+```
+
+### TwoSidedCardCapture (carddetector)
+
+[Código fuente](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/TwoSidedCardCapture.kt)
+
+```kotlin
+package com.apexfission.android.carddetector.ui.capture
+
+import android.graphics.Bitmap
+import android.os.SystemClock
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.apexfission.android.carddetector.domain.tflite.filters.AspectRatioValidator
+import com.apexfission.android.carddetector.domain.tflite.filters.CardValidator
+import com.apexfission.android.carddetector.domain.tflite.filters.MarginValidator
+import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
+import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
+import com.apexfission.android.carddetector.ui.detector.CardDetectorCamera
+import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
+import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureIndicatorOverlay
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
+import kotlinx.coroutines.channels.Channel
+
+data class CapturedCardSide(val detection: CardDetection, val bitmap: Bitmap)
+
+data class TwoSidedCardCaptureResult(val front: CapturedCardSide, val back: CapturedCardSide)
+
+@Composable
+fun TwoSidedCardCapture(
+    instanceKey: String,
+    modelPath: String,
+    classLabels: Map<Int, String>,
+    cardClasses: Set<Int>,
+    onComplete: (TwoSidedCardCaptureResult) -> Unit,
+    modifier: Modifier = Modifier,
+    config: CardCaptureConfig = CardCaptureConfig(),
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
+    detectorPreset: CardDetectorPreset = CardDetectorPreset.HighPerformance,
+    cameraPreset: CameraPreset = CameraPreset.HighResolution,
+    cardFilters: List<CardValidator> = listOf(MarginValidator(), AspectRatioValidator()),
+    onBack: () -> Unit = {},
+) /* expression body omitted */
 ```
 
 ### CardDetectorLite (carddetector)

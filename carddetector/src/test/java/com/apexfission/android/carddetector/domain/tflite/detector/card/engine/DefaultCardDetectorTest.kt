@@ -51,6 +51,7 @@ class DefaultCardDetectorTest {
         val cardDetector = DefaultCardDetector(
             yoloDetector = yoloDetector,
             cardValidators = emptyList(),
+            measureSharpness = { _, _ -> 200f },
             cardClasses = setOf(0),
             lockOnThreshold = 3,
             hashBasedSearchFrameLimit = 2
@@ -98,6 +99,7 @@ class DefaultCardDetectorTest {
         val cardDetector = DefaultCardDetector(
             yoloDetector = yoloDetector,
             cardValidators = emptyList(),
+            measureSharpness = { _, _ -> 200f },
             cardClasses = setOf(0),
             lockOnThreshold = 3,
             differenceHashDistanceLimit = 5,
@@ -124,6 +126,7 @@ class DefaultCardDetectorTest {
         val cardDetector = DefaultCardDetector(
             yoloDetector = yoloDetector,
             cardValidators = emptyList(),
+            measureSharpness = { _, _ -> 200f },
             cardClasses = setOf(0)
         )
 
@@ -131,4 +134,27 @@ class DefaultCardDetectorTest {
         assertNull(result)
         verify(yoloDetector, times(1)).detect(bitmap)
     }
+    @Test
+    fun `slow inference preserves frame arrival time and cannot become capture ready`() {
+        var now = 100L
+        val bitmap = createPatternedBitmap(200, 200)
+        val yolo = mock<Detector>()
+        whenever(yolo.detect(bitmap)).thenAnswer {
+            now += 500L
+            listOf(Detection(ImageBox.from2P(10, 10, 110, 80), 0.9f, 0))
+        }
+        val detector = DefaultCardDetector(
+            yoloDetector = yolo, cardValidators = emptyList(), cardClasses = setOf(0),
+            elapsedRealtime = { now }, measureSharpness = { _, _ -> 200f }
+        )
+        val result = detector.track(bitmap)!!
+        assertEquals(100L, result.observedAtElapsedRealtimeMs)
+        val readiness = com.apexfission.android.carddetector.ui.capture.CaptureReadiness(
+            com.apexfission.android.carddetector.ui.capture.CardCaptureConfig(stableDurationMs = 100L)
+        )
+        val locked = result.copy(lockOnProgress = 1f)
+        readiness.evaluate(locked.copy(observedAtElapsedRealtimeMs = 300L), 300L)
+        org.junit.Assert.assertFalse(readiness.evaluate(locked, now))
+    }
+
 }
