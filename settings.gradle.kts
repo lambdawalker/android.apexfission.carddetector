@@ -17,6 +17,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
         if (providers.environmentVariable("RELEASE_REPOSITORY").orElse("maven-central").get() != "maven-central") {
             providers.environmentVariable("MAVEN_REPOSITORY_URL").orNull?.takeIf { it.isNotBlank() }?.let { endpoint ->
                 maven {
