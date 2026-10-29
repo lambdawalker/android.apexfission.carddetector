@@ -11,6 +11,7 @@ import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.overlays.animation.DetectionAnimationConfig
 
+/** Component. */
 @Composable
 internal fun rememberGuideStateMachine(
     activeDetection: CardDetection?,

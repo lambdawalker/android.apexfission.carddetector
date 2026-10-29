@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -58,6 +59,7 @@ private class AttemptOwner : ViewModelStoreOwner {
 }
 
 /**
+ * Screen.
  * Front → explicit turn-over → back → review, with independent retakes.
  * Requires camera permission from the host, just like CardDetectorLite.
  * [onComplete] runs once on the main thread and transfers ownership of both images.
@@ -192,6 +194,7 @@ fun TwoSidedCardCapture(
     }
 }
 
+/** Component. */
 @Composable
 private fun CardDetectorOverlayScope.CaptureCameraOverlay(
     side: CardSide, strings: CardCaptureStrings, autoCaptureEnabled: Boolean,
@@ -240,6 +243,7 @@ private fun CardDetectorOverlayScope.CaptureCameraOverlay(
     }
 }
 
+/** Component. */
 @Composable
 private fun CaptureHeader(strings: CardCaptureStrings, onBack: () -> Unit) {
     Row(Modifier.fillMaxWidth().background(Color.Black.copy(alpha=0.65f)), verticalAlignment=Alignment.CenterVertically) {
@@ -248,11 +252,13 @@ private fun CaptureHeader(strings: CardCaptureStrings, onBack: () -> Unit) {
     }
 }
 
+/** Component. */
 @Composable
 private fun CaptureTitle(title: String) {
     Text(title, color=Color(0xFF75E8CD), fontSize=24.sp, fontWeight=FontWeight.Bold, textAlign=TextAlign.Center)
 }
 
+/** Component. */
 @Composable
 internal fun CaptureTurnOver(front: CapturedCardSide, strings: CardCaptureStrings, onBack: () -> Unit, onContinue: () -> Unit) {
     Column(Modifier.fillMaxSize().safeDrawingPadding(), horizontalAlignment=Alignment.CenterHorizontally) {
@@ -266,6 +272,7 @@ internal fun CaptureTurnOver(front: CapturedCardSide, strings: CardCaptureString
     }
 }
 
+/** Component. */
 @Composable
 internal fun CaptureReview(front: CapturedCardSide, back: CapturedCardSide, strings: CardCaptureStrings,
     onBack: () -> Unit, onRetake: (CardSide) -> Unit, onConfirm: () -> Unit,
@@ -285,3 +292,32 @@ internal fun CaptureReview(front: CapturedCardSide, back: CapturedCardSide, stri
         Button(onClick=onConfirm, modifier=Modifier.fillMaxWidth().padding(24.dp)) { Text(strings.use) }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun CaptureHeaderPreview() {
+    CaptureHeader(
+        strings = CardCaptureStrings("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""),
+        onBack = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CaptureTitlePreview() {
+    CaptureTitle("Title")
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TwoSidedCardCapturePreview() {
+    TwoSidedCardCapture(
+        instanceKey = "preview",
+        modelPath = "",
+        classLabels = emptyMap(),
+        cardClasses = emptySet(),
+        onComplete = {}
+    )
+}
+
+

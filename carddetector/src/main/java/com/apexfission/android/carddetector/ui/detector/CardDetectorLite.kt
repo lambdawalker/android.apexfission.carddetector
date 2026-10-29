@@ -25,8 +25,10 @@ import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
+ * Screen.
  * All-in-one Composable that provides a configurable in-camera-feed card detection and tracking solution.
  *
  * Configured via structured preset objects ([CardDetectorPreset] and [CameraPreset]),
@@ -77,7 +79,8 @@ fun CardDetectorLite(
     )
 }
 
-/** Internal adapter with an ordered, owning callback for every evaluation, including misses.
+/** Component.
+ * Internal adapter with an ordered, owning callback for every evaluation, including misses.
  * Used by the capture flow so callback conflation cannot hide breaks in stability. */
 @Composable
 internal fun CardDetectorCamera(
@@ -214,3 +217,26 @@ internal fun CardDetectorCamera(
         overlayScope.controlOverlay()
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun CardDetectorLitePreview() {
+    CardDetectorLite(
+        instanceKey = "preview",
+        modelPath = "",
+        classLabels = emptyMap(),
+        cardClasses = emptySet()
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CardDetectorCameraPreview() {
+    CardDetectorCamera(
+        instanceKey = "preview",
+        modelPath = "",
+        classLabels = emptyMap(),
+        cardClasses = emptySet()
+    )
+}
+

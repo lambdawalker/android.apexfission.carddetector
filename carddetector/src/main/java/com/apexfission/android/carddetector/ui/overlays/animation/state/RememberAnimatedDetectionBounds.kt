@@ -11,6 +11,7 @@ import com.apexfission.android.carddetector.ui.overlays.animation.LockOnProgress
 import com.apexfission.android.carddetector.ui.overlays.animation.TrackingMetadata
 
 /**
+ * Component.
  * Remembers and calculates real-time animated screen coordinates and tracking state for card overlays.
  */
 @Composable

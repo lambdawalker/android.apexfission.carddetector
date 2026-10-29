@@ -12,6 +12,7 @@ import com.apexfission.android.carddetector.ui.overlays.draw.lerpF
 import kotlin.math.min
 
 /**
+ * Component.
  * Lock-on overlay using AnimatedDetectionCanvas.
  *
  * Progress, breathe, and sweepPhase are automatically animated and exposed by AnimatedDetectionCanvas.

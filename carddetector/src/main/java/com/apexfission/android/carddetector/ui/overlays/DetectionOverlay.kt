@@ -18,8 +18,10 @@ import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.math.transformations.translate
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
+ * Component.
  * Scoped variant of [DetectionOverlay] using [CardDetectorOverlayScope].
  *
  * @param showClassNames Whether to draw class names above bounding boxes.
@@ -40,6 +42,7 @@ fun CardDetectorOverlayScope.DetectionOverlay(
 }
 
 /**
+ * Component.
  * Standalone variant of [DetectionOverlay] taking explicit parameters.
  *
  * @param cardDetection The [CardDetection] result from the ViewModel.
@@ -97,3 +100,15 @@ fun DetectionOverlay(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun DetectionOverlayPreview() {
+    DetectionOverlay(
+        cardDetection = null,
+        imageSpaceChain = ImageSpaceChain.Empty,
+        showClassNames = false,
+        classLabels = emptyMap()
+    )
+}
+

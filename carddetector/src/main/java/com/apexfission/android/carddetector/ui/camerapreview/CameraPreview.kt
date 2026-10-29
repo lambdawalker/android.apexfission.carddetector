@@ -46,6 +46,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 
 /**
+ * Component.
  * Encapsulates the CameraX lifecycle and provides a live camera feed.
  *
  * @param onFrame A high-frequency callback that provides frames from the camera and the corresponding [ImageSpaceChain].
@@ -279,3 +280,16 @@ fun CameraPreview(
         }
     }
 }
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun CameraPreviewPreview() {
+    CameraPreview(
+        onFrame = { _, _ -> },
+        onFocusEvent = { _, _ -> },
+        lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current,
+        flashlightEnabled = false,
+        focusOn = null
+    )
+}
+

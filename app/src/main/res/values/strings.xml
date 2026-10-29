@@ -17,4 +17,5 @@
     <string name="welcome_video_description">Follow a card in the bundled sample video. No camera permission needed.</string>
     <string name="welcome_video_action">Play video demo</string>
     <string name="welcome_footer">These demos process images on the device and do not upload them. Camera demos ask for permission when opened.</string>
+    <string name="welcome_settings_action" translatable="false">Open app settings</string>
 </resources>

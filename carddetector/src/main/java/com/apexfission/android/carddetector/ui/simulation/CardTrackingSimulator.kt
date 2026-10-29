@@ -30,8 +30,10 @@ import com.apexfission.android.carddetector.ui.detector.DetectorComponent
 import com.apexfission.android.carddetector.ui.detector.detectorViewModelKey
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
+ * Screen.
  * A simulation composable that runs card tracking inference over video frames from a URI source.
  *
  * Configured via structured preset objects ([CardDetectorPreset] and [CameraPreset]).
@@ -181,3 +183,17 @@ fun CardTrackingSimulator(
         overlayScope.controlOverlay()
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun CardTrackingSimulatorPreview() {
+    CardTrackingSimulator(
+        instanceKey = "preview",
+        videoUri = Uri.EMPTY,
+        modelPath = "",
+        classLabels = emptyMap(),
+        cardClasses = emptySet(),
+        onCardDetection = { _, _ -> }
+    )
+}
+

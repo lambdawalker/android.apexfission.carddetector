@@ -14,6 +14,7 @@ plugins {
 
 android {
     namespace = "com.apexfission.android.carddetector"
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
     compileSdk {
         version = release(37)
     }
@@ -119,6 +120,9 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
+
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.androidx.ui.tooling)
 }
 
 

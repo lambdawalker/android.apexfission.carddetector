@@ -11,6 +11,7 @@ import com.apexfission.android.carddetector.ui.overlays.animation.state.shouldRu
 typealias AnimatedDetectionScope = AnimationAnimatedDetectionScope
 
 /**
+ * Component.
  * Renders a full-screen Canvas providing animated card detection bounds and state in [AnimatedDetectionScope].
  */
 @Composable

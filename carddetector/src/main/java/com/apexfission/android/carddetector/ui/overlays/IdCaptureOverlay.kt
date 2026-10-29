@@ -50,6 +50,7 @@ import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.overlays.draw.lerpF
 
 /**
+ * Component.
  * Renders the animated card detection indicator / guide frame for ID capture.
  *
  * Built on top of [AnimatedDetectionCanvas].
@@ -154,6 +155,7 @@ fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
 }
 
 /**
+ * Component.
  * Renders the ID capture controls and text (header, title, instructions, shutter button, flashlight toggle).
  *
  * @param config Configuration parameters for titles and capture behavior.
@@ -325,6 +327,7 @@ fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
 }
 
 /**
+ * Component.
  * Built-in ID capture overlay combining the card detection indicator and controls/text.
  *
  * Renders [IdCaptureIndicatorOverlay] and [IdCaptureControlsOverlay] together.

@@ -15,6 +15,7 @@ import com.apexfission.android.math.transformations.translate
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.overlays.animation.DetectionAnimationConfig
 
+/** Component. */
 @Composable
 internal fun rememberAnimatedCoordinates(
     activeDetection: CardDetection?,
