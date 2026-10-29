@@ -25,3 +25,18 @@ A different repository commit alone does not invalidate the historical still; it
 Use a device running the exact source you want to demonstrate, synthetic/sample cards, fixed orientation and locale. Record model, app/source SHA, Android/device version, viewport/density, theme/font scale, lighting, animation settings and any external inputs. For the live demo, obtain camera permission, frame the sample card, try capture/back and denial/recovery. Use `adb shell screenrecord /sdcard/card-demo.mp4`, then `adb pull /sdcard/card-demo.mp4` to collect it; inspect the entire recording before replacing canonical media. Device interaction is manual and not claimed deterministic.
 
 A release that changes UI or camera behavior needs current device verification; the existing recording is never reused as that evidence. Static frames alone cannot validate motion, permissions, focus or lifecycle. The present documentation change adds no new current-device capture claim.
+
+## Render current UI states on the host
+
+The **Render documentation screens** workflow renders Compose previews for `:carddetector` and `:app`, then compares a second render with those generated images. It runs for PRs and pushes to main/previews and can be dispatched manually. Download `compose-previews-carddetector` and `compose-previews-app` from the run. Each archive includes PNGs, reports, and `render-manifest.json` with the exact source SHA and image hashes. Missing previews fail the job.
+
+```bash
+./gradlew :carddetector:updateDebugScreenshotTest :carddetector:validateDebugScreenshotTest
+./gradlew :app:updateDebugScreenshotTest :app:validateDebugScreenshotTest
+```
+
+The reference PNGs are generated under each module's `src/screenshotTestDebug/reference/`; HTML reports are under `build/reports/screenshotTest/`. These transient images are not approved regression baselines. Review candidates before adding selected images to documentation. The workflow never commits or silently accepts baselines. It uses the standalone screenshot plugin compatible with this repository's AGP 9.4 toolchain.
+
+The suite renders the welcome catalog, single-side overlays, front/back guides, turn-over and review screens, plus detection/debug/lock-on overlays. Capture and welcome screens include English/Spanish variants at 393 × 852 dp, fixed font scale and static theme. The card fixture is drawn from synthetic data, with visibly different front/back images. Coordinate mappings and focused metadata are explicit. Previews invoke UI components directly; they do not start camera, inference, playback or network services.
+
+Host renders illustrate layout and copy. They do not establish device camera correctness, permission interactions, model quality, focus accuracy or successful release publication. Keep these images' source and renderer provenance separate from the historical recording above.

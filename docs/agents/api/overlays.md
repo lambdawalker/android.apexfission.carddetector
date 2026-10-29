@@ -117,6 +117,7 @@ import androidx.compose.ui.unit.sp
 import com.apexfission.android.yolo.image.PreProcessingImageTransformation
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.yolo.engine.NumThreads
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CardDetectorOverlayScope.DebugOverlay(
@@ -172,6 +173,7 @@ import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.math.transformations.translate
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CardDetectorOverlayScope.DetectionOverlay(
