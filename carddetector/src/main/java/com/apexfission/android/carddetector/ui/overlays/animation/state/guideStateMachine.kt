@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalInspectionMode
 import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.overlays.animation.DetectionAnimationConfig
@@ -19,6 +20,15 @@ internal fun rememberGuideStateMachine(
     config: DetectionAnimationConfig,
     detectionSequence: Long
 ): InternalGuideState {
+    // Layoutlib has no live evaluation/timer loop. Render the supplied static
+    // evaluation directly so detected/locked previews show their actual bounds.
+    if (LocalInspectionMode.current) {
+        return when {
+            detectionSequence == 0L || activeDetection == null || spaceChain == null -> InternalGuideState.IDLE
+            activeDetection.lockOnProgress >= 1f -> InternalGuideState.LOCKED
+            else -> InternalGuideState.LOCKING
+        }
+    }
     var internalGuideState by remember { mutableStateOf(InternalGuideState.IDLE) }
     val detectionLostTimestamp = remember { mutableLongStateOf(0L) }
 

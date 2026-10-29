@@ -88,6 +88,7 @@ private fun rememberScope(detected: Boolean): CardDetectorOverlayScope {
     return remember(detected, chain) {
         object : CardDetectorOverlayScope {
             override val detectionState = sampleDetection.takeIf { detected }
+            override val detectionSequence = if (detected) 1L else 0L
             override val latestBestDetection = detectionState
             override val imageSpaceChain: ImageSpaceChain = chain
             override val captureEnabled = detected
