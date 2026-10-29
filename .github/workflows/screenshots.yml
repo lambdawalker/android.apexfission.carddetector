@@ -1,0 +1,64 @@
+name: Render documentation screens
+on:
+  pull_request:
+  push:
+    branches: [main, previews]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: screenshots-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [carddetector, app]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          lfs: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            17
+            21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Render and compare deterministic previews
+        env:
+          MODULE: ${{ matrix.module }}
+        run: ./gradlew ":$MODULE:updateDebugScreenshotTest" ":$MODULE:validateDebugScreenshotTest" --no-daemon
+      - name: Record render provenance and require images
+        env:
+          MODULE: ${{ matrix.module }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          module = os.environ['MODULE']
+          root = pathlib.Path(module) / 'src/screenshotTestDebug/reference'
+          images = sorted(root.rglob('*.png'))
+          expected = {'carddetector': 14, 'app': 2}[module]
+          if len(images) != expected:
+              raise SystemExit(f'Expected {expected} rendered images for {module}; got {len(images)}')
+          record = {
+              'source': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'module': module, 'renderer': 'Compose Preview Screenshot Testing 0.0.1-alpha16',
+              'kind': 'host-rendered synthetic UI; no camera or model execution',
+              'images': {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest() for p in images},
+          }
+          (root / 'render-manifest.json').write_text(json.dumps(record, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compose-previews-${{ matrix.module }}
+          path: |
+            ${{ matrix.module }}/src/screenshotTestDebug/reference/
+            ${{ matrix.module }}/build/reports/screenshotTest/
+            ${{ matrix.module }}/build/outputs/screenshotTest-results/
+          if-no-files-found: error

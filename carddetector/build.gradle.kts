@@ -6,6 +6,7 @@ import org.gradle.api.publish.PublishingExtension
 import com.android.build.gradle.BaseExtension
 
 plugins {
+    alias(libs.plugins.compose.screenshot)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
 

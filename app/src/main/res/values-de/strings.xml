@@ -17,4 +17,5 @@
     <string name="welcome_video_description">Verfolge eine Karte im mitgelieferten Beispielvideo. Keine Kameraberechtigung erforderlich.</string>
     <string name="welcome_video_action">Videodemo abspielen</string>
     <string name="welcome_footer">Diese Demos verarbeiten Bilder auf dem Gerät und laden sie nicht hoch. Kamerademos fragen beim Öffnen nach der Berechtigung.</string>
+    <string name="welcome_settings_action">App-Einstellungen öffnen</string>
 </resources>

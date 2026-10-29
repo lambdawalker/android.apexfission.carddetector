@@ -17,4 +17,5 @@
     <string name="welcome_video_description">Suivez une carte dans la vidéo d’exemple incluse. Aucune autorisation de caméra requise.</string>
     <string name="welcome_video_action">Lire la démo vidéo</string>
     <string name="welcome_footer">Ces démos traitent les images sur l’appareil sans les envoyer. Les démos utilisant la caméra demandent une autorisation à l’ouverture.</string>
+    <string name="welcome_settings_action">Ouvrir les paramètres de l’application</string>
 </resources>

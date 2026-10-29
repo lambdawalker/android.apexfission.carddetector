@@ -27,7 +27,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
 import java.util.concurrent.atomic.AtomicReference
-import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Component.
@@ -127,13 +126,3 @@ fun VideoPreviewWithFullFrameCapture(
         factory = { textureView }, modifier = modifier
             .onSizeChanged { viewSize = it })
 }
-
-@Preview(showBackground = true)
-@Composable
-fun VideoPreviewWithFullFrameCapturePreview() {
-    VideoPreviewWithFullFrameCapture(
-        videoUri = Uri.EMPTY,
-        onFrame = { _, _ -> }
-    )
-}
-

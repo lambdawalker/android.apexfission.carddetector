@@ -103,7 +103,7 @@ fun DetectionOverlay(
 
 @Preview(showBackground = true)
 @Composable
-fun DetectionOverlayPreview() {
+private fun DetectionOverlayPreview() {
     DetectionOverlay(
         cardDetection = null,
         imageSpaceChain = ImageSpaceChain.Empty,

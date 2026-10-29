@@ -194,7 +194,7 @@ fun DebugOverlay(
 
 @Preview(showBackground = true)
 @Composable
-fun DebugOverlayPreview() {
+private fun DebugOverlayPreview() {
     DebugOverlay(
         isDetectionEnabled = true,
         useGpu = false,

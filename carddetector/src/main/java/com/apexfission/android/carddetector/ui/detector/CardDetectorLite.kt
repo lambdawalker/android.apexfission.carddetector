@@ -25,7 +25,6 @@ import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Screen.
@@ -217,26 +216,3 @@ internal fun CardDetectorCamera(
         overlayScope.controlOverlay()
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun CardDetectorLitePreview() {
-    CardDetectorLite(
-        instanceKey = "preview",
-        modelPath = "",
-        classLabels = emptyMap(),
-        cardClasses = emptySet()
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CardDetectorCameraPreview() {
-    CardDetectorCamera(
-        instanceKey = "preview",
-        modelPath = "",
-        classLabels = emptyMap(),
-        cardClasses = emptySet()
-    )
-}
-

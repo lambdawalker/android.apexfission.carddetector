@@ -280,16 +280,3 @@ fun CameraPreview(
         }
     }
 }
-
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
-@Composable
-fun CameraPreviewPreview() {
-    CameraPreview(
-        onFrame = { _, _ -> },
-        onFocusEvent = { _, _ -> },
-        lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current,
-        flashlightEnabled = false,
-        focusOn = null
-    )
-}
-

@@ -196,7 +196,7 @@ fun TwoSidedCardCapture(
 
 /** Component. */
 @Composable
-private fun CardDetectorOverlayScope.CaptureCameraOverlay(
+internal fun CardDetectorOverlayScope.CaptureCameraOverlay(
     side: CardSide, strings: CardCaptureStrings, autoCaptureEnabled: Boolean,
     onToggleAutoCapture: () -> Unit, showInitialGuide: Boolean,
     canCapture: Boolean, focused: Boolean, onCapture: () -> Unit,
@@ -295,29 +295,15 @@ internal fun CaptureReview(front: CapturedCardSide, back: CapturedCardSide, stri
 
 @Preview(showBackground = true)
 @Composable
-fun CaptureHeaderPreview() {
+private fun CaptureHeaderPreview() {
     CaptureHeader(
-        strings = CardCaptureStrings("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""),
+        strings = defaultCardCaptureStrings(),
         onBack = {}
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CaptureTitlePreview() {
+private fun CaptureTitlePreview() {
     CaptureTitle("Title")
 }
-
-@Preview(showBackground = true)
-@Composable
-fun TwoSidedCardCapturePreview() {
-    TwoSidedCardCapture(
-        instanceKey = "preview",
-        modelPath = "",
-        classLabels = emptyMap(),
-        cardClasses = emptySet(),
-        onComplete = {}
-    )
-}
-
-

@@ -1,10 +1,12 @@
 
 plugins {
+    alias(libs.plugins.compose.screenshot)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
     namespace = "com.apexfission.android.carddetector.demo"
     compileSdk {
         version = release(37)
@@ -41,6 +43,8 @@ kotlin {
 }
 
 dependencies {
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.androidx.ui.tooling)
 
 
     // The demo exercises the current capture API. The model module still builds
