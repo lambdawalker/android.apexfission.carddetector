@@ -6,6 +6,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 
+/** Component. */
 @Composable
 internal fun rememberAnimatedLockOnProgress(
     internalGuideState: InternalGuideState,

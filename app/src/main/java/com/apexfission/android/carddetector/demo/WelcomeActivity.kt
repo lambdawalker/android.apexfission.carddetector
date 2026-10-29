@@ -1,7 +1,9 @@
 package com.apexfission.android.carddetector.demo
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +16,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Flip
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.apexfission.android.carddetector.demo.ui.theme.CardDetectorDemoTheme
 
@@ -31,7 +35,10 @@ class WelcomeActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CardDetectorDemoTheme {
-                WelcomeScreen { demo -> startActivity(demoIntent(demo)) }
+                WelcomeScreen(
+                    onOpenDemo = { demo -> startActivity(demoIntent(demo)) },
+                    onOpenSettings = { openAppSettings() }
+                )
             }
         }
     }
@@ -43,6 +50,15 @@ class WelcomeActivity : ComponentActivity() {
         DemoDestination.TwoSidesAutomatic -> Intent(this, CardDetectionActivity::class.java)
             .putExtra(CardDetectionActivity.EXTRA_AUTO_CAPTURE, true)
         DemoDestination.Video -> Intent(this, CardDetectionSimulationActivity::class.java)
+    }
+
+    private fun openAppSettings() {
+        startActivity(
+            Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:$packageName")
+            )
+        )
     }
 }
 
@@ -63,8 +79,14 @@ internal enum class DemoDestination(
         R.string.welcome_video_action, "CardTrackingSimulator", Icons.Default.PlayArrow),
 }
 
+/**
+ * Screen.
+ */
 @Composable
-internal fun WelcomeScreen(onOpenDemo: (DemoDestination) -> Unit) {
+internal fun WelcomeScreen(
+    onOpenDemo: (DemoDestination) -> Unit,
+    onOpenSettings: () -> Unit,
+) {
     Scaffold { insets ->
         Box(Modifier.fillMaxSize().padding(insets), contentAlignment = Alignment.TopCenter) {
             LazyColumn(
@@ -110,10 +132,31 @@ internal fun WelcomeScreen(onOpenDemo: (DemoDestination) -> Unit) {
                     }
                 }
                 item {
+                    OutlinedButton(
+                        onClick = onOpenSettings,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.welcome_settings_action))
+                    }
+                }
+                item {
                     Text(stringResource(R.string.welcome_footer), style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun WelcomeScreenPreview() {
+    CardDetectorDemoTheme {
+        WelcomeScreen(
+            onOpenDemo = {},
+            onOpenSettings = {}
+        )
     }
 }

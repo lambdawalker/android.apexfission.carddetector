@@ -6,6 +6,7 @@ import org.gradle.api.publish.PublishingExtension
 import com.android.build.gradle.BaseExtension
 
 plugins {
+    alias(libs.plugins.compose.screenshot)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
 
@@ -14,6 +15,7 @@ plugins {
 
 android {
     namespace = "com.apexfission.android.carddetector"
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
     compileSdk {
         version = release(37)
     }
@@ -119,6 +121,9 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
+
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.androidx.ui.tooling)
 }
 
 

@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 /**
+ * Screen.
  * A simulation composable that runs card tracking inference over video frames from a URI source.
  *
  * Configured via structured preset objects ([CardDetectorPreset] and [CameraPreset]).

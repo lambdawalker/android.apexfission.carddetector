@@ -24,8 +24,10 @@ import androidx.compose.ui.unit.sp
 import com.apexfission.android.yolo.image.PreProcessingImageTransformation
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.yolo.engine.NumThreads
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
+ * Component.
  * Scoped variant of [DebugOverlay] using [CardDetectorOverlayScope].
  *
  * Automatically pulls runtime parameters from [CardDetectorOverlayScope.detectorPreset]
@@ -64,6 +66,7 @@ fun CardDetectorOverlayScope.DebugOverlay(
 }
 
 /**
+ * Component.
  * Standalone variant of [DebugOverlay] taking explicit parameters.
  *
  * Positioned at the bottom of the screen with navigation bar padding.
@@ -188,3 +191,21 @@ fun DebugOverlay(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun DebugOverlayPreview() {
+    DebugOverlay(
+        isDetectionEnabled = true,
+        useGpu = false,
+        showBoundingBoxes = true,
+        showLockOnProgress = true,
+        imageMode = PreProcessingImageTransformation.FullImage,
+        inferenceIntervalMs = 100L,
+        tapToFocusEnabled = true,
+        focusOnCardEnabled = true,
+        lockOnThreshold = 3,
+        numThreads = NumThreads.Default
+    )
+}
+

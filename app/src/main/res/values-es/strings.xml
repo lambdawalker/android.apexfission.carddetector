@@ -17,4 +17,5 @@
     <string name="welcome_video_description">Sigue una tarjeta en el vídeo de ejemplo incluido. No requiere permiso de cámara.</string>
     <string name="welcome_video_action">Reproducir demo de vídeo</string>
     <string name="welcome_footer">Estas demos procesan las imágenes en el dispositivo y no las suben. Las demos de cámara solicitan permiso al abrirse.</string>
+    <string name="welcome_settings_action">Abrir ajustes de la aplicación</string>
 </resources>

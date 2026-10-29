@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 /**
+ * Screen.
  * All-in-one Composable that provides a configurable in-camera-feed card detection and tracking solution.
  *
  * Configured via structured preset objects ([CardDetectorPreset] and [CameraPreset]),
@@ -77,7 +78,8 @@ fun CardDetectorLite(
     )
 }
 
-/** Internal adapter with an ordered, owning callback for every evaluation, including misses.
+/** Component.
+ * Internal adapter with an ordered, owning callback for every evaluation, including misses.
  * Used by the capture flow so callback conflation cannot hide breaks in stability. */
 @Composable
 internal fun CardDetectorCamera(

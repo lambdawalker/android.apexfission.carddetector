@@ -29,6 +29,7 @@ import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageS
 import java.util.concurrent.atomic.AtomicReference
 
 /**
+ * Component.
  * A video preview composable that renders video output via ExoPlayer and captures full frames
  * along with their corresponding [ImageSpaceChain] coordinate mapping.
  *

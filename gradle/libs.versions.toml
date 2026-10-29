@@ -35,8 +35,10 @@ mockitoKotlin = "6.4.0"
 composeRuntime = "1.12.1"
 androidBuiltInKotlin = "9.5.0"
 permission = "permission~v0.2.5"
+screenshotValidation = "0.0.1-alpha16"
 
 [libraries]
+screenshot-validation-api = { module = "com.android.tools.screenshot:screenshot-validation-api", version.ref = "screenshotValidation" }
 apexfission-yolo = { module = "com.apexfission.android:yolo", version.ref = "apexfissionYolo" }
 apexfission-coordinates = { module = "com.apexfission.android.math:coordinates", version.ref = "apexfissionCoordinates" }
 apexfission-permission = { module = "com.github.lambdawalker:android.apexfission.permissions", version.ref = "permission" }
@@ -87,6 +89,7 @@ mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", versio
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "composeRuntime" }
 
 [plugins]
+compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshotValidation" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }

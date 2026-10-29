@@ -46,6 +46,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 
 /**
+ * Component.
  * Encapsulates the CameraX lifecycle and provides a live camera feed.
  *
  * @param onFrame A high-frequency callback that provides frames from the camera and the corresponding [ImageSpaceChain].

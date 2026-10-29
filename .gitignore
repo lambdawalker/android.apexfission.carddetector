@@ -89,3 +89,6 @@ build/docs-media/
 .venv/
 
 sites/src/versions.json
+
+# Ephemeral Compose screenshot candidates; approved docs images live in docs/screenshots.
+**/src/screenshotTestDebug/reference/

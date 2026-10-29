@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.apexfission.android.carddetector.ui.overlays.animation.DetectionAnimationConfig
 
+/** Component. */
 @Composable
 fun rememberAnimatedOpacity(
     internalGuideState: InternalGuideState,

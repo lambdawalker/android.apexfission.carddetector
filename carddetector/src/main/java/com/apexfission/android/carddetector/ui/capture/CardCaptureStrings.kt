@@ -34,6 +34,7 @@ data class CardCaptureStrings(
     val autoToggle: String = "Toggle automatic capture",
 )
 
+/** Component. */
 @Composable
 fun defaultCardCaptureStrings() = CardCaptureStrings(
     title = stringResource(R.string.card_capture_title),
