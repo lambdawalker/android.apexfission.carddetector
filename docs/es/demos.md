@@ -14,6 +14,18 @@ La grabación vertical muestra la interfaz de escaneo de tarjetas con una flecha
 
 Fotograma de la grabación histórica a los **12 segundos**, que muestra el contorno cian alrededor de la tarjeta de ejemplo. Consulte la [procedencia y regeneración del material multimedia](../screenshots/README.md).
 
+## Vistas previas actuales
+
+Estas vistas de Compose muestran la captura de frente y reverso con datos sintéticos, a 393 × 852 dp. Se renderizan en el equipo anfitrión desde el código `68a49850d253`; no son capturas de un dispositivo con cámara. Consulte la [procedencia y los hashes](../screenshots/ui-manifest.json) y [cómo regenerar candidatos](../screenshots/README.md#render-current-ui-states-on-the-host).
+
+| Guía del frente | Guía del reverso |
+| --- | --- |
+| ![Guía del frente y control de captura automática](../screenshots/capture-front-es.png) | ![Guía del reverso e indicador de paso](../screenshots/capture-back-es.png) |
+
+| Dar la vuelta | Revisar y repetir |
+| --- | --- |
+| ![Frente capturado y botón para continuar al reverso](../screenshots/capture-turn-over-es.png) | ![Recortes sintéticos distintos y controles para repetir cada lado](../screenshots/capture-review-es.png) |
+
 ## Ejemplos ejecutables
 
 Requisitos: dispositivo con Android API 28+, cadena de herramientas Android del repositorio, recursos LFS descargados (`git lfs pull`) y `./gradlew :app:installDebug`. La inferencia y el comportamiento de la cámara requieren pruebas en un dispositivo; compilar el sitio por sí solo no los valida.

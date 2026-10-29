@@ -14,6 +14,18 @@ The portrait recording shows the card-scanning interface with a back arrow, inst
 
 Historical recording frame at **12 seconds**, showing the cyan outline around the sample card. See [media provenance and regeneration](../screenshots/README.md).
 
+## Current screen previews
+
+These Compose previews show the front/back capture flow using synthetic card data, at 393 × 852 dp. They are rendered on the host from source `68a49850d253`, not captured from a camera device. See [render provenance and hashes](../screenshots/ui-manifest.json) and [how to regenerate candidates](../screenshots/README.md#render-current-ui-states-on-the-host).
+
+| Front guide | Back guide |
+| --- | --- |
+| ![Front capture guide and automatic capture toggle](../screenshots/capture-front-en.png) | ![Back capture guide and step indicator](../screenshots/capture-back-en.png) |
+
+| Turn over the card | Review and retake |
+| --- | --- |
+| ![Captured front and Continue to back action](../screenshots/capture-turn-over-en.png) | ![Distinct synthetic front/back crops and independent retake controls](../screenshots/capture-review-en.png) |
+
 ## Runnable examples
 
 Prerequisites: Android API 28+ device, repository Android toolchain, hydrated LFS assets (`git lfs pull`), and `./gradlew :app:installDebug`. Inference and camera behavior need device testing; a site build alone does not validate them.

@@ -1,4 +1,5 @@
 import {buildVersioned} from './build-versioned.mjs';
+import {createHash} from 'node:crypto';
 import {readFile,writeFile,mkdir,rm,readdir,copyFile} from 'node:fs/promises';
 import {resolve,dirname,relative} from 'node:path';
 import {execFileSync} from 'node:child_process';
@@ -21,6 +22,21 @@ await copyFile(resolve(root,'docs/demo.mp4'),'public/media/card-detection.mp4');
 const manifest=JSON.parse(await read('docs/screenshots/manifest.json'));
 for(const s of manifest.scenarios)await copyFile(resolve(root,'docs/screenshots',s.file),resolve('public/screenshots',s.file));
 await copyFile(resolve(root,'docs/screenshots/manifest.json'),'public/screenshots/manifest.json');
+const ui=JSON.parse(await read('docs/screenshots/ui-manifest.json'));
+if(!/^[a-f0-9]{40}$/.test(ui.source)||ui.images.length!==8)throw new Error('Invalid UI screenshot provenance');
+const expectedUi=new Set(['front','back','turn-over','review'].flatMap(s=>['en','es'].map(l=>`capture-${s}-${l}.png`)));
+for(const item of ui.images){
+ if(!expectedUi.delete(item.file))throw new Error(`Unexpected or duplicate UI screenshot: ${item.file}`);
+ const path=resolve(root,'docs/screenshots',item.file),bytes=await readFile(path);
+ if(bytes.subarray(0,8).toString('hex')!=='89504e470d0a1a0a'||
+    createHash('sha256').update(bytes).digest('hex')!==item.sha256||
+    bytes.readUInt32BE(16)!==item.width||bytes.readUInt32BE(20)!==item.height)
+  throw new Error(`Changed UI screenshot; review provenance before accepting: ${item.file}`);
+ await copyFile(path,resolve('public/screenshots',item.file));
+}
+if(expectedUi.size)throw new Error('Missing required UI screenshots');
+await copyFile(resolve(root,'docs/screenshots/ui-manifest.json'),'public/screenshots/ui-manifest.json');
+
 const core=JSON.parse(await read('docs/releases/carddetector.json'));
 const model=JSON.parse(await read('docs/releases/tfmodel.json'));
 const release={version:`core ${core.version} / model ${model.version}`};
