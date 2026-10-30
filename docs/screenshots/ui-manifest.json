@@ -65,6 +65,69 @@
       "sha256": "41d0a4f07a2eb5f4b8a7392646383202c39bf577181d2c6453fac04b104feab4",
       "width": 1032,
       "height": 2237
+    },
+    {
+      "file": "single-side-detected.png",
+      "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/SingleSideDetectedScreenshot_single-side-detected-en_41388753_0.png",
+      "sha256": "b79e19e7d584f4e75d0d63197bcd11b48ee78dd784822da8499b42a63a71216c",
+      "width": 1032,
+      "height": 2237,
+      "source": "7956530f51157fdb5725258c89fcff58d9788d6b",
+      "workflow_run": "https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/40960818835"
+    },
+    {
+      "file": "single-side-idle.png",
+      "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/SingleSideIdleScreenshot_single-side-idle-en_f254cd48_0.png",
+      "sha256": "c5ce5bd40be48f1e8fc381cf6d031dc372c643f9361433cc7c39dc3338d121d3",
+      "width": 1032,
+      "height": 2237,
+      "source": "7956530f51157fdb5725258c89fcff58d9788d6b",
+      "workflow_run": "https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/40960818835"
+    },
+    {
+      "file": "detection-overlay.png",
+      "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/DetectionOverlayScreenshot_detection-overlay_9811ff0e_0.png",
+      "sha256": "7a65e852fd17d8309e522f876b291b6a1dcfa4b12525ff522ee65ab21a75a107",
+      "width": 1032,
+      "height": 2237,
+      "source": "7956530f51157fdb5725258c89fcff58d9788d6b",
+      "workflow_run": "https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/40960818835"
+    },
+    {
+      "file": "lock-on-overlay.png",
+      "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/LockOnOverlayScreenshot_lock-on-overlay_09ec53c8_0.png",
+      "sha256": "ad5a43b58fc498a9cd1f41dead818bcafe6c13dc089e3bb559b1825c21df69e1",
+      "width": 1032,
+      "height": 2237,
+      "source": "7956530f51157fdb5725258c89fcff58d9788d6b",
+      "workflow_run": "https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/40960818835"
+    },
+    {
+      "file": "debug-overlay.png",
+      "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/DebugOverlayScreenshot_debug-overlay_75f5aa26_0.png",
+      "sha256": "eb49af3c1fde3d68bb0928a27f6ffc60db13aced6ae70f45b84b3e86a80b0617",
+      "width": 1032,
+      "height": 2237,
+      "source": "7956530f51157fdb5725258c89fcff58d9788d6b",
+      "workflow_run": "https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/40960818835"
+    },
+    {
+      "file": "welcome-en.png",
+      "preview": "com/apexfission/android/carddetector/demo/DemoScreenshotTestKt/WelcomeScreenshot_welcome-en_577b7233_0.png",
+      "sha256": "0535714ab4e1c01df22531090fc62ee64c107cb1a15072a3d9265fd6b14d7ae1",
+      "width": 1032,
+      "height": 2237,
+      "source": "7956530f51157fdb5725258c89fcff58d9788d6b",
+      "workflow_run": "https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/40960818835"
+    },
+    {
+      "file": "welcome-es.png",
+      "preview": "com/apexfission/android/carddetector/demo/DemoScreenshotTestKt/WelcomeScreenshot_welcome-es_774ad256_0.png",
+      "sha256": "0a3df18f295f53bc4e1ad74dc1622de0a16164c5d85fbcbbae6b8846dce8deb5",
+      "width": 1032,
+      "height": 2237,
+      "source": "7956530f51157fdb5725258c89fcff58d9788d6b",
+      "workflow_run": "https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/40960818835"
     }
   ]
 }

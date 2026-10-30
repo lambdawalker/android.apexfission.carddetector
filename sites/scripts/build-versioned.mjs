@@ -1,6 +1,10 @@
 import {execFileSync} from 'node:child_process';
-import {writeFile,mkdir} from 'node:fs/promises';
+import {writeFile,mkdir,readFile} from 'node:fs/promises';
 import {dirname} from 'node:path';
+import {resolve} from 'node:path';
+import {showcase} from './showcase.mjs';
+import {latestScope} from './navigation.mjs';
+import {rewriteMarkdown} from './markdown.mjs';
 import {readRevision,readTranslationTree,readWorkingDocs,translatedGuide,rewriteVersioned,modelReference,modelPrerequisite,stableAnchors,guideSlug,scopePath} from './versioned.mjs';
 import {base,repository} from './markdown.mjs';
 
@@ -59,6 +63,20 @@ export async function buildVersioned(root) {
       :`# Installation\n\nDevelopment source may contain unreleased API.\n\n${latest?`[Install latest confirmed version: ${latest.version}](${base}/en/${entry.module}/${latest.version}/installation/)`:'No confirmed release.'}\n`;
    }
    await page('installation.md',install);
+   const overview=showcase(scope);
+   scope.pages.push({slug:'overview',title:es?'Vista general':'Overview'});
+   await put(`public/${language}/${entry.module}/${entry.version}/raw/overview.md`,overview);
+   await put(`src/content/docs/${language}/${entry.module}/${entry.version}/overview.md`,
+    `---\nslug: ${JSON.stringify(`${language}/${entry.module}/${entry.version}/overview`)}\ntitle: ${JSON.stringify(es?'Detecta. Sigue. Captura.':'Detect. Track. Capture.')}\neditUrl: false\nprev: false\nnext: false\n---\n\n`+overview.replace(/^# .+\n/,''));
+   for(const [slug,source] of [['development','docs/maintenance.md'],['releases','docs/releases.md'],['coverage','docs/coverage.md'],['media','docs/screenshots/README.md']]) {
+    const markdown=await readFile(resolve(root,source),'utf8');
+    const title=markdown.match(/^# (.+)/m)[1];
+    const sharedNotice=es?'> **Recurso compartido del proyecto:** se mantiene con el sitio actual, independientemente de la versión seleccionada. Este recurso está en inglés.\n\n':'> **Shared project resource:** maintained with the current site, independently of the selected library version.\n\n';
+    const body=sharedNotice+rewriteMarkdown(markdown,source,'human');
+    await put(`public/${language}/${entry.module}/${entry.version}/raw/project/${slug}.md`,body);
+    await put(`src/content/docs/${language}/${entry.module}/${entry.version}/project/${slug}.md`,
+     `---\nslug: ${JSON.stringify(`${language}/${entry.module}/${entry.version}/project/${slug}`)}\ntitle: ${JSON.stringify(title)}\neditUrl: false\nprev: false\nnext: false\n---\n\n`+body.replace(/^# .+\n/m,''));
+   }
    scopes.push(scope);
   }
  }
@@ -66,13 +84,15 @@ export async function buildVersioned(root) {
   const es=language==='es';let body=`# ${es?'Documentación de la biblioteca':'Library documentation'}\n\n${es?'Selecciona un módulo y una versión. Cada módulo se publica de forma independiente.':'Choose a module and version. Each module releases independently.'}\n\n`;
   for(const module of ['carddetector','tfmodel']) {
    body+=`## ${module}\n\n`;
-   for(const e of catalog.filter(e=>e.module===module).reverse())body+=`- [${e.version}](${base}/${language}/${module}/${e.version}/) — ${Object.keys(e.destinations).join(', ')}\n`;
-   body+=`- [${es?'Desarrollo (sin publicar)':'Development (unreleased)'}](${base}/${language}/${module}/development/)\n\n`;
+   for(const e of catalog.filter(e=>e.module===module).reverse())body+=`- [${e.version}](${base}/${language}/${module}/${e.version}/overview/) — ${Object.keys(e.destinations).join(', ')}\n`;
+   body+=`- [${es?'Desarrollo (sin publicar)':'Development (unreleased)'}](${base}/${language}/${module}/development/overview/)\n\n`;
   }
   body+=es?'El archivo comienza con las publicaciones confirmadas disponibles al incorporar este sistema; no representa un historial completo de versiones anteriores.\n':'This archive starts with confirmed publications available when this system was introduced; it is not a complete record of older releases.\n';
   const title=body.match(/^# (.+)/)[1];
   await put(`src/content/docs/${language}/index.md`,`---\ntitle: ${JSON.stringify(title)}\nprev: false\nnext: false\n---\n\n`+body.replace(/^# .+\n/,''));
  }
  await put('src/versions.json',JSON.stringify(scopes,null,2)+'\n');
+ const latest=latestScope(scopes);
+ await put('src/content/docs/index.md',`---\ntitle: Card Detector\n---\n\n<meta http-equiv="refresh" content="0;url=${latest.root}overview/" />\n\n[Open latest confirmed release: ${latest.version}](${latest.root}overview/)\n`);
  console.log(`Rendered ${catalog.length} archived releases and bilingual development documentation.`);
 }

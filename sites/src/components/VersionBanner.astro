@@ -1,25 +1,20 @@
 ---
 import build from '../build.json';
 import scopes from '../versions.json';
+import {navigationView,destination,latestScope,versionScopes} from '../../scripts/navigation.mjs';
 const base='/android.apexfission.carddetector';
-const path=Astro.url.pathname;
-const current=scopes.find(s=>path.startsWith(s.root));
-const language=current?.language ?? (path.startsWith(base+'/es/')?'es':'en');
+const view=navigationView(scopes,Astro.url.pathname,Astro.url.searchParams);
+const current=view.scope;
+const language=current.language;
 const es=language==='es';
-const module=current?.module ?? 'carddetector';
-const version=current?.version ?? 'development';
-const slug=current?path.slice(current.root.length).replace(/\/$/,''):'';
-function href(scope:typeof scopes[number]) {
- return scope.root+(scope.pages.some(p=>p.slug===slug)&&slug?slug+'/':'');
-}
-const sameLanguage=scopes.filter(s=>s.language===language);
-const modules=['carddetector','tfmodel'].map(name=>{
- const target=sameLanguage.filter(s=>s.module===name&&s.version!=='development').at(-1)
-  ?? sameLanguage.find(s=>s.module===name)!;
- return {name,url:name===module&&current?href(current):href(target)};
-});
-const versions=sameLanguage.filter(s=>s.module===module).slice().reverse();
+const module=current.module;
+const version=current.version;
+const slug=view.slug;
+const href=(scope:typeof scopes[number])=>destination(scope,view);
+const modules=['carddetector','tfmodel'].map(name=>({name,url:href(name===module?current:latestScope(scopes,language,name)!)}));
+const versions=versionScopes(scopes,language,module);
 const languages=['en','es'].map(lang=>({lang,target:scopes.find(s=>s.language===lang&&s.module===module&&s.version===version)!}));
+
 ---
 <aside aria-label={es?'Versión de la documentación':'Documentation version'} class="version-banner">
  <div class="selectors">
@@ -41,9 +36,9 @@ const languages=['en','es'].map(lang=>({lang,target:scopes.find(s=>s.language===
   <a class="catalog" href={`${base}/${language}/`}>{es?'Todas las versiones':'All versions'}</a>
  </div>
  <div class="provenance">
-  {version==='development'?(es?'Documentación de desarrollo':'Development documentation'):`${module} ${version}`}
-  {' · '}{es?'Código':'Code'} <a href={`https://github.com/lambdawalker/android.apexfission.carddetector/commit/${current?.source??build.ref}`}>{(current?.source??build.ref).slice(0,12)}</a>
-  {' · '}<a href={current?`${current.root}raw/${slug||'index'}.md`:`${base}/agents/index.md`}>{es?'Guía en Markdown':'Markdown guide'}</a>
+  {view.kind!=='guide'?(es?'Recursos del proyecto':"Project resources"):version==='development'?(es?'Documentación de desarrollo':'Development documentation'):`${module} ${version}`}
+  {' · '}{es?'Código':'Code'} <a href={`https://github.com/lambdawalker/android.apexfission.carddetector/commit/${view.kind==='guide'?current.source:build.ref}`}>{(view.kind==='guide'?current.source:build.ref).slice(0,12)}</a>
+  {' · '}<a href={view.kind==='project'?`${current.root}raw/project/${slug}.md`:view.kind==='guide'?`${current.root}raw/${slug||'index'}.md`:`${current.root}raw/index.md`}>{es?'Guía en Markdown':'Markdown guide'}</a>
  </div>
  <noscript><p>{es?'Usa el catálogo para elegir una versión sin JavaScript.':'Use the catalog to choose a version without JavaScript.'} <a href={`${base}/${language==='en'?'es':'en'}/`}>{language==='en'?'Español':'English'}</a></p></noscript>
 </aside>
