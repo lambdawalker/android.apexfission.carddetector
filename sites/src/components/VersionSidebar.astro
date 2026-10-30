@@ -1,25 +1,28 @@
 ---
 import scopes from '../versions.json';
-import {catalogLinks} from '../../scripts/navigation.mjs';
+import {navigationView,sidebarGroups} from '../../scripts/navigation.mjs';
 const base='/android.apexfission.carddetector';
-const path=Astro.url.pathname;
-const current=scopes.find(s=>path.startsWith(s.root));
-const es=current?.language==='es'||path.startsWith(base+'/es/');
-const legacy=[['','Overview'],['installation','Install'],['getting-started','First detection'],['model-contract','Model contract'],['configuration','Configure detection'],['concepts','Threads & ownership'],['task-recipes','Recipes'],['demos','Runnable demos'],['reference','API index'],['api/components','Components'],['api/detection','Detection'],['api/overlays','Overlays'],['api/adapters','Adapters'],['api/utilities','Utilities'],['limitations','Limitations'],['troubleshooting','Troubleshooting'],['migration','Migration'],['development','Build & maintain'],['releases','Release runbook'],['coverage','Feature coverage'],['media','Media provenance'],['agents','AI documentation']];
-const isCatalog=path===base+'/en/'||path===base+'/es/';
-const pages=current?current.pages.map(p=>({title:p.title,href:current.root+(p.slug?p.slug+'/':'')})):
- isCatalog?catalogLinks(scopes,es?'es':'en'):legacy.map(([slug,title])=>({title,href:base+'/'+(slug?slug+'/':'')}));
+const view=navigationView(scopes,Astro.url.pathname,Astro.url.searchParams);
+const es=view.scope.language==='es';
+const groups=sidebarGroups(scopes,view);
 ---
-<nav aria-label={es?'Guías de esta versión':'Guides for this version'}>
+<nav aria-label={es?'Documentación y recursos del proyecto':'Documentation and project resources'} data-doc-sidebar>
  <a class="catalog" href={`${base}/${es?'es':'en'}/`}>{es?'← Versiones y módulos':'← Versions and modules'}</a>
- <ul>{pages.map(p=><li><a href={p.href} aria-current={path===p.href?'page':undefined}>{p.title}</a></li>)}</ul>
+ {groups.map(group=><section aria-labelledby={`nav-${group.id}`}>
+  <h2 id={`nav-${group.id}`}>{group.title}</h2>
+  <ul>{group.items.map(p=><li><a href={p.href} aria-current={p.current?'page':undefined} data-navigation-id={p.id}>
+   {p.title}{p.context&&<span class="context">{p.context}</span>}
+  </a></li>)}</ul>
+ </section>)}
 </nav>
 <style>
 nav {font-size:.875rem;padding:.5rem 0}
-ul {list-style:none;padding:0;margin:1rem 0}
+ul {list-style:none;padding:0;margin:0 0 1rem}
 li {margin:.1rem 0}
+h2 {font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--sl-color-gray-3);padding:.8rem .75rem .3rem;margin:0}
 a {display:block;padding:.4rem .75rem;color:var(--sl-color-gray-2);text-decoration:none;border-radius:.25rem}
 a:hover {color:var(--sl-color-white);background:var(--sl-color-gray-6)}
 a[aria-current="page"] {color:var(--sl-color-text-accent);background:var(--sl-color-accent-low);font-weight:600}
 .catalog {color:var(--sl-color-text-accent)}
+.context {display:block;font-size:.7rem;color:var(--sl-color-gray-3)}
 </style>

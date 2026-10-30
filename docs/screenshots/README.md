@@ -28,6 +28,8 @@ A release that changes UI or camera behavior needs current device verification; 
 
 ## Render current UI states on the host
 
+The website overview groups the reviewed previews into two-sided capture, single-side capture and overlays, and the demo catalog. `ui-manifest.json` records the 15 curated images and their hashes, dimensions, render commits, and workflow runs. Per-image provenance overrides the top-level render when a later run supplied the image. English and Spanish overviews select the matching capture and welcome screens; overlay examples are shared. These development previews are illustrative on every version's overview; they do not assert that an archived release provides the displayed UI.
+
 The **Render documentation screens** workflow renders Compose previews for `:carddetector` and `:app`, then compares a second render with those generated images. It runs for PRs and pushes to main/previews and can be dispatched manually. Download `compose-previews-carddetector` and `compose-previews-app` from the run. Each archive includes PNGs, reports, and `render-manifest.json` with the exact source SHA and image hashes. Missing previews fail the job.
 
 ```bash
