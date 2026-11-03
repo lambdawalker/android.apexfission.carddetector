@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performClick
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
@@ -33,11 +34,29 @@ class CaptureReviewTest {
             copy = defaultCardCaptureStrings()
             MaterialTheme { CaptureReview(front, back, copy, {}, { retaken = it }, { confirmed = true }) }
         }
-        compose.onNodeWithText(copy.complete).assertIsDisplayed()
+        compose.onNodeWithText(copy.review).assertIsDisplayed()
         compose.onNodeWithText(copy.retakeFront).performClick()
         compose.runOnIdle { assertEquals(CardSide.Front, retaken) }
-        compose.onNodeWithText(copy.retakeBack).performClick()
+        compose.onNodeWithText(copy.retakeBack).performScrollTo().performClick()
         compose.runOnIdle { assertEquals(CardSide.Back, retaken) }
+        compose.onNodeWithText(copy.use).performClick()
+        compose.runOnIdle { assertTrue(confirmed) }
+    }
+
+    @Test fun singleReviewExposesOnlyFrontRetakeAndConfirmation() {
+        val front = card()
+        var retaken: CardSide? = null
+        var confirmed = false
+        lateinit var copy: CardCaptureStrings
+        compose.setContent {
+            copy = defaultCardCaptureStrings()
+            MaterialTheme { CaptureReview(front, strings = copy, onBack = {},
+                onRetake = { retaken = it }, onConfirm = { confirmed = true }) }
+        }
+        compose.onNodeWithText(copy.captured).assertIsDisplayed()
+        compose.onNodeWithText(copy.retakeBack).assertDoesNotExist()
+        compose.onNodeWithText(copy.retakeFront).performClick()
+        compose.runOnIdle { assertEquals(CardSide.Front, retaken); assertEquals(false, confirmed) }
         compose.onNodeWithText(copy.use).performClick()
         compose.runOnIdle { assertTrue(confirmed) }
     }
@@ -45,13 +64,16 @@ class CaptureReviewTest {
     @Test fun turnOverWaitsForExplicitContinue() {
         val front = card()
         var continued = false
+        var retaken = false
         lateinit var copy: CardCaptureStrings
         compose.setContent {
             copy = defaultCardCaptureStrings()
-            MaterialTheme { CaptureTurnOver(front, copy, {}, {}, { continued = true }) }
+            MaterialTheme { CaptureTurnOver(front, copy, {}, { retaken = true }, { continued = true }) }
         }
         compose.onNodeWithText(copy.stepFront).assertIsDisplayed()
         compose.runOnIdle { assertEquals(false, continued) }
+        compose.onNodeWithText(copy.retakeFront).performClick()
+        compose.runOnIdle { assertTrue(retaken); assertEquals(false, continued) }
         compose.onNodeWithText(copy.continueToBack).performClick()
         compose.runOnIdle { assertTrue(continued) }
     }

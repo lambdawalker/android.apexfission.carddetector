@@ -159,10 +159,10 @@ import com.apexfission.android.carddetector.domain.tflite.filters.*
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.detector.CardDetectorCamera
-import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlay
+import com.apexfission.android.carddetector.ui.capture.components.CaptureReview
 import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
-import com.apexfission.android.carddetector.ui.overlays.components.CaptureOverlay
 import kotlinx.coroutines.channels.Channel
 
 @Composable
@@ -209,7 +209,8 @@ import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.detector.CardDetectorCamera
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
-import com.apexfission.android.carddetector.ui.capture.components.CaptureCameraOverlay
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlay
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
 import com.apexfission.android.carddetector.ui.capture.components.CaptureReview
 import com.apexfission.android.carddetector.ui.capture.components.CaptureTurnOver
 import kotlinx.coroutines.channels.Channel

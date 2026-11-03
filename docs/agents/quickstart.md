@@ -18,7 +18,7 @@ Declare the permission and Activity in your host manifest (adjust the Activity p
 
 ## Complete Activity
 
-This exact file is part of `:app` and is compiled by existing Android CI. It requests permission, observes permission changes after Settings, renders the scanner, and explicitly recycles both kinds of delivered bitmap. It shows capture dimensions and a transient tracking ID. It intentionally does not perform OCR or retain images.
+This exact file is part of `:app` and is compiled by existing Android CI. It requests permission, observes permission changes after Settings, renders the scanner, and explicitly recycles both kinds of delivered bitmap. It does not display or retain capture results. It intentionally does not perform OCR or retain images.
 
 <!-- example: quickstart -->
 
@@ -38,11 +38,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.apexfission.android.carddetector.demo.ui.theme.CardDetectorDemoTheme
 import com.apexfission.android.carddetector.domain.ModelCatalog
@@ -71,7 +66,10 @@ class DocumentationQuickstartActivity : ComponentActivity() {
         setContent {
             CardDetectorDemoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(Modifier.fillMaxSize().padding(innerPadding).consumeWindowInsets(innerPadding)) {
+                    Box(Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)) {
                         HandlePermissions(
                             permissions = listOf(
                                 PermissionDescription(
@@ -91,9 +89,7 @@ class DocumentationQuickstartActivity : ComponentActivity() {
                             onBack = { finish() },
                             onNotNow = { finish() },
                         ) {
-                            var status by remember { mutableStateOf("Ready to scan a sample card") }
                             Column(Modifier.fillMaxSize()) {
-                                Text(status)
                                 CardDetectorLite(
                                     modifier = Modifier.weight(1f),
                                     instanceKey = "documentation-camera",
@@ -103,19 +99,16 @@ class DocumentationQuickstartActivity : ComponentActivity() {
                                     cameraPreset = CameraPreset.Default,
                                     onCardDetection = { _, bitmap -> bitmap.recycle() },
                                     onCapture = { card, bitmap ->
-                                        try {
-                                            val message = "Captured ${bitmap.width} × ${bitmap.height}; tracking ID ${card.id}"
-                                            runOnUiThread { status = message }
-                                        } finally {
-                                            bitmap.recycle()
-                                        }
+                                        bitmap.recycle()
                                     },
                                     onBack = { finish() },
                                     controlOverlay = {
-                                        IdCaptureOverlay(config = IdCaptureOverlayConfig(
-                                            title = "Card Detector demo",
-                                            instructionSubTitle = "Scan a sample card; this demo does not upload images",
-                                        ))
+                                        IdCaptureOverlay(
+                                            config = IdCaptureOverlayConfig(
+                                                title = "Card Detector demo",
+                                                instructionSubTitle = "Scan a sample card; this demo does not upload images",
+                                            )
+                                        )
                                     },
                                 )
                             }
@@ -137,6 +130,6 @@ class DocumentationQuickstartActivity : ComponentActivity() {
 adb shell am start -n com.apexfission.android.carddetector.demo/.DocumentationQuickstartActivity
 ```
 
-Grant permission, point at a synthetic/sample card, hold it within the guide, and press the shutter once enabled. The status shows crop size and tracker ID. Denial keeps the permission screen; retry or use Settings and return. The retained crop can be older than the latest visible frame: see [capture semantics](concepts.md).
+Grant permission, point at a synthetic/sample card, hold it within the guide, and press the shutter once enabled. The sample callbacks recycle their images immediately; the camera view remains open. Denial keeps the permission screen; retry or use Settings and return. The retained crop can be older than the latest visible frame: see [capture semantics](concepts.md).
 
 In a production host, replace recycling-only callbacks with bounded processing and explicit cleanup. Do not copy the demo Activity's exported setting into a sensitive production scanner; the repository exports demos so they can be launched with adb. See [recipes](recipes.md) and [the demo catalog](demos.md).

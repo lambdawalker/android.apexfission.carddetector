@@ -98,7 +98,7 @@ Invoke only after your coroutine begins with valid ownership, or use the handoff
 
 ## Capture both sides
 
-`TwoSidedCardCapture` provides front → explicit “Continue to back” → back → review. It shows the side on the camera feed, an initial square aiming area that disappears after the first detection for each side or retake, with an adaptive document outline, and `1 / 2` or `2 / 2` above the shutter. Review allows independent retakes. Crops retain the detected document rectangle; portrait and landscape documents use the same aiming area. The existing single-side `CardDetectorLite` remains available.
+`TwoSidedCardCapture` provides front → explicit “Continue to back” → back → review. It shows the side on the camera feed, an initial square aiming area that disappears after the first detection for each side or retake, with an adaptive document outline, and `1 / 2` or `2 / 2` above the shutter. The turn-over screen also offers **Retake front** before continuing. Review allows independent retakes and keeps confirmation below the scrollable images. Crops retain the detected document rectangle; portrait and landscape documents use the same aiming area. The existing single-side `CardDetectorLite` remains available.
 
 Obtain camera permission first. Use the model imports from the [quickstart](quickstart.md), then compose:
 
@@ -135,11 +135,11 @@ Automatic capture is initially off by default. Set `CardCaptureConfig(autoCaptur
 
 `CardDetection.focusScore` is Laplacian variance of luminance on an inset card region, scaled to a longest edge of at most 256 px. `focusState` is Unknown, Focused or Unfocused; `isFocused` uses the default threshold of 100. `observedAtElapsedRealtimeMs` is a monotonic evaluation timestamp, not wall-clock time. These values are also reported by low-level/video detection. This heuristic is **not camera autofocus completion, OCR readability, glare assessment, or side classification**. Noise, lighting and texture affect it; calibrate `focusThreshold` on target devices/documents. An unavailable/invalid score never authorizes automatic capture. A custom capture threshold does not change the detection's default `isFocused` threshold.
 
-English copy is the fallback; Spanish follows the Android locale. Override individual strings with `defaultCardCaptureStrings().copy(frontInstruction = "…", backInstruction = "…")`, or supply a complete `CardCaptureStrings`. The side labels guide users; showing the same side twice is not automatically rejected.
+English copy is the fallback. Android resources also provide Spanish, German, French, Italian, Japanese, Korean, Polish, Portuguese, Russian, Ukrainian, Simplified Chinese and Traditional Chinese. Override individual strings with `defaultCardCaptureStrings().copy(frontInstruction = "…", backInstruction = "…")`, or supply a complete `CardCaptureStrings`. The side labels guide users; showing the same side twice is not automatically rejected.
 
 ## Single-side automatic capture
 
-Use `SingleSideCardCapture` for a complete one-shot single-side flow. The host must obtain camera permission first and supply the same model metadata as the quickstart. Automatic capture is opt-in; the demo enables it. The on-screen toggle switches modes without starting a new attempt. Manual capture remains available for a fresh crop even while automatic focus/stability checks are pending.
+Use `SingleSideCardCapture` for a complete single-side flow: capture → review → confirm, with retake available before confirmation. The host must obtain camera permission first and supply the same model metadata as the quickstart. Automatic capture is opt-in; the demo enables it. The on-screen toggle switches modes without starting a new attempt. Manual capture remains available for a fresh crop even while automatic focus/stability checks are pending.
 
 ```kotlin
 // Imports: ui.capture.SingleSideCardCapture and ui.capture.CardCaptureConfig
@@ -160,7 +160,7 @@ SingleSideCardCapture(
 )
 ```
 
-`onCapture` runs **once per attempt on the main thread** and transfers the current crop to the host. The flow stops its camera/detector owner after completion; change `instanceKey` to start another attempt. Unused/replaced/late frames are recycled internally. Removing the composable cancels the attempt and releases undelivered images. Model, detector/camera, validator, or capture-configuration changes restart the attempt. Heavy image work must leave the main thread through a cancellation-safe ownership handoff. This differs from `CardDetectorLite.onCapture`, which runs on a worker and copies a retained best image.
+`onCapture` runs **after review confirmation, once per attempt on the main thread**, and transfers the captured crop to the host. Taking a photo pauses the camera/detector and opens the shared review screen with one image. **Retake front** or the review back arrow discards that image and starts a fresh camera attempt; neither calls the host callback. The confirmation button transfers ownership, and disposal must not recycle the confirmed image. The flow stops its camera/detector owner during review and after completion; change `instanceKey` to start another attempt. Unused/replaced/late frames are recycled internally. Removing the composable cancels the attempt and releases undelivered images. Model, detector/camera, validator, or capture-configuration changes restart the attempt. Heavy image work must leave the main thread through a cancellation-safe ownership handoff. This differs from `CardDetectorLite.onCapture`, which runs on a worker and copies a retained best image.
 
 Both complete capture flows share `CaptureReadiness`: 600 ms of stable, locked, focused detections, a default focus threshold of 100, and a maximum gap/age of 400 ms. Every evaluation, including misses, reaches this gate before UI conflation. Turning automatic capture off rejects queued auto-ready frames; turning it on resets the dwell interval. A duplicate, stale, blurred, moving, or missed frame cannot advance readiness by a timer alone. Successful capture can optionally produce haptic confirmation with `hapticFeedbackEnabled = true`; it is disabled by default.
 

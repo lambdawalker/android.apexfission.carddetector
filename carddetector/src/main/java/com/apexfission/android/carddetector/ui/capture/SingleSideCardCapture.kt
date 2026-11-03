@@ -30,9 +30,9 @@ private class SingleCaptureOwner : ViewModelStoreOwner {
 }
 
 /**
- * One-shot single-side capture with an optional automatic mode and a manual shutter.
+ * Single-side capture with review, retake, an optional automatic mode and a manual shutter.
  * Requires the host's camera permission. Reuses the two-sided focus/stability/freshness gate.
- * [onCapture] runs once per attempt on the main thread, transferring one current crop to
+ * [onCapture] runs after review confirmation, once per attempt on the main thread, transferring one current crop to
  * the host; recycle it after its final use. Replaced, cancelled and undelivered images are
  * recycled internally. Change [instanceKey] to capture again. Detector/configuration changes
  * also restart the attempt. Unlike CardDetectorLite, this does not capture an older best image.
@@ -78,7 +78,7 @@ fun SingleSideCardCapture(
         onDispose { frames.cancel(); reviewCard?.bitmap?.recycle(); session.close() }
     }
     LaunchedEffect(session) {
-        while (!session.completed) { kotlinx.coroutines.delay(100); now = SystemClock.elapsedRealtime() }
+        while (!completed) { kotlinx.coroutines.delay(100); now = SystemClock.elapsedRealtime() }
     }
     LaunchedEffect(frames) {
         for (frame in frames) {
@@ -97,11 +97,13 @@ fun SingleSideCardCapture(
             CaptureReview(
                 front = reviewCard!!,
                 strings = strings,
-                onBack = { reviewCard?.bitmap?.recycle(); reviewCard = null; session.reset() },
-                onRetake = { reviewCard?.bitmap?.recycle(); reviewCard = null; session.reset() },
+                onBack = { reviewCard?.bitmap?.recycle(); reviewCard = null; session.reset(); hasDetected = false; autoReady = false; now = SystemClock.elapsedRealtime() },
+                onRetake = { reviewCard?.bitmap?.recycle(); reviewCard = null; session.reset(); hasDetected = false; autoReady = false; now = SystemClock.elapsedRealtime() },
                 onConfirm = { 
                     completed = true
-                    callback(reviewCard!!.detection, reviewCard!!.bitmap)
+                    val confirmed = reviewCard ?: return@CaptureReview
+                    reviewCard = null // Ownership transfers to the host; disposal must not recycle it.
+                    callback(confirmed.detection, confirmed.bitmap)
                 }
             )
         } else {

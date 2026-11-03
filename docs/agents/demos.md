@@ -16,7 +16,7 @@ Historical recording frame at **12 seconds**, showing the cyan outline around th
 
 ## Current screen previews
 
-These Compose previews show the front/back capture flow using synthetic card data, at 393 × 852 dp. They are rendered on the host from source `68a49850d253`, not captured from a camera device. See [render provenance and hashes](../screenshots/ui-manifest.json) and [how to regenerate candidates](../screenshots/README.md#render-current-ui-states-on-the-host).
+These Compose previews show the front/back capture flow using synthetic card data, at 393 × 852 dp. They are rendered on the host, not captured from a camera device; the manifest records each image’s source revision. See [render provenance and hashes](../screenshots/ui-manifest.json) and [how to regenerate candidates](../screenshots/README.md#render-current-ui-states-on-the-host).
 
 | Front guide | Back guide |
 | --- | --- |
@@ -33,9 +33,9 @@ Prerequisites: Android API 28+ device, repository Android toolchain, hydrated LF
 | Demo | Launch / action | Expected behavior | Recovery and source |
 | --- | --- | --- | --- |
 | Welcome / demo catalog | Open launcher or `adb shell am start -n com.apexfission.android.carddetector.demo/.WelcomeActivity` | Five demo buttons; no camera permission requested on this screen | Back from a demo returns to the catalog; [source](../../app/src/main/java/com/apexfission/android/carddetector/demo/WelcomeActivity.kt) |
-| Minimal integration | `adb shell am start -n com.apexfission.android.carddetector.demo/.DocumentationQuickstartActivity` → grant permission → present sample card → shutter | Guide and capture dimensions; both callback images explicitly released | Denial → retry or Settings; [complete source](../../app/src/main/java/com/apexfission/android/carddetector/demo/DocumentationQuickstartActivity.kt) |
-| Single-side automatic capture | Choose **Single side · automatic** in the welcome catalog | Focus + stable dwell → one current crop → return to welcome; switch to manual using the toggle | Camera permission on entry; [source](../../app/src/main/java/com/apexfission/android/carddetector/demo/CardDetectionActivity.kt) |
-| Two-sided capture | Choose manual or automatic capture on the welcome screen; direct `.CardDetectionActivity` launch defaults to automatic | Front → Continue to back → back → review/retake → return to welcome after confirmation | Camera permission requested on entry; [source](../../app/src/main/java/com/apexfission/android/carddetector/demo/CardDetectionActivity.kt) |
+| Minimal integration | `adb shell am start -n com.apexfission.android.carddetector.demo/.DocumentationQuickstartActivity` → grant permission → present sample card → shutter | Guide and shutter; both callback images explicitly released without showing a result | Denial → retry or Settings; [complete source](../../app/src/main/java/com/apexfission/android/carddetector/demo/DocumentationQuickstartActivity.kt) |
+| Single-side automatic capture | Choose **Single side · automatic** in the welcome catalog | Focus + stable dwell → review one crop → confirm to return to welcome; retake restarts capture; switch to manual using the toggle | Camera permission on entry; [source](../../app/src/main/java/com/apexfission/android/carddetector/demo/CardDetectionActivity.kt) |
+| Two-sided capture | Choose manual or automatic capture on the welcome screen; direct `.CardDetectionActivity` launch defaults to automatic | Front → turn over or retake front → Continue to back → back → review/retake → return to welcome after confirmation | Camera permission requested on entry; [source](../../app/src/main/java/com/apexfission/android/carddetector/demo/CardDetectionActivity.kt) |
 | Recorded-video simulator | `adb shell am start -n com.apexfission.android.carddetector.demo/.CardDetectionSimulationActivity` | Plays packaged `raw/x.mp4`; moving detection guide and capture controls, no camera permission or flashlight | Blank video → check LFS/readable URI; [source](../../app/src/main/java/com/apexfission/android/carddetector/demo/CardDetectionSimulationActivity.kt) |
 
 The simulator's [MainViewModel](../../app/src/main/java/com/apexfission/android/carddetector/demo/MainViewModel.kt) contains placeholder cloud/on-device OCR methods. It is a wiring example, not a production OCR queue. Prefer the quickstart and ownership recipe for new integrations. The recorded showcase is a separate asset from the simulator's input video; do not feed UI screen recordings back into the simulator as if they were raw camera fixtures.
@@ -44,6 +44,6 @@ The simulator's [MainViewModel](../../app/src/main/java/com/apexfission/android/
 
 The accepted image above is deterministically extracted from the supplied video, with timestamp, input hash, tool configuration, and pixel hash in the media manifest. It is not a newly captured app screenshot. Current device screenshots are optional; no device screenshot baseline is claimed. Existing image-test outputs concern detector fixtures and are not silently repurposed as UI evidence. See [maintenance](../maintenance.md) for candidate/update/verify commands.
 
-The single-side automatic demo uses the same focus/stability gate as the two-sided flow. It delivers one current crop and returns to the catalog; automatic/manual mode remains selectable.
+The single-side automatic demo uses the same focus/stability gate as the two-sided flow. It opens review after capture, allows retake, and returns to the catalog only after confirming the image; automatic/manual mode remains selectable.
 
 ![Single-side automatic capture](../screenshots/single-side-auto-en.png)
