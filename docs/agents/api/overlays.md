@@ -274,6 +274,7 @@ import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
+import com.apexfission.android.carddetector.ui.capture.CardCaptureStrings
 import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
@@ -293,6 +294,11 @@ fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
     autoCaptureEnabled: Boolean = false,
     onToggleAutoCapture: () -> Unit = {},
     showAutoCaptureToggle: Boolean = false,
+    step: String? = null,
+    modeText: String? = if (showAutoCaptureToggle) { if (autoCaptureEnabled) defaultCardCaptureStrings().auto else defaultCardCaptureStrings().manual } else null,
+    canCapture: Boolean = !config.requiresCardDetectionForCapture || captureEnabled,
+    onCapture: () -> Unit = { capture() },
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
 ) /* expression body omitted */
 
 @Composable
@@ -302,6 +308,11 @@ fun CardDetectorOverlayScope.IdCaptureOverlay(
     autoCaptureEnabled: Boolean = false,
     onToggleAutoCapture: () -> Unit = {},
     showAutoCaptureToggle: Boolean = false,
+    step: String? = null,
+    modeText: String? = if (showAutoCaptureToggle) { if (autoCaptureEnabled) defaultCardCaptureStrings().auto else defaultCardCaptureStrings().manual } else null,
+    canCapture: Boolean = !config.requiresCardDetectionForCapture || captureEnabled,
+    onCapture: () -> Unit = { capture() },
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
 ) /* expression body omitted */
 ```
 
