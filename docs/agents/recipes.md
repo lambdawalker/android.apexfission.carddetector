@@ -131,8 +131,37 @@ TwoSidedCardCapture(
 
 The auto-capture icon beside the shutter toggles automatic capture without discarding saved sides. Switching it on starts a fresh stability interval; switching it off rejects queued automatic captures. The flashlight icon toggles the torch on supported cameras.
 
-Automatic capture is initially off by default. Set `CardCaptureConfig(autoCaptureEnabled = true)` to start enabled. Automatic capture requires current lock, card-region focus score of at least `focusThreshold` (default 100), and 600 ms of stable bounds. Gaps above 400 ms, misses, unfocused frames and movement reset readiness. Every detector evaluation updates readiness before UI delivery can conflate frames. The manual shutter stays available for a fresh detected crop, even below the automatic focus threshold. Both modes consume the current crop, not the older best image retained by the single-side API.
+Automatic capture is initially off by default. Set `CardCaptureConfig(autoCaptureEnabled = true)` to start enabled. Automatic capture requires current lock, card-region focus score of at least `focusThreshold` (default 100), and 600 ms of stable bounds. Gaps above 400 ms, misses, unfocused frames and movement reset readiness. Every detector evaluation updates readiness before UI delivery can conflate frames. The manual shutter stays available for a fresh detected crop, even below the automatic focus threshold. Both modes consume the current crop, not the older best image retained by `CardDetectorLite`.
 
 `CardDetection.focusScore` is Laplacian variance of luminance on an inset card region, scaled to a longest edge of at most 256 px. `focusState` is Unknown, Focused or Unfocused; `isFocused` uses the default threshold of 100. `observedAtElapsedRealtimeMs` is a monotonic evaluation timestamp, not wall-clock time. These values are also reported by low-level/video detection. This heuristic is **not camera autofocus completion, OCR readability, glare assessment, or side classification**. Noise, lighting and texture affect it; calibrate `focusThreshold` on target devices/documents. An unavailable/invalid score never authorizes automatic capture. A custom capture threshold does not change the detection's default `isFocused` threshold.
 
 English copy is the fallback; Spanish follows the Android locale. Override individual strings with `defaultCardCaptureStrings().copy(frontInstruction = "…", backInstruction = "…")`, or supply a complete `CardCaptureStrings`. The side labels guide users; showing the same side twice is not automatically rejected.
+
+## Single-side automatic capture
+
+Use `SingleSideCardCapture` for a complete one-shot single-side flow. The host must obtain camera permission first and supply the same model metadata as the quickstart. Automatic capture is opt-in; the demo enables it. The on-screen toggle switches modes without starting a new attempt. Manual capture remains available for a fresh crop even while automatic focus/stability checks are pending.
+
+```kotlin
+// Imports: ui.capture.SingleSideCardCapture and ui.capture.CardCaptureConfig
+SingleSideCardCapture(
+    instanceKey = "single-document",
+    modelPath = modelPath,
+    classLabels = classLabels,
+    cardClasses = cardClasses,
+    config = CardCaptureConfig(autoCaptureEnabled = true, hapticFeedbackEnabled = true),
+    onBack = onBack,
+    onCapture = { detection, bitmap ->
+        try {
+            // Consume synchronously, or transfer ownership safely to your own work queue.
+        } finally {
+            bitmap.recycle()
+        }
+    },
+)
+```
+
+`onCapture` runs **once per attempt on the main thread** and transfers the current crop to the host. The flow stops its camera/detector owner after completion; change `instanceKey` to start another attempt. Unused/replaced/late frames are recycled internally. Removing the composable cancels the attempt and releases undelivered images. Model, detector/camera, validator, or capture-configuration changes restart the attempt. Heavy image work must leave the main thread through a cancellation-safe ownership handoff. This differs from `CardDetectorLite.onCapture`, which runs on a worker and copies a retained best image.
+
+Both complete capture flows share `CaptureReadiness`: 600 ms of stable, locked, focused detections, a default focus threshold of 100, and a maximum gap/age of 400 ms. Every evaluation, including misses, reaches this gate before UI conflation. Turning automatic capture off rejects queued auto-ready frames; turning it on resets the dwell interval. A duplicate, stale, blurred, moving, or missed frame cannot advance readiness by a timer alone. Successful capture can optionally produce haptic confirmation with `hapticFeedbackEnabled = true`; it is disabled by default.
+
+Guidance distinguishes **looking for a card**, **finding focus**, **hold steady**, **ready to capture**, and **photo captured**. Manual readiness text never implies the document was validated or OCR succeeded. `readyToCapture`, `captured`, `singleInstruction`, and the existing strings are customizable through `defaultCardCaptureStrings().copy(...)`. Status text uses a polite live region. Narrow/large-text layouts can scroll to controls; sufficiently wide landscape layouts place instructions and controls in separate columns. These are same-source rendering checks, not persistent visual baselines.

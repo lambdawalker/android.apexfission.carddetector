@@ -15,6 +15,8 @@ import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
 import com.apexfission.android.carddetector.ui.capture.CardCaptureStrings
+import com.apexfission.android.carddetector.ui.capture.CaptureGuidance
+import com.apexfission.android.carddetector.ui.capture.text
 import com.apexfission.android.carddetector.ui.capture.CardSide
 import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
@@ -32,12 +34,15 @@ internal fun CardDetectorOverlayScope.CaptureCameraOverlay(
     side: CardSide, strings: CardCaptureStrings, autoCaptureEnabled: Boolean,
     onToggleAutoCapture: () -> Unit, showInitialGuide: Boolean,
     canCapture: Boolean, focused: Boolean, onCapture: () -> Unit,
+    guidance: CaptureGuidance? = null,
 ) {
     CaptureOverlay(
         config = IdCaptureOverlayConfig(
             title = strings.title,
             instructionTitle = if (side == CardSide.Front) strings.front else strings.back,
             instructionSubTitle = when {
+                guidance == CaptureGuidance.Looking -> strings.find + " · " + if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction
+                guidance != null -> guidance.text(strings)
                 !canCapture -> if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction
                 focused -> strings.ready
                 else -> strings.focus

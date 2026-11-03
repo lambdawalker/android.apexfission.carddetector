@@ -13,7 +13,7 @@
     <string name="card_capture_use">Usar estas fotos</string>
     <string name="card_capture_retake_front">Repetir frente</string>
     <string name="card_capture_retake_back">Repetir reverso</string>
-    <string name="card_capture_find">Mantén los cuatro bordes dentro del recuadro</string>
+    <string name="card_capture_find">Buscando una tarjeta</string>
     <string name="card_capture_focus">Mantén firme · enfocando</string>
     <string name="card_capture_ready">Enfocado · mantén firme</string>
     <string name="card_capture_manual">Toca para capturar</string>
@@ -26,4 +26,7 @@
     <string name="card_capture_complete">2 / 2 · Completo</string>
     <string name="card_capture_done">Fotos listas</string>
     <string name="card_capture_auto_toggle">Activar o desactivar captura automática</string>
+    <string name="card_capture_ready_to_capture">Lista para capturar</string>
+    <string name="card_capture_captured">Foto capturada</string>
+    <string name="card_capture_single_instruction">Coloca tu tarjeta dentro de la guía</string>
 </resources>

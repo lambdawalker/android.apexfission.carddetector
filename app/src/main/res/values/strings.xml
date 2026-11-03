@@ -18,4 +18,7 @@
     <string name="welcome_video_action">Play video demo</string>
     <string name="welcome_footer">These demos process images on the device and do not upload them. Camera demos ask for permission when opened.</string>
     <string name="welcome_settings_action">Open app settings</string>
+    <string name="welcome_single_auto_title">Single side · automatic</string>
+    <string name="welcome_single_auto_description">Capture one side when the card is focused and steady. Switch to manual capture at any time.</string>
+    <string name="welcome_single_auto_action">Try single-side auto capture</string>
 </resources>

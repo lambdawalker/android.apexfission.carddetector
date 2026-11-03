@@ -13,7 +13,7 @@
     <string name="card_capture_use">Use these photos</string>
     <string name="card_capture_retake_front">Retake front</string>
     <string name="card_capture_retake_back">Retake back</string>
-    <string name="card_capture_find">Keep all four edges inside the square</string>
+    <string name="card_capture_find">Looking for a card</string>
     <string name="card_capture_focus">Hold steady · finding focus</string>
     <string name="card_capture_ready">In focus · hold steady</string>
     <string name="card_capture_manual">Tap to capture</string>
@@ -26,4 +26,7 @@
     <string name="card_capture_complete">2 / 2 · Complete</string>
     <string name="card_capture_done">Photos ready</string>
     <string name="card_capture_auto_toggle">Toggle automatic capture</string>
+    <string name="card_capture_ready_to_capture">Ready to capture</string>
+    <string name="card_capture_captured">Photo captured</string>
+    <string name="card_capture_single_instruction">Place your card inside the guide</string>
 </resources>

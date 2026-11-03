@@ -14,7 +14,7 @@
 | `track(Bitmap)` de bajo nivel | Quien llama conserva la imagen y la mantiene válida hasta que termina la llamada síncrona. |
 | `track(ImageProxy)` de bajo nivel | Quien llama cierra el proxy; los mapas de bits temporales convertidos se liberan internamente. |
 | Callback de detección | La aplicación anfitriona es propietaria del recorte de la tarjeta desde la entrada al callback; recíclelo tras su último uso. |
-| Callback de captura | La aplicación anfitriona es propietaria de una copia independiente del mejor recorte conservado. |
+| Callback de captura de `CardDetectorLite` | La aplicación anfitriona es propietaria de una copia independiente del mejor recorte conservado. |
 | Mejor imagen conservada | Pertenece al SDK; no la recicle a través de los metadatos ni del estado de la interfaz. |
 | `OcrWrapper.run` | La entrada pertenece a quien llama y debe mantenerse válida mientras se ejecuta OCR; OCR no la recicla. |
 | `Bitmap.use` | Recicla en `finally`; complete todo el trabajo con la imagen dentro de su bloque. |
@@ -25,7 +25,7 @@ Use `import com.apexfission.android.carddetector.resource.use`. Es válido recic
 
 La entrega de detecciones se ejecuta en serie en un dispatcher de trabajo separado de la inferencia. Como máximo se ejecuta un callback y espera un resultado; un resultado pendiente más reciente sustituye a la imagen anterior no entregada, que la biblioteca recicla. La aplicación anfitriona es propietaria de cualquier imagen ya entregada, incluso si su callback lanza una excepción. No lo trate como un flujo sin pérdidas, no cuente fotogramas mediante callbacks ni exija un único evento `NewCard` para iniciar todo el trabajo. Cuando corresponda, elimine los ID de seguimiento no nulos duplicados entre `NewCard` y `CardLocked`.
 
-La captura también llama al código de la aplicación en un hilo de trabajo. Envíe las acciones de interfaz al hilo principal. Mueva el trabajo de CPU o red a un dispatcher controlado por la aplicación anfitriona y limite el trabajo posterior. La pausa mediante `isDetectionEnabled` detiene la admisión al procesamiento, no el trabajo ya entregado a la aplicación.
+La captura de `CardDetectorLite` también llama al código de la aplicación en un hilo de trabajo. Envíe las acciones de interfaz al hilo principal. Mueva el trabajo de CPU o red a un dispatcher controlado por la aplicación anfitriona y limite el trabajo posterior. La pausa mediante `isDetectionEnabled` detiene la admisión al procesamiento, no el trabajo ya entregado a la aplicación.
 
 ## Captura y duración
 
@@ -46,3 +46,5 @@ YOLO revierte el relleno de bandas para obtener coordenadas de su imagen de entr
 `OcrWrapper.close()` es idempotente, rechaza llamadas nuevas con `IllegalStateException` y aplaza la liberación del reconocedor hasta que terminen las solicitudes activas del contenedor. `run` suspende; los errores de ML Kit se propagan. `CardDetectorLite` no realiza OCR ni cargas automáticas.
 
 `TwoSidedCardCapture` utiliza una ruta independiente de captura del fotograma actual, propiedad de la sesión, y entrega el par en el hilo principal. Consulte [capturar ambos lados](recipes.md#capturar-ambos-lados) para las reglas de propiedad, vigencia y recreación.
+
+`SingleSideCardCapture` administra una ruta independiente de captura única del fotograma actual. Su callback transfiere un mapa de bits en el hilo principal y después se detiene su propietario desechable de cámara/detector. Un `instanceKey` nuevo inicia otro intento. La [captura automática de un solo lado](recipes.md#single-side-automatic-capture) explica la propiedad, antigüedad, cambio de modo y confirmación háptica opcional. Ningún componente de captura ejecuta OCR ni sube imágenes automáticamente.

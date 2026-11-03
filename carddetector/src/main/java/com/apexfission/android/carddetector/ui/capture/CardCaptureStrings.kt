@@ -32,6 +32,9 @@ data class CardCaptureStrings(
     val complete: String,
     val done: String,
     val autoToggle: String = "Toggle automatic capture",
+    val readyToCapture: String = "Ready to capture",
+    val captured: String = "Photo captured",
+    val singleInstruction: String = "Place your card inside the guide",
 )
 
 /** Component. */
@@ -63,4 +66,7 @@ fun defaultCardCaptureStrings() = CardCaptureStrings(
     complete = stringResource(R.string.card_capture_complete),
     done = stringResource(R.string.card_capture_done),
     autoToggle = stringResource(R.string.card_capture_auto_toggle),
+    readyToCapture = stringResource(R.string.card_capture_ready_to_capture),
+    captured = stringResource(R.string.card_capture_captured),
+    singleInstruction = stringResource(R.string.card_capture_single_instruction),
 )

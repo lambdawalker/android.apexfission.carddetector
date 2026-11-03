@@ -28,17 +28,17 @@ def pom(version='1.2.3'):
 def jar(name, data):
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, 'w') as archive:
-        archive.writestr(name, data)
+        archive.writestr(zipfile.ZipInfo(name, (1980, 1, 1, 0, 0, 0)), data)
     return stream.getvalue()
 
 
 def aar(bytecode=61, model=False):
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, 'w') as archive:
-        archive.writestr('AndroidManifest.xml', '<manifest/>')
+        archive.writestr(zipfile.ZipInfo('AndroidManifest.xml', (1980, 1, 1, 0, 0, 0)), '<manifest/>')
         if model:
-            archive.writestr('assets/cdl/tflite/Y11-640E197F16.tflite', (Path(__file__).parents[2] / 'tfmodel/src/main/assets/cdl/tflite/Y11-640E197F16.tflite').read_bytes())
-        archive.writestr('classes.jar', jar('com/apexfission/android/carddetector/Detection.class',
+            archive.writestr(zipfile.ZipInfo('assets/cdl/tflite/Y11-640E197F16.tflite', (1980, 1, 1, 0, 0, 0)), (Path(__file__).parents[2] / 'tfmodel/src/main/assets/cdl/tflite/Y11-640E197F16.tflite').read_bytes())
+        archive.writestr(zipfile.ZipInfo('classes.jar', (1980, 1, 1, 0, 0, 0)), jar('com/apexfission/android/carddetector/Detection.class',
                                          b'\xca\xfe\xba\xbe\x00\x00' + bytecode.to_bytes(2, 'big')))
     return stream.getvalue()
 
@@ -126,6 +126,12 @@ class PolicyTests(unittest.TestCase):
 
 
 class ArtifactTests(unittest.TestCase):
+    def test_artifact_fixture_archives_have_fixed_timestamps(self):
+        for suffix, data in artifacts().items():
+            if suffix == '.aar' or suffix.endswith('.jar'):
+                with zipfile.ZipFile(io.BytesIO(data)) as archive:
+                    self.assertTrue(all(i.date_time == (1980, 1, 1, 0, 0, 0) for i in archive.infolist()))
+
     def test_validate_all_unsigned_artifacts(self):
         for suffix, data in artifacts().items():
             release.verify_artifact(data, suffix, 'org.example', 'core', '1.2.3')

@@ -8,6 +8,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -70,13 +72,16 @@ fun TwoSidedCardCapture(
     val currentConfig by rememberUpdatedState(config)
     var autoCaptureMode by remember { mutableStateOf(AutoCaptureMode(config.autoCaptureEnabled)) }
     var detectedAttempt by remember { mutableLongStateOf(-1L) }
+    var lastAutoReady by remember { mutableStateOf(false) }
+    val haptics = LocalHapticFeedback.current
 
     fun capture() {
         val image = latest ?: return
         if (receivedAt <= 0L || SystemClock.elapsedRealtime() - receivedAt !in 0..currentConfig.maxDetectionGapMs) return
         val token = session.requestCapture() ?: return
         latest = null // transfer our retained frame, not the detector's older best image
-        session.accept(token, image)
+        val accepted = session.accept(token, image)
+        if (accepted && config.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.Confirm)
         revision++
     }
 
@@ -105,7 +110,8 @@ fun TwoSidedCardCapture(
             receivedAt = frame.card?.detection?.observedAtElapsedRealtimeMs ?: 0L
             now = SystemClock.elapsedRealtime()
             if (frame.hasDetected) detectedAttempt = frame.attempt
-            if (autoCaptureMode.accepts(frame.autoGeneration, frame.autoReady)) capture()
+            lastAutoReady = autoCaptureMode.accepts(frame.autoGeneration, frame.autoReady)
+            if (lastAutoReady) capture()
         }
     }
 
@@ -143,11 +149,12 @@ fun TwoSidedCardCapture(
                             side = session.side,
                             strings = strings,
                             autoCaptureEnabled = autoCaptureMode.enabled,
-                            onToggleAutoCapture = { autoCaptureMode = autoCaptureMode.toggled() },
+                            onToggleAutoCapture = { autoCaptureMode = autoCaptureMode.toggled(); lastAutoReady = false },
                             showInitialGuide = detectedAttempt != attempt,
                             canCapture = fresh,
                             focused = fresh && latest?.detection?.focusScore?.let { it >= config.focusThreshold } == true,
                             onCapture = { capture() },
+                            guidance = captureGuidance(latest?.detection, now, config, autoCaptureMode.enabled, lastAutoReady),
                         )
                     }
                 }

@@ -18,4 +18,7 @@
     <string name="welcome_video_action">Lire la démo vidéo</string>
     <string name="welcome_footer">Ces démos traitent les images sur l’appareil sans les envoyer. Les démos utilisant la caméra demandent une autorisation à l’ouverture.</string>
     <string name="welcome_settings_action">Ouvrir les paramètres de l’application</string>
+    <string name="welcome_single_auto_title">Une face · automatique</string>
+    <string name="welcome_single_auto_description">Capturez une face lorsque la carte est nette et stable. Vous pouvez passer à la capture manuelle à tout moment.</string>
+    <string name="welcome_single_auto_action">Essayer la capture automatique d’une face</string>
 </resources>

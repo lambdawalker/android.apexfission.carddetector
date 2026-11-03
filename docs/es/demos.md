@@ -32,8 +32,9 @@ Requisitos: dispositivo con Android API 28+, cadena de herramientas Android del 
 
 | Demostración | Inicio / acción | Comportamiento esperado | Recuperación y código fuente |
 | --- | --- | --- | --- |
-| Bienvenida / catálogo de demos | Abrir el lanzador o `adb shell am start -n com.apexfission.android.carddetector.demo/.WelcomeActivity` | Cuatro botones de demos; esta pantalla no solicita permiso de cámara | Volver desde una demo regresa al catálogo; [código fuente](../../app/src/main/java/com/apexfission/android/carddetector/demo/WelcomeActivity.kt) |
+| Bienvenida / catálogo de demos | Abrir el lanzador o `adb shell am start -n com.apexfission.android.carddetector.demo/.WelcomeActivity` | Cinco botones de demos; esta pantalla no solicita permiso de cámara | Volver desde una demo regresa al catálogo; [código fuente](../../app/src/main/java/com/apexfission/android/carddetector/demo/WelcomeActivity.kt) |
 | Integración mínima | `adb shell am start -n com.apexfission.android.carddetector.demo/.DocumentationQuickstartActivity` → conceder permiso → presentar tarjeta de ejemplo → disparador | Guía y dimensiones de captura; ambas imágenes de los callbacks se liberan explícitamente | Denegación → volver a intentar o Ajustes; [código fuente completo](../../app/src/main/java/com/apexfission/android/carddetector/demo/DocumentationQuickstartActivity.kt) |
+| Captura automática de un lado | Elegir **Un lado · automático** en el catálogo | Enfoque y estabilidad → un recorte actual → volver al catálogo; el interruptor permite captura manual | Solicita permiso de cámara al entrar; [código fuente](../../app/src/main/java/com/apexfission/android/carddetector/demo/CardDetectionActivity.kt) |
 | Captura de ambos lados | Elegir captura manual o automática en la bienvenida; iniciar `.CardDetectionActivity` directamente usa captura automática | Frente → Continuar al reverso → reverso → revisión/repetición → volver a bienvenida al confirmar | Solicita permiso de cámara al entrar; [código fuente](../../app/src/main/java/com/apexfission/android/carddetector/demo/CardDetectionActivity.kt) |
 | Simulador de vídeo grabado | `adb shell am start -n com.apexfission.android.carddetector.demo/.CardDetectionSimulationActivity` | Reproduce el `raw/x.mp4` incluido; guía de detección móvil y controles de captura, sin permiso de cámara ni linterna | Vídeo en blanco → comprobar LFS y que la URI sea legible; [código fuente](../../app/src/main/java/com/apexfission/android/carddetector/demo/CardDetectionSimulationActivity.kt) |
 
@@ -42,3 +43,7 @@ El [MainViewModel](../../app/src/main/java/com/apexfission/android/carddetector/
 ## Capturas de pantalla y pruebas
 
 La imagen aceptada anterior se extrae de forma determinista del vídeo suministrado, con la marca temporal, el hash de entrada, la configuración de herramientas y el hash de píxeles en el manifiesto multimedia. No es una captura de pantalla nueva de la aplicación. Las capturas actuales de dispositivos son opcionales; no se afirma disponer de una referencia de capturas de dispositivo. Las salidas existentes de pruebas de imágenes corresponden a datos de prueba del detector y no se reutilizan implícitamente como pruebas de la interfaz. Consulte [mantenimiento](../maintenance.md) para los comandos de generación de candidatos, actualización y verificación.
+
+La demo automática de un lado usa el mismo control de enfoque y estabilidad que el flujo de ambos lados. Entrega un recorte actual y vuelve al catálogo; permite seleccionar el modo automático o manual.
+
+![Single-side automatic capture](../screenshots/single-side-auto-es.png)

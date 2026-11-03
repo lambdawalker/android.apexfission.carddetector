@@ -14,7 +14,7 @@ CameraX `ImageProxy` or Media3 video bitmap → single-flight admission and thro
 | Low-level `track(Bitmap)` | Caller retains image and keeps it valid until the synchronous call returns. |
 | Low-level `track(ImageProxy)` | Caller closes proxy; temporary converted bitmaps are released internally. |
 | Detection callback | Host owns delivered card cutout from callback entry; recycle after final use. |
-| Capture callback | Host owns an independent copy of the retained best cutout. |
+| `CardDetectorLite` capture callback | Host owns an independent copy of the retained best cutout. |
 | Retained best image | SDK-owned; do not recycle it through metadata or UI state. |
 | `OcrWrapper.run` | Caller-owned input, kept valid while OCR runs; OCR does not recycle it. |
 | `Bitmap.use` | Recycles in `finally`; complete all image work inside its block. |
@@ -25,7 +25,7 @@ Use `import com.apexfission.android.carddetector.resource.use`. Immediately recy
 
 Detection delivery runs serially on a worker dispatcher separate from inference. At most one callback runs and one result waits; a newer pending result replaces the older undelivered image, which the library recycles. The host owns any already-delivered image, even when its callback throws. Do not treat this as a lossless stream, count frames using callbacks, or require a single `NewCard` event to trigger all work. Deduplicate non-null tracking IDs across `NewCard` and `CardLocked` when appropriate.
 
-Capture also calls application code on a worker. Dispatch UI actions to the main thread. Move CPU or network work to a host-controlled dispatcher and bound downstream work. Pausing via `isDetectionEnabled` stops processing admission, not already-delivered host work.
+`CardDetectorLite` capture also calls application code on a worker. Dispatch UI actions to the main thread. Move CPU or network work to a host-controlled dispatcher and bound downstream work. Pausing via `isDetectionEnabled` stops processing admission, not already-delivered host work.
 
 ## Capture and lifetime
 
@@ -46,3 +46,5 @@ YOLO reverses letterboxing into its input image. UI ViewModels restore preproces
 `OcrWrapper.close()` is idempotent, rejects new calls with `IllegalStateException`, and defers recognizer disposal until active wrapper requests complete. `run` suspends; ML Kit failures propagate. There is no automatic OCR or upload in `CardDetectorLite`.
 
 `TwoSidedCardCapture` has a separate session-owned current-frame capture path and main-thread pair completion. See [both-side capture](recipes.md#capture-both-sides) for ownership, freshness and recreation behavior.
+
+`SingleSideCardCapture` owns a separate one-shot, current-frame capture path. Its callback transfers one bitmap on the main thread, then its disposable camera/detector owner stops. A new `instanceKey` starts another attempt. [Single-side automatic capture](recipes.md#single-side-automatic-capture) documents ownership, freshness, toggling and optional haptics. No capture component performs OCR or uploads images automatically.

@@ -16,14 +16,15 @@ Watch the [screen recording with playback controls](https://lambdawalker.github.
 
 Use the confirmed coordinates generated in [IMPORT.md](IMPORT.md). Choose the `carddetector` module for your own compatible model or `tfmodel` for bundled assets and its pinned compatible detector. Artifact names and repository requirements vary by destination; copy the generated installation example rather than combining old and new coordinates. The [complete quickstart](docs/agents/quickstart.md) includes imports, permission handling, and explicit bitmap cleanup.
 
-- Single-side live camera: `CardDetectorLite`.
+- Single-side detection and retained-best capture: `CardDetectorLite`.
+- One-shot single-side manual/automatic capture: [`SingleSideCardCapture`](docs/agents/recipes.md#single-side-automatic-capture).
 - Front/back capture with review, retakes, and optional automatic capture: [`TwoSidedCardCapture`](docs/agents/recipes.md#capture-both-sides).
 - Recorded video: `CardTrackingSimulator`.
 - Presentation: `IdCaptureOverlay`, custom scoped controls, and animation helpers.
 - Configuration: detector/camera presets, preprocessing, and `CardValidator`.
 - Without Compose: `buildCardDetector` and synchronous `track` overloads.
 
-Every delivered callback bitmap belongs to the host. Recycle after final use. Single-side detection/capture callbacks run on worker threads; detection delivery can skip pending results and capture uses a retained best image. Two-sided capture uses fresh crops and transfers the confirmed front/back pair on the main thread. Read [ownership and lifecycle](docs/agents/concepts.md).
+Every delivered callback bitmap belongs to the host. Recycle after final use. `CardDetectorLite` detection/capture callbacks run on worker threads; detection delivery can skip pending results and capture uses a retained best image. `SingleSideCardCapture` transfers one current crop once on the main thread. Two-sided capture uses fresh crops and transfers the confirmed front/back pair on the main thread. Read [ownership and lifecycle](docs/agents/concepts.md).
 
 ## Repository
 
@@ -31,7 +32,7 @@ Every delivered callback bitmap belongs to the host. Recycle after final use. Si
 | --- | --- |
 | `:carddetector` | Core, camera/video adapters, tracking, overlays, optional OCR wrapper |
 | `:tfmodel` | Sentinel model assets and `ModelCatalog.TfLite` extensions |
-| `:app` | Welcome catalog, manual/automatic two-sided capture, video simulation, and minimal quickstart |
+| `:app` | Welcome catalog, single-side automatic capture, manual/automatic two-sided capture, video simulation, and minimal quickstart |
 
 YOLO and coordinates come from Maven Central; the demo permissions dependency comes from JitPack. No sibling checkouts or submodules are required. Use JDK 21 for the Gradle daemon, JDK 17 for compilation, and Android SDK 37. Hydrate models and media with `git lfs pull`. See [testing prerequisites and dependency compatibility](docs/maintenance.md#android-verification).
 

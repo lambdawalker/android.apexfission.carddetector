@@ -131,8 +131,37 @@ TwoSidedCardCapture(
 
 El icono de captura automática junto al obturador permite activarla o desactivarla sin perder los lados guardados. Al activarla empieza un nuevo intervalo de estabilidad; al desactivarla se rechazan las capturas automáticas pendientes. El icono de flash controla la linterna en cámaras compatibles.
 
-La captura automática está inicialmente desactivada de forma predeterminada. `CardCaptureConfig(autoCaptureEnabled = true)` exige fijación actual, nitidez de la región de la tarjeta de al menos `focusThreshold` (100 por defecto) y límites estables durante 600 ms. Intervalos superiores a 400 ms, ausencias, desenfoque y movimiento reinician la espera. Cada evaluación actualiza la preparación antes de que la entrega a la interfaz pueda descartar fotogramas. El obturador manual sigue disponible con un recorte detectado reciente, incluso por debajo del umbral automático. Ambos modos consumen el recorte actual, no la mejor imagen antigua conservada por la API de un lado.
+La captura automática está inicialmente desactivada de forma predeterminada. `CardCaptureConfig(autoCaptureEnabled = true)` exige fijación actual, nitidez de la región de la tarjeta de al menos `focusThreshold` (100 por defecto) y límites estables durante 600 ms. Intervalos superiores a 400 ms, ausencias, desenfoque y movimiento reinician la espera. Cada evaluación actualiza la preparación antes de que la entrega a la interfaz pueda descartar fotogramas. El obturador manual sigue disponible con un recorte detectado reciente, incluso por debajo del umbral automático. Ambos modos consumen el recorte actual, no la mejor imagen antigua conservada por `CardDetectorLite`.
 
 `CardDetection.focusScore` es la varianza del laplaciano de luminancia en una región interior de la tarjeta, escalada a un lado máximo de 256 px. `focusState` es Unknown, Focused o Unfocused; `isFocused` usa el umbral predeterminado de 100. `observedAtElapsedRealtimeMs` es una marca temporal monótona de evaluación, no la hora civil. También se reportan en detección de bajo nivel y vídeo. La heurística **no representa finalización del autoenfoque, legibilidad OCR, evaluación de reflejos ni clasificación del lado**. El ruido, la iluminación y la textura influyen; calibre `focusThreshold` en los dispositivos y documentos objetivo. Una puntuación ausente o inválida nunca autoriza captura automática. Un umbral personalizado no modifica el umbral predeterminado de `isFocused`.
 
 El inglés es el idioma de respaldo; el español sigue la configuración regional de Android. Personalice cadenas con `defaultCardCaptureStrings().copy(frontInstruction = "…", backInstruction = "…")` o proporcione un `CardCaptureStrings` completo. Las etiquetas guían al usuario; mostrar el mismo lado dos veces no se rechaza automáticamente.
+
+## Captura automática de un solo lado
+
+Use `SingleSideCardCapture` para un flujo completo de captura única de un lado. El host debe obtener primero el permiso de cámara y proporcionar los mismos metadatos de modelo que el inicio rápido. La captura automática es opcional; la demo la activa. El interruptor cambia de modo sin reiniciar el intento. El disparador manual sigue disponible con un recorte reciente aunque las comprobaciones automáticas de enfoque y estabilidad todavía estén pendientes.
+
+```kotlin
+// Imports: ui.capture.SingleSideCardCapture and ui.capture.CardCaptureConfig
+SingleSideCardCapture(
+    instanceKey = "single-document",
+    modelPath = modelPath,
+    classLabels = classLabels,
+    cardClasses = cardClasses,
+    config = CardCaptureConfig(autoCaptureEnabled = true, hapticFeedbackEnabled = true),
+    onBack = onBack,
+    onCapture = { detection, bitmap ->
+        try {
+            // Consume synchronously, or transfer ownership safely to your own work queue.
+        } finally {
+            bitmap.recycle()
+        }
+    },
+)
+```
+
+`onCapture` se ejecuta **una sola vez por intento en el hilo principal** y transfiere el recorte actual al host. El flujo detiene su propietario de cámara/detector al completar la captura; cambie `instanceKey` para iniciar otro intento. Los fotogramas sustituidos, tardíos o no utilizados se reciclan internamente. Retirar el composable cancela el intento y libera las imágenes no entregadas. Cambiar modelo, ajustes del detector/cámara, validadores o configuración de captura reinicia el intento. El procesamiento pesado debe salir del hilo principal mediante una transferencia de propiedad que contemple la cancelación. Esto difiere de `CardDetectorLite.onCapture`, que se ejecuta en un hilo de trabajo y copia la mejor imagen conservada.
+
+Ambos flujos completos comparten `CaptureReadiness`: 600 ms de detecciones estables, fijadas y enfocadas, umbral de enfoque predeterminado de 100 e intervalo/antigüedad máximos de 400 ms. Cada evaluación, incluidas las ausencias, pasa por el control antes de que la interfaz pueda descartar resultados. Desactivar la captura automática rechaza los fotogramas preparados que aún estén en cola; activarla reinicia la espera de estabilidad. Un temporizador por sí solo no permite avanzar con un fotograma duplicado, antiguo, desenfocado, en movimiento o ausente. La captura correcta puede producir una confirmación háptica opcional con `hapticFeedbackEnabled = true`; está desactivada de forma predeterminada.
+
+Las instrucciones distinguen **buscando una tarjeta**, **enfocando**, **mantén firme**, **lista para capturar** y **foto capturada**. El texto de preparación manual nunca implica validación del documento ni éxito de OCR. Personalice `readyToCapture`, `captured`, `singleInstruction` y las cadenas existentes con `defaultCardCaptureStrings().copy(...)`. El estado usa una región activa de accesibilidad no intrusiva. En pantallas estrechas o con letra grande se puede desplazar hasta los controles; en horizontal con ancho suficiente, instrucciones y controles ocupan columnas separadas. Estas comprobaciones verifican la repetibilidad de la misma revisión, no baselines visuales persistentes.

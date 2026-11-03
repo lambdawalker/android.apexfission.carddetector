@@ -31,6 +31,10 @@ import com.apexfission.android.carddetector.ui.capture.components.CaptureCameraO
 import com.apexfission.android.carddetector.ui.capture.components.CaptureReview
 import com.apexfission.android.carddetector.ui.capture.components.CaptureTurnOver
 import com.apexfission.android.carddetector.ui.capture.CapturedCardSide
+import com.apexfission.android.carddetector.ui.capture.CardCaptureStrings
+import com.apexfission.android.carddetector.ui.capture.CaptureGuidance
+import com.apexfission.android.carddetector.ui.capture.SingleSideCaptureOverlay
+import com.apexfission.android.carddetector.ui.capture.SingleCaptureComplete
 import com.apexfission.android.carddetector.ui.capture.CardSide
 import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
@@ -156,11 +160,13 @@ private fun CameraScreen(
     focused: Boolean = false,
     autoCapture: Boolean = true,
     showInitialGuide: Boolean = !detected,
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
 ) = Screen(showCard = detected, backCard = side == CardSide.Back) {
     rememberScope(detected, focused).CaptureCameraOverlay(
-        side = side, strings = defaultCardCaptureStrings(), autoCaptureEnabled = autoCapture,
+        side = side, strings = strings, autoCaptureEnabled = autoCapture,
         onToggleAutoCapture = {}, showInitialGuide = showInitialGuide,
         canCapture = detected, focused = focused, onCapture = {},
+        guidance = if (!detected) CaptureGuidance.Looking else if (!focused) CaptureGuidance.Focusing else CaptureGuidance.Ready,
     )
 }
 
@@ -280,9 +286,7 @@ fun ShutterDisabledScreenshot() = Screen(showCard = false) {
 @Preview(name = "single-side-auto-en", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f)
 @Preview(name = "single-side-auto-es", widthDp = 393, heightDp = 852, locale = "es", fontScale = 1f)
 @Composable
-fun SingleSideAutoScreenshot() = Screen {
-    rememberScope(true).IdCaptureOverlay(autoCaptureEnabled = true, showAutoCaptureToggle = true)
-}
+fun SingleSideAutoScreenshot() = AutoSingleScreen()
 
 // Frozen post-detection miss states; live fade timing and latch/reset behavior are
 // tested separately by CaptureOverlayTest on the emulator.
@@ -308,4 +312,66 @@ fun CaptureBackAfterMissScreenshot() = CameraScreen(CardSide.Back, showInitialGu
 @Composable
 fun SingleSideNoFlashScreenshot() = Screen {
     rememberScope(true, torchAvailable = false).IdCaptureOverlay()
+}
+
+
+@Composable
+private fun AutoSingleScreen(
+    guidance: CaptureGuidance = CaptureGuidance.HoldSteady,
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
+) = Screen(showCard = guidance != CaptureGuidance.Looking) {
+    rememberScope(guidance != CaptureGuidance.Looking).SingleSideCaptureOverlay(
+        strings, guidance, guidance != CaptureGuidance.Looking, true,
+        guidance == CaptureGuidance.Looking, {}, {},
+    )
+}
+
+@Composable
+private fun longSpanishStrings() = defaultCardCaptureStrings().copy(
+    title = "Captura de una identificación para completar el registro de la familia",
+    singleInstruction = "Coloca la identificación completa dentro de la guía y asegúrate de que todos sus bordes sean visibles",
+    find = "Buscando una tarjeta: evita los reflejos y mantén la identificación estable mientras comprobamos el enfoque antes de capturar la imagen automáticamente",
+    frontInstruction = "Coloca el frente de la identificación dentro del recuadro y mantén visibles todos los bordes, sin reflejos y con buena iluminación",
+    auto = "La captura automática está activada; también puedes tocar el botón para capturar manualmente",
+)
+
+@PreviewTest
+@Preview(name = "single-auto-narrow-es", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1f)
+@Preview(name = "single-auto-landscape-en", widthDp = 852, heightDp = 393, locale = "en", fontScale = 1f)
+@Preview(name = "single-auto-large-font-es", widthDp = 393, heightDp = 852, locale = "es", fontScale = 1.6f)
+@Composable
+fun SingleAutoLayoutScreenshot() = AutoSingleScreen(CaptureGuidance.Looking)
+
+@PreviewTest
+@Preview(name = "single-auto-long-spanish", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1f)
+@Composable
+fun SingleAutoLongSpanishScreenshot() = AutoSingleScreen(CaptureGuidance.Looking, longSpanishStrings())
+
+@PreviewTest
+@Preview(name = "two-side-narrow-es", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1f)
+@Preview(name = "two-side-landscape-en", widthDp = 852, heightDp = 393, locale = "en", fontScale = 1f)
+@Preview(name = "two-side-large-font-es", widthDp = 393, heightDp = 852, locale = "es", fontScale = 1.6f)
+@Composable
+fun TwoSideLayoutScreenshot() = CameraScreen(CardSide.Front)
+
+@PreviewTest
+@Preview(name = "two-side-long-spanish", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1f)
+@Composable
+fun TwoSideLongSpanishScreenshot() = CameraScreen(CardSide.Front, strings = longSpanishStrings())
+
+@PreviewTest
+@Preview(name = "review-landscape-es", widthDp = 852, heightDp = 393, locale = "es", fontScale = 1f)
+@Composable
+fun ReviewLandscapeScreenshot() = ReviewScreen()
+
+@PreviewTest
+@Preview(name = "single-auto-ready-en", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f)
+@Composable
+fun SingleAutoReadyScreenshot() = AutoSingleScreen(CaptureGuidance.Ready)
+
+@PreviewTest
+@Preview(name = "single-auto-complete-en", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f)
+@Composable
+fun SingleAutoCompleteScreenshot() = Screen(showCard = false, camera = false) {
+    SingleCaptureComplete(defaultCardCaptureStrings())
 }

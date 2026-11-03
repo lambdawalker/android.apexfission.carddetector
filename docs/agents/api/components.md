@@ -81,6 +81,7 @@ data class CardCaptureConfig(
     val focusThreshold: Float = 100f,
     val stableDurationMs: Long = 600L,
     val maxDetectionGapMs: Long = 400L,
+    val hapticFeedbackEnabled: Boolean = false,
 ) {
 
 }
@@ -124,10 +125,61 @@ data class CardCaptureStrings(
     val complete: String,
     val done: String,
     val autoToggle: String = "Toggle automatic capture",
+    val readyToCapture: String = "Ready to capture",
+    val captured: String = "Photo captured",
+    val singleInstruction: String = "Place your card inside the guide",
 )
 
 @Composable
 fun defaultCardCaptureStrings() /* expression body omitted */
+```
+
+### SingleSideCardCapture (carddetector)
+
+[Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/SingleSideCardCapture.kt)
+
+```kotlin
+package com.apexfission.android.carddetector.ui.capture
+
+import android.graphics.Bitmap
+import android.os.SystemClock
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.apexfission.android.carddetector.domain.tflite.filters.*
+import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
+import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
+import com.apexfission.android.carddetector.ui.detector.CardDetectorCamera
+import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
+import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
+import com.apexfission.android.carddetector.ui.overlays.components.CaptureOverlay
+import kotlinx.coroutines.channels.Channel
+
+@Composable
+fun SingleSideCardCapture(
+    instanceKey: String,
+    modelPath: String,
+    classLabels: Map<Int, String>,
+    cardClasses: Set<Int>,
+    onCapture: (CardDetection, Bitmap) -> Unit,
+    modifier: Modifier = Modifier,
+    config: CardCaptureConfig = CardCaptureConfig(),
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
+    detectorPreset: CardDetectorPreset = CardDetectorPreset.HighPerformance,
+    cameraPreset: CameraPreset = CameraPreset.HighResolution,
+    cardFilters: List<CardValidator> = listOf(MarginValidator(), AspectRatioValidator()),
+    onBack: () -> Unit = {},
+) /* expression body omitted */
 ```
 
 ### TwoSidedCardCapture (carddetector)
@@ -145,6 +197,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner

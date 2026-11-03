@@ -18,4 +18,7 @@
     <string name="welcome_video_action">Videodemo abspielen</string>
     <string name="welcome_footer">Diese Demos verarbeiten Bilder auf dem Gerät und laden sie nicht hoch. Kamerademos fragen beim Öffnen nach der Berechtigung.</string>
     <string name="welcome_settings_action">App-Einstellungen öffnen</string>
+    <string name="welcome_single_auto_title">Eine Seite · automatisch</string>
+    <string name="welcome_single_auto_description">Eine Seite aufnehmen, sobald die Karte scharf und ruhig ist. Ein Wechsel zur manuellen Aufnahme ist jederzeit möglich.</string>
+    <string name="welcome_single_auto_action">Automatische einseitige Aufnahme testen</string>
 </resources>
