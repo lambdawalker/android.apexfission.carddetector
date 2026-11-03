@@ -6,6 +6,7 @@ Scope is main source. Public declaration inputs and internal/private classificat
 | --- | --- | --- | --- | --- |
 | Install / bundled model / requirements | installation | [IMPORT](../IMPORT.md), [model contract](agents/model-contract.md) | tfmodel + app build | Not useful |
 | Live camera and runtime permission | getting-started | [quickstart](agents/quickstart.md), [components API](agents/api/components.md) | DocumentationQuickstartActivity; live Activity | Historical recording; fresh device verification required |
+| One-shot single-side automatic capture | task-recipes | [recipe](agents/recipes.md#single-side-automatic-capture), [components](agents/api/components.md) | Single-side automatic demo; SingleCaptureSessionTest, CaptureReadinessTest, CaptureGuidanceTest | Single auto states; narrow/landscape/large-font/long-Spanish renders |
 | Temporal tracking / callback delivery | concepts | [concepts](agents/concepts.md), [detection API](agents/api/detection.md) | Camera/simulator; CardLockStateMachineTest, LatestCallbackDispatcherTest | Recording illustrates movement, not correctness |
 | Capture / image ownership / cancellation | task-recipes | [recipes](agents/recipes.md), [concepts](agents/concepts.md) | Quickstart + OwnedBitmapWork; bitmap/store tests | Not provable with stills |
 | Detector/camera presets | configuration | [configuration](agents/configuration.md), [components](agents/api/components.md) | CameraPresetTest, CardDetectorPresetTest; demo overrides | Device-specific; no new baseline |

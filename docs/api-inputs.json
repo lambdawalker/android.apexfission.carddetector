@@ -144,6 +144,12 @@
     "visibility": "internal/private"
   },
   {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CaptureGuidance.kt",
+    "sha256": "0b53a66c23ed03fa9ed9d26fb1ee3450ac02a24c2a09e8c318aea74d8e7e4f8c",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CaptureReadiness.kt",
     "sha256": "818798691a79a973e9e58ce1fafa385eca803c1d550b0b2b27aa2f60d9e5405a",
     "guide": null,
@@ -157,25 +163,37 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CardCaptureConfig.kt",
-    "sha256": "2c3828a71a2a41b124b62102817d93c2c73b34d0428748f05e4a81cbe10dbda9",
+    "sha256": "71aca5c53ca7815d0ed6552b3e13f68f12daf0053712fe24db4c9cb5010dea6e",
     "guide": "docs/agents/api/components.md",
     "visibility": "public"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CardCaptureStrings.kt",
-    "sha256": "f688b52839ea234e23b67b65cac93d9f910e77b7c4f071236163ff09cbcc6151",
+    "sha256": "16de8be2dcfc160f3e104ed156c87000ae1e95fdbdb9b265db5ea4effef7d79f",
+    "guide": "docs/agents/api/components.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/SingleCaptureSession.kt",
+    "sha256": "e3b49abbab2e6784e5fc35016aca1aa58b4f7e9f83e17465c3f12fd8e7ae3175",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/SingleSideCardCapture.kt",
+    "sha256": "178f79c7b24349ca210fe95064c5251b0889f9ca92d27edad78ba4f57d26ac16",
     "guide": "docs/agents/api/components.md",
     "visibility": "public"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/TwoSidedCardCapture.kt",
-    "sha256": "7251dbf0e61b76638a7e28cd66a9a80bba82c0548a6b47e48ac4b2d38ee21e81",
+    "sha256": "58fe61836d4306f8284c4001a9f4e1f0e94071a7f70ca0b2fbb9c19c4ad0f4c7",
     "guide": "docs/agents/api/components.md",
     "visibility": "public"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/CaptureCameraOverlay.kt",
-    "sha256": "58967356a33c3fceaaa0814e2be885749210e26c89762da09681ff0db945ed2a",
+    "sha256": "fb1de0bb2e85d13ed00b1c7d7399276ec6813ffaf90a3a627359df5f355086ab",
     "guide": null,
     "visibility": "internal/private"
   },
@@ -188,6 +206,12 @@
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/CaptureTurnOver.kt",
     "sha256": "2828b4ab7c0edc0ae05c38cf3c8b80cc2d0ca225e919ba1c5e0775d25fcf1c67",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/SingleSideCapturePreview.kt",
+    "sha256": "90b974337dd761e4ab4aaf7a7e44bb0cd30447c219f5bbf351bcad768ea9d810",
     "guide": null,
     "visibility": "internal/private"
   },
@@ -373,7 +397,7 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/CaptureOverlay.kt",
-    "sha256": "a350588eabaedcbef7ca3bba6ba8d2b25cb95d49a0e16c023f470d4ff86c02a2",
+    "sha256": "5ccb7fd2083964bc1e77e22dbe28d4ce82ab34f4c239a1cee5546960f9ac93ec",
     "guide": null,
     "visibility": "internal/private"
   },
@@ -397,7 +421,7 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/OverlayHeader.kt",
-    "sha256": "7186b58f20b6f371250a94131cda8ec6a0032d66fe49330db2bfdb4a1d75c0ea",
+    "sha256": "f510765efa4eeb957ffd5a108effeee171d82992c0e4cdfbc7dbd903effbd60f",
     "guide": "docs/agents/api/overlays.md",
     "visibility": "public"
   },
