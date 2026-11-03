@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performClick
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
@@ -36,7 +37,7 @@ class CaptureReviewTest {
         compose.onNodeWithText(copy.review).assertIsDisplayed()
         compose.onNodeWithText(copy.retakeFront).performClick()
         compose.runOnIdle { assertEquals(CardSide.Front, retaken) }
-        compose.onNodeWithText(copy.retakeBack).performClick()
+        compose.onNodeWithText(copy.retakeBack).performScrollTo().performClick()
         compose.runOnIdle { assertEquals(CardSide.Back, retaken) }
         compose.onNodeWithText(copy.use).performClick()
         compose.runOnIdle { assertTrue(confirmed) }

@@ -166,7 +166,10 @@ private fun CameraScreen(
         config = IdCaptureOverlayConfig(
             title = strings.title,
             instructionTitle = if (side == CardSide.Front) strings.front else strings.back,
-            instructionSubTitle = guidance.text(strings)
+            instructionSubTitle = when {
+                guidance == CaptureGuidance.Looking -> strings.find + " · " + if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction
+                else -> guidance.text(strings)
+            }
         ),
         strings = strings,
         autoCaptureEnabled = autoCapture,
