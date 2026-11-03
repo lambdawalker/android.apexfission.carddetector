@@ -175,31 +175,25 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/CaptureCameraOverlay.kt",
-    "sha256": "2d6564d74ccf166b31d6afb0299f1003c4894d6853c749eacd1139915a81a8ec",
-    "guide": null,
-    "visibility": "internal/private"
-  },
-  {
-    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/CaptureHeader.kt",
-    "sha256": "52f9441e9721bb382e1698bb5545ed7876985cdb7d1dbc3aeba1f198284a3960",
+    "sha256": "58967356a33c3fceaaa0814e2be885749210e26c89762da09681ff0db945ed2a",
     "guide": null,
     "visibility": "internal/private"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/CaptureReview.kt",
-    "sha256": "5af82d2828af1e0c5d44d178092bbf5d99c9afc5585d74a74c8ede93235f16fd",
+    "sha256": "f3a2f804546b348db1f832948574c74e35d390e3e07e4db3004326ee1efc54de",
     "guide": null,
     "visibility": "internal/private"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/CaptureTurnOver.kt",
-    "sha256": "911641a9516446d329b91279f560e25012308930f1ac5d6bc454123a1ecc792b",
+    "sha256": "2828b4ab7c0edc0ae05c38cf3c8b80cc2d0ca225e919ba1c5e0775d25fcf1c67",
     "guide": null,
     "visibility": "internal/private"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLite.kt",
-    "sha256": "1b5275027bfa6a0711ec37a035410019a9c09c4d1a960889e248e512f44ef46b",
+    "sha256": "1a0c22186f009d2af3f4added310cb4eca895396595e5e4acf76441cfa6059da",
     "guide": "docs/agents/api/components.md",
     "visibility": "public"
   },
@@ -301,7 +295,7 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/IdCaptureOverlay.kt",
-    "sha256": "4e89b70bd053dec68119a6cd92e7e9212a4416e6879c37d5202d3c183e007ca7",
+    "sha256": "71637831449ed0c18bb7d39cdd7c6561f3c22076652451ad1c18e846615a7d0f",
     "guide": "docs/agents/api/overlays.md",
     "visibility": "public"
   },
@@ -370,6 +364,42 @@
     "sha256": "f36aae6b150fc2d445e6e1880421ff25413977eb884543aa015a804fdd1f5161",
     "guide": null,
     "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/CaptureControlsRow.kt",
+    "sha256": "b1d4275c296d8c5e72115fa07566cd99636ec5eb821a016b1a249662b0a95b95",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/CaptureOverlay.kt",
+    "sha256": "a350588eabaedcbef7ca3bba6ba8d2b25cb95d49a0e16c023f470d4ff86c02a2",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/InitialGuideOverlay.kt",
+    "sha256": "d22ce47b0273a5eb37302895e153cc9f6e595c10f3976f53ef4ba111af69f331",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/InitialGuideState.kt",
+    "sha256": "f560c1fb964aa49a8e882a085d586c5b4397418b92c6b344d2a2c39680aae429",
+    "guide": null,
+    "visibility": "internal/private"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/OverlayGradients.kt",
+    "sha256": "31495dda6345d28ba2472774ed15346a3d814ff17184026e9eb20fab2e2e0591",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
+  },
+  {
+    "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/OverlayHeader.kt",
+    "sha256": "7186b58f20b6f371250a94131cda8ec6a0032d66fe49330db2bfdb4a1d75c0ea",
+    "guide": "docs/agents/api/overlays.md",
+    "visibility": "public"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/draw/PathUtils.kt",

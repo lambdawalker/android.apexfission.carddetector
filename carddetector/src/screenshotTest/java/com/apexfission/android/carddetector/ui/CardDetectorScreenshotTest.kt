@@ -85,12 +85,12 @@ private fun sampleCard(back: Boolean = false): Bitmap {
 }
 
 @Composable
-private fun rememberScope(detected: Boolean, focused: Boolean = true): CardDetectorOverlayScope {
+private fun rememberScope(detected: Boolean, focused: Boolean = true, torchAvailable: Boolean = true): CardDetectorOverlayScope {
     val density = LocalDensity.current
     val chain = remember(density) {
         with(density) { createPreviewImageSpaceChain(393, 852, 393.dp.roundToPx(), 852.dp.roundToPx()) }
     }
-    return remember(detected, focused, chain) {
+    return remember(detected, focused, torchAvailable, chain) {
         object : CardDetectorOverlayScope {
             override val detectionState = sampleDetection.copy(focusScore = if (focused) 150f else 0f).takeIf { detected }
             override val detectionSequence = if (detected) 1L else 0L
@@ -101,7 +101,7 @@ private fun rememberScope(detected: Boolean, focused: Boolean = true): CardDetec
             override val cameraPreset = CameraPreset.HighResolution
             override val classLabels = mapOf(0 to "SAMPLE_CARD")
             override val flashlightEnabled = false
-            override val flashlightAvailable = true
+            override val flashlightAvailable = torchAvailable
             override fun goBack() = Unit
             override fun toggleFlashlight() = Unit
             override fun capture() = Unit
@@ -155,10 +155,11 @@ private fun CameraScreen(
     detected: Boolean = false,
     focused: Boolean = false,
     autoCapture: Boolean = true,
+    showInitialGuide: Boolean = !detected,
 ) = Screen(showCard = detected, backCard = side == CardSide.Back) {
     rememberScope(detected, focused).CaptureCameraOverlay(
         side = side, strings = defaultCardCaptureStrings(), autoCaptureEnabled = autoCapture,
-        onToggleAutoCapture = {}, showInitialGuide = !detected,
+        onToggleAutoCapture = {}, showInitialGuide = showInitialGuide,
         canCapture = detected, focused = focused, onCapture = {},
     )
 }
@@ -272,4 +273,39 @@ fun ShutterEnabledScreenshot() = Screen(showCard = false) {
 @Composable
 fun ShutterDisabledScreenshot() = Screen(showCard = false) {
     CaptureShutterButton(false, {}, Modifier.align(Alignment.Center))
+}
+
+
+@PreviewTest
+@Preview(name = "single-side-auto-en", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f)
+@Preview(name = "single-side-auto-es", widthDp = 393, heightDp = 852, locale = "es", fontScale = 1f)
+@Composable
+fun SingleSideAutoScreenshot() = Screen {
+    rememberScope(true).IdCaptureOverlay(autoCaptureEnabled = true, showAutoCaptureToggle = true)
+}
+
+// Frozen post-detection miss states; live fade timing and latch/reset behavior are
+// tested separately by CaptureOverlayTest on the emulator.
+@PreviewTest
+@Preview(name = "single-side-after-miss-en", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f)
+@Composable
+fun SingleSideAfterMissScreenshot() = Screen(showCard = false) {
+    rememberScope(false).IdCaptureOverlay(showInitialGuide = false)
+}
+
+@PreviewTest
+@Preview(name = "capture-front-after-miss-en", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f)
+@Composable
+fun CaptureFrontAfterMissScreenshot() = CameraScreen(CardSide.Front, showInitialGuide = false)
+
+@PreviewTest
+@Preview(name = "capture-back-after-miss-en", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f)
+@Composable
+fun CaptureBackAfterMissScreenshot() = CameraScreen(CardSide.Back, showInitialGuide = false)
+
+@PreviewTest
+@Preview(name = "single-side-no-flash-en", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f)
+@Composable
+fun SingleSideNoFlashScreenshot() = Screen {
+    rememberScope(true, torchAvailable = false).IdCaptureOverlay()
 }

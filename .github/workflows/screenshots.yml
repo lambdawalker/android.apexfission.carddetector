@@ -46,3 +46,39 @@ jobs:
             ${{ matrix.module }}/build/reports/screenshotTest/
             ${{ matrix.module }}/build/outputs/screenshotTest-results/
           if-no-files-found: error
+
+  guide-transitions:
+    name: Capture guide fade transitions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          lfs: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            17
+            21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2.38.0
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: false
+          script: ./gradlew :carddetector:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.apexfission.android.carddetector.ui.overlays.CaptureOverlayTest --no-daemon
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: capture-guide-transition-results
+          path: |
+            carddetector/build/reports/androidTests/
+            carddetector/build/outputs/androidTest-results/

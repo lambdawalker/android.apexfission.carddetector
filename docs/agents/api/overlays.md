@@ -255,65 +255,32 @@ fun DetectionOverlay(
 package com.apexfission.android.carddetector.ui.overlays
 
 import android.content.res.Configuration
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.FlashOff
-import androidx.compose.material.icons.filled.FlashOn
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
-import com.apexfission.android.math.models.ImageBox
-import com.apexfission.android.math.models.ImageSpaceChain
-import com.apexfission.android.yolo.engine.Feature
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
+import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
+import com.apexfission.android.carddetector.ui.overlays.components.CaptureOverlay
 import com.apexfission.android.carddetector.ui.overlays.draw.lerpF
+import com.apexfission.android.math.models.ImageBox
+import com.apexfission.android.yolo.engine.Feature
 
 @Composable
 fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
@@ -322,13 +289,20 @@ fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
 
 @Composable
 fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
-    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig()
-) /* body omitted */
+    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig(),
+    autoCaptureEnabled: Boolean = false,
+    onToggleAutoCapture: () -> Unit = {},
+    showAutoCaptureToggle: Boolean = false,
+) /* expression body omitted */
 
 @Composable
 fun CardDetectorOverlayScope.IdCaptureOverlay(
-    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig()
-) /* body omitted */
+    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig(),
+    showInitialGuide: Boolean = true,
+    autoCaptureEnabled: Boolean = false,
+    onToggleAutoCapture: () -> Unit = {},
+    showAutoCaptureToggle: Boolean = false,
+) /* expression body omitted */
 ```
 
 ### IdCaptureOverlayConfig (carddetector)
@@ -551,6 +525,168 @@ fun rememberAnimatedOpacity(
     internalGuideState: InternalGuideState,
     config: DetectionAnimationConfig
 ): Float /* body omitted */
+```
+
+### CaptureControlsRow (carddetector)
+
+[Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/CaptureControlsRow.kt)
+
+```kotlin
+package com.apexfission.android.carddetector.ui.overlays.components
+
+import android.content.res.Configuration
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoMode
+import androidx.compose.material.icons.filled.FlashOff
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.apexfission.android.carddetector.ui.overlays.CaptureShutterButton
+import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
+
+@Composable
+fun CaptureControlsRow(
+    isCaptureEnabled: Boolean,
+    onCapture: () -> Unit,
+    autoCaptureEnabled: Boolean,
+    onToggleAutoCapture: () -> Unit,
+    flashlightAvailable: Boolean,
+    flashlightEnabled: Boolean,
+    onToggleFlashlight: () -> Unit,
+    autoToggleContentDescription: String,
+    flashContentDescription: String,
+    shutterContentDescription: String,
+    modifier: Modifier = Modifier,
+    showAutoCaptureToggle: Boolean = true,
+) /* body omitted */
+```
+
+### InitialGuideOverlay (carddetector)
+
+[Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/InitialGuideOverlay.kt)
+
+```kotlin
+package com.apexfission.android.carddetector.ui.overlays.components
+
+import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
+import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
+
+@Composable
+fun InitialGuideOverlay(modifier: Modifier = Modifier) /* body omitted */
+```
+
+### OverlayGradients (carddetector)
+
+[Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/OverlayGradients.kt)
+
+```kotlin
+package com.apexfission.android.carddetector.ui.overlays.components
+
+import android.content.res.Configuration
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
+
+@Composable
+fun OverlayTopGradient(modifier: Modifier = Modifier, height: Dp = 180.dp) /* body omitted */
+
+@Composable
+fun OverlayBottomGradient(modifier: Modifier = Modifier, height: Dp = 280.dp) /* body omitted */
+```
+
+### OverlayHeader (carddetector)
+
+[Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/OverlayHeader.kt)
+
+```kotlin
+package com.apexfission.android.carddetector.ui.overlays.components
+
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
+
+@Composable
+fun OverlayHeader(
+    title: String,
+    onBack: () -> Unit,
+    exitContentDescription: String = "Back",
+    modifier: Modifier = Modifier,
+    contentColor: Color = Color.White,
+) /* body omitted */
+
+@Composable
+fun OverlayTitle(title: String, modifier: Modifier = Modifier, contentColor: Color = Color(0xFF75E8CD)) /* body omitted */
+
+@Composable
+fun OverlayInstructions(
+    title: String,
+    subtitle: String,
+    modifier: Modifier = Modifier
+) /* body omitted */
 ```
 
 ### PathUtils (carddetector)

@@ -27,7 +27,13 @@
     "capture-review-dark-es",
     "capture-review-large-font-en",
     "shutter-enabled",
-    "shutter-disabled"
+    "shutter-disabled",
+    "single-side-auto-en",
+    "single-side-auto-es",
+    "single-side-after-miss-en",
+    "capture-front-after-miss-en",
+    "capture-back-after-miss-en",
+    "single-side-no-flash-en"
   ],
   "app": [
     "welcome-en",

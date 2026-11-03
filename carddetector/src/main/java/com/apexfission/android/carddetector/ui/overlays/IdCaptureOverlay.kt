@@ -1,72 +1,32 @@
 package com.apexfission.android.carddetector.ui.overlays
 
 import android.content.res.Configuration
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.FlashOff
-import androidx.compose.material.icons.filled.FlashOn
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
-import com.apexfission.android.math.models.ImageBox
-import com.apexfission.android.math.models.ImageSpaceChain
-import com.apexfission.android.yolo.engine.Feature
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
+import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
-import com.apexfission.android.carddetector.ui.overlays.components.CaptureControlsRow
-import com.apexfission.android.carddetector.ui.overlays.components.InitialGuideOverlay
-import com.apexfission.android.carddetector.ui.overlays.components.OverlayBottomGradient
-import com.apexfission.android.carddetector.ui.overlays.components.OverlayHeader
-import com.apexfission.android.carddetector.ui.overlays.components.OverlayInstructions
-import com.apexfission.android.carddetector.ui.overlays.components.OverlayTopGradient
+import com.apexfission.android.carddetector.ui.overlays.components.CaptureOverlay
 import com.apexfission.android.carddetector.ui.overlays.draw.lerpF
+import com.apexfission.android.math.models.ImageBox
+import com.apexfission.android.yolo.engine.Feature
 
 /**
  * Component.
@@ -173,87 +133,58 @@ fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
     }
 }
 
-/**
- * Component.
- * Renders the ID capture controls and text (header, title, instructions, shutter button, flashlight toggle).
- *
- * @param config Configuration parameters for titles and capture behavior.
+/** Controls-only entry point, sharing the same layout as two-sided capture.
+ * Enable the optional auto toggle only when the host supplies its capture policy and callback.
  */
 @Composable
 fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
     config: IdCaptureOverlayConfig = IdCaptureOverlayConfig(),
     autoCaptureEnabled: Boolean = false,
-    onToggleAutoCapture: () -> Unit = {}
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        OverlayTopGradient(modifier = Modifier.align(Alignment.TopCenter))
-        OverlayBottomGradient(modifier = Modifier.align(Alignment.BottomCenter))
-
-        // Overlay UI layer (Header, instructions, controls)
-        Column(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
-            // Top Bar with back button & title
-            OverlayHeader(title = config.title, onBack = { goBack() })
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Instruction title and subtitle
-            OverlayInstructions(
-                title = config.instructionTitle,
-                subtitle = config.instructionSubTitle
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            val isCaptureEnabled = if (config.requiresCardDetectionForCapture) captureEnabled else true
-
-            CaptureControlsRow(
-                isCaptureEnabled = isCaptureEnabled,
-                onCapture = { capture() },
-                autoCaptureEnabled = autoCaptureEnabled,
-                onToggleAutoCapture = onToggleAutoCapture,
-                flashlightAvailable = flashlightAvailable,
-                flashlightEnabled = flashlightEnabled,
-                onToggleFlashlight = { toggleFlashlight() },
-                autoToggleContentDescription = "Toggle automatic capture",
-                flashContentDescription = "Toggle Flashlight",
-                shutterContentDescription = "Capture",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .padding(horizontal = 32.dp, vertical = 24.dp)
-            )
-
-            Text(
-                text = if (autoCaptureEnabled) "Auto-capture on" else "Auto-capture off",
-                color = Color.White,
-                fontSize = 13.sp,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
+    onToggleAutoCapture: () -> Unit = {},
+    showAutoCaptureToggle: Boolean = false,
+) = SingleSideCaptureOverlay(config, false, autoCaptureEnabled, onToggleAutoCapture, showAutoCaptureToggle, false)
 
 /**
- * Component.
- * Built-in ID capture overlay combining the card detection indicator and controls/text.
- *
- * Renders [IdCaptureIndicatorOverlay] and [IdCaptureControlsOverlay] together.
- *
- * @param config Configuration parameters for opacity, timers, smoothing, and capture behavior.
+ * Built-in single-side capture overlay. The initial white guide fades out over 250 ms
+ * after the first detection and stays hidden on misses until this overlay is remounted.
+ * Detection indicators remain separate from that initial guide. Use a new detector
+ * instanceKey (or a composition key) to start a new capture attempt.
+ * The optional auto toggle is hidden by default: this overlay does not implement auto capture.
  */
 @Composable
 fun CardDetectorOverlayScope.IdCaptureOverlay(
     config: IdCaptureOverlayConfig = IdCaptureOverlayConfig(),
     showInitialGuide: Boolean = true,
     autoCaptureEnabled: Boolean = false,
-    onToggleAutoCapture: () -> Unit = {}
+    onToggleAutoCapture: () -> Unit = {},
+    showAutoCaptureToggle: Boolean = false,
+) = SingleSideCaptureOverlay(config, showInitialGuide, autoCaptureEnabled, onToggleAutoCapture, showAutoCaptureToggle, true)
+
+@Composable
+private fun CardDetectorOverlayScope.SingleSideCaptureOverlay(
+    config: IdCaptureOverlayConfig,
+    showInitialGuide: Boolean,
+    autoCaptureEnabled: Boolean,
+    onToggleAutoCapture: () -> Unit,
+    showAutoCaptureToggle: Boolean,
+    showIndicator: Boolean,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (showInitialGuide && detectionState == null) InitialGuideOverlay()
-        IdCaptureIndicatorOverlay(config)
-        IdCaptureControlsOverlay(config, autoCaptureEnabled, onToggleAutoCapture)
-    }
+    val strings = defaultCardCaptureStrings()
+    CaptureOverlay(
+        config = config,
+        showInitialGuide = showInitialGuide,
+        canCapture = !config.requiresCardDetectionForCapture || captureEnabled,
+        onCapture = { capture() },
+        autoCaptureEnabled = autoCaptureEnabled,
+        onToggleAutoCapture = onToggleAutoCapture,
+        showAutoCaptureToggle = showAutoCaptureToggle,
+        exitContentDescription = strings.exit,
+        autoToggleContentDescription = strings.autoToggle,
+        flashContentDescription = strings.flash,
+        shutterContentDescription = strings.shutter,
+        modeText = if (showAutoCaptureToggle) { if (autoCaptureEnabled) strings.auto else strings.manual } else null,
+        showIndicator = showIndicator,
+    )
 }
 
 @Composable
