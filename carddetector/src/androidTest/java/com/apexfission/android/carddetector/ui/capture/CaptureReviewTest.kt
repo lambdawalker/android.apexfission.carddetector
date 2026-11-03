@@ -33,7 +33,7 @@ class CaptureReviewTest {
             copy = defaultCardCaptureStrings()
             MaterialTheme { CaptureReview(front, back, copy, {}, { retaken = it }, { confirmed = true }) }
         }
-        compose.onNodeWithText(copy.complete).assertIsDisplayed()
+        compose.onNodeWithText(copy.review).assertIsDisplayed()
         compose.onNodeWithText(copy.retakeFront).performClick()
         compose.runOnIdle { assertEquals(CardSide.Front, retaken) }
         compose.onNodeWithText(copy.retakeBack).performClick()
@@ -42,16 +42,37 @@ class CaptureReviewTest {
         compose.runOnIdle { assertTrue(confirmed) }
     }
 
-    @Test fun turnOverWaitsForExplicitContinue() {
+    @Test fun singleReviewExposesOnlyFrontRetakeAndConfirmation() {
         val front = card()
-        var continued = false
+        var retaken: CardSide? = null
+        var confirmed = false
         lateinit var copy: CardCaptureStrings
         compose.setContent {
             copy = defaultCardCaptureStrings()
-            MaterialTheme { CaptureTurnOver(front, copy, {}, {}, { continued = true }) }
+            MaterialTheme { CaptureReview(front, strings = copy, onBack = {},
+                onRetake = { retaken = it }, onConfirm = { confirmed = true }) }
+        }
+        compose.onNodeWithText(copy.captured).assertIsDisplayed()
+        compose.onNodeWithText(copy.retakeBack).assertDoesNotExist()
+        compose.onNodeWithText(copy.retakeFront).performClick()
+        compose.runOnIdle { assertEquals(CardSide.Front, retaken); assertEquals(false, confirmed) }
+        compose.onNodeWithText(copy.use).performClick()
+        compose.runOnIdle { assertTrue(confirmed) }
+    }
+
+    @Test fun turnOverWaitsForExplicitContinue() {
+        val front = card()
+        var continued = false
+        var retaken = false
+        lateinit var copy: CardCaptureStrings
+        compose.setContent {
+            copy = defaultCardCaptureStrings()
+            MaterialTheme { CaptureTurnOver(front, copy, {}, { retaken = true }, { continued = true }) }
         }
         compose.onNodeWithText(copy.stepFront).assertIsDisplayed()
         compose.runOnIdle { assertEquals(false, continued) }
+        compose.onNodeWithText(copy.retakeFront).performClick()
+        compose.runOnIdle { assertTrue(retaken); assertEquals(false, continued) }
         compose.onNodeWithText(copy.continueToBack).performClick()
         compose.runOnIdle { assertTrue(continued) }
     }

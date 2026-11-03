@@ -210,10 +210,10 @@ private fun TurnOverScreen(darkTheme: Boolean = false) = Screen(showCard = false
 fun CaptureReviewScreenshot() = ReviewScreen()
 
 @Composable
-private fun ReviewScreen(darkTheme: Boolean = false) = Screen(showCard = false, camera = false, darkTheme = darkTheme) {
+private fun ReviewScreen(darkTheme: Boolean = false, singleSide: Boolean = false) = Screen(showCard = false, camera = false, darkTheme = darkTheme) {
     val front = remember { CapturedCardSide(sampleDetection, sampleCard()) }
     val back = remember { CapturedCardSide(sampleDetection, sampleCard(back = true)) }
-    CaptureReview(front, back, defaultCardCaptureStrings(), {}, {}, {})
+    CaptureReview(front, back.takeUnless { singleSide }, defaultCardCaptureStrings(), {}, {}, {})
 }
 
 @PreviewTest
@@ -393,3 +393,33 @@ fun SingleAutoReadyScreenshot() = AutoSingleScreen(CaptureGuidance.Ready)
 fun SingleAutoCompleteScreenshot() = Screen(showCard = false, camera = false) {
     SingleCaptureComplete(defaultCardCaptureStrings())
 }
+
+// Review is shared by both complete flows; exercise the one-image branch directly.
+@PreviewTest
+@Preview(name = "single-review-en", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f)
+@Preview(name = "single-review-es", widthDp = 393, heightDp = 852, locale = "es", fontScale = 1f)
+@Preview(name = "single-review-narrow-es", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1f)
+@Preview(name = "single-review-landscape-en", widthDp = 852, heightDp = 393, locale = "en", fontScale = 1f)
+@Preview(name = "single-review-large-font-es", widthDp = 393, heightDp = 852, locale = "es", fontScale = 1.6f)
+@Composable
+fun SingleReviewScreenshot() = ReviewScreen(singleSide = true)
+
+@PreviewTest
+@Preview(name = "single-review-dark-en", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun SingleReviewDarkScreenshot() = ReviewScreen(darkTheme = true, singleSide = true)
+
+@PreviewTest
+@Preview(name = "turn-over-narrow-es", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1f)
+@Preview(name = "turn-over-landscape-en", widthDp = 852, heightDp = 393, locale = "en", fontScale = 1f)
+@Preview(name = "turn-over-large-font-es", widthDp = 393, heightDp = 852, locale = "es", fontScale = 1.6f)
+@Composable
+fun TurnOverLayoutScreenshot() = TurnOverScreen()
+
+@PreviewTest
+@Preview(name = "single-auto-de", widthDp = 393, heightDp = 852, locale = "de", fontScale = 1f)
+@Preview(name = "single-auto-ja", widthDp = 393, heightDp = 852, locale = "ja", fontScale = 1f)
+@Preview(name = "single-auto-uk", widthDp = 393, heightDp = 852, locale = "uk", fontScale = 1f)
+@Preview(name = "single-auto-zh", widthDp = 393, heightDp = 852, locale = "zh-rCN", fontScale = 1f)
+@Composable
+fun LocalizedSingleCaptureScreenshot() = AutoSingleScreen(CaptureGuidance.Looking)

@@ -74,7 +74,7 @@ jobs:
           target: google_apis
           arch: x86_64
           disable-animations: false
-          script: ./gradlew :carddetector:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.package=com.apexfission.android.carddetector.ui.overlays --no-daemon
+          script: ./gradlew :carddetector:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.package=com.apexfission.android.carddetector.ui --no-daemon
       - name: Require all guide and layout cases
         run: python3 scripts/verify_capture_ui_tests.py
       - uses: actions/upload-artifact@v4

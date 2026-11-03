@@ -25,7 +25,7 @@ class CaptureUiInventoryTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'CaptureLayoutTest'):
                 inventory.verify(root)
 
-    def test_accepts_all_six_passed_cases(self):
+    def test_accepts_all_required_passed_cases(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self.report(root, inventory.REQUIRED)
@@ -36,4 +36,11 @@ class CaptureUiInventoryTests(unittest.TestCase):
             root = Path(tmp)
             self.report(root, inventory.REQUIRED, skipped=True)
             with self.assertRaisesRegex(ValueError, 'did not pass'):
+                inventory.verify(root)
+
+    def test_requires_review_cases_even_when_overlay_cases_pass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.report(root, [case for case in inventory.REQUIRED if case[0] != 'CaptureReviewTest'])
+            with self.assertRaisesRegex(ValueError, 'CaptureReviewTest'):
                 inventory.verify(root)

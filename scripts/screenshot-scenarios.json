@@ -44,7 +44,20 @@
     "two-side-long-spanish",
     "review-landscape-es",
     "single-auto-ready-en",
-    "single-auto-complete-en"
+    "single-auto-complete-en",
+    "single-review-en",
+    "single-review-es",
+    "single-review-narrow-es",
+    "single-review-landscape-en",
+    "single-review-large-font-es",
+    "single-review-dark-en",
+    "turn-over-narrow-es",
+    "turn-over-landscape-en",
+    "turn-over-large-font-es",
+    "single-auto-de",
+    "single-auto-ja",
+    "single-auto-uk",
+    "single-auto-zh"
   ],
   "app": [
     "welcome-en",

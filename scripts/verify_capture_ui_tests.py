@@ -4,6 +4,9 @@ import sys
 import xml.etree.ElementTree as ET
 
 REQUIRED = {
+    ('CaptureReviewTest', 'reviewExposesSeparateRetakesAndConfirmation'),
+    ('CaptureReviewTest', 'singleReviewExposesOnlyFrontRetakeAndConfirmation'),
+    ('CaptureReviewTest', 'turnOverWaitsForExplicitContinue'),
     ('CaptureOverlayTest', 'singleSideGuideFadesAndDoesNotReturnOnMiss'),
     ('CaptureOverlayTest', 'frontGuideFadesAndResetsForANewAttempt'),
     ('CaptureOverlayTest', 'backGuideFadesAndResetsForANewAttempt'),
