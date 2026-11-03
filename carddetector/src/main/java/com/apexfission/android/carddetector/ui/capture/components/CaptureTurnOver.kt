@@ -33,9 +33,9 @@ import androidx.core.graphics.createBitmap
 @Composable
 internal fun CaptureTurnOver(front: CapturedCardSide, strings: CardCaptureStrings, onBack: () -> Unit, onContinue: () -> Unit) {
     Column(Modifier.fillMaxSize().safeDrawingPadding(), horizontalAlignment=Alignment.CenterHorizontally) {
-        OverlayHeader(title = strings.title, onBack = onBack, exitContentDescription = strings.exit)
+        OverlayHeader(title = strings.title, onBack = onBack, exitContentDescription = strings.exit, contentColor = MaterialTheme.colorScheme.onBackground)
         Spacer(Modifier.height(24.dp))
-        OverlayTitle(strings.frontSaved)
+        OverlayTitle(strings.frontSaved, contentColor = MaterialTheme.colorScheme.primary)
         Text(strings.turnOver, color=MaterialTheme.colorScheme.onSurface, textAlign=TextAlign.Center, modifier=Modifier.padding(16.dp))
         Image(front.bitmap.asImageBitmap(), strings.frontSaved, Modifier.weight(1f).fillMaxWidth().padding(24.dp), contentScale=ContentScale.Fit)
         Text(strings.stepFront, color=MaterialTheme.colorScheme.onSurface)

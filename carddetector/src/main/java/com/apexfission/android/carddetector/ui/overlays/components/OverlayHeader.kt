@@ -31,7 +31,8 @@ fun OverlayHeader(
     title: String,
     onBack: () -> Unit,
     exitContentDescription: String = "Back",
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentColor: Color = Color.White,
 ) {
     Row(
         modifier = modifier
@@ -44,12 +45,12 @@ fun OverlayHeader(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = exitContentDescription,
-                tint = Color.White
+                tint = contentColor
             )
         }
         Text(
             text = title,
-            color = Color.White,
+            color = contentColor,
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center
@@ -59,11 +60,11 @@ fun OverlayHeader(
 }
 
 @Composable
-fun OverlayTitle(title: String, modifier: Modifier = Modifier) {
+fun OverlayTitle(title: String, modifier: Modifier = Modifier, contentColor: Color = Color(0xFF75E8CD)) {
     Text(
         text = title,
         modifier = modifier,
-        color = Color(0xFF75E8CD),
+        color = contentColor,
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center

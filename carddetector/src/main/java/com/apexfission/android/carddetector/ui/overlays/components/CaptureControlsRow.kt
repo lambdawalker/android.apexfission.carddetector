@@ -37,14 +37,15 @@ fun CaptureControlsRow(
     autoToggleContentDescription: String,
     flashContentDescription: String,
     shutterContentDescription: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showAutoCaptureToggle: Boolean = true,
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconToggleButton(
+        if (showAutoCaptureToggle) IconToggleButton(
             checked = autoCaptureEnabled,
             onCheckedChange = { onToggleAutoCapture() },
             modifier = Modifier
@@ -56,7 +57,7 @@ fun CaptureControlsRow(
                 contentDescription = autoToggleContentDescription,
                 tint = if (autoCaptureEnabled) Color(0xFF75E8CD) else Color.White.copy(alpha = 0.6f)
             )
-        }
+        } else Spacer(Modifier.size(48.dp))
         
         CaptureShutterButton(
             isCaptureEnabled = isCaptureEnabled,

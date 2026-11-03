@@ -50,9 +50,9 @@ internal fun CaptureReview(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OverlayHeader(title = strings.title, onBack = onBack, exitContentDescription = strings.exit)
+        OverlayHeader(title = strings.title, onBack = onBack, exitContentDescription = strings.exit, contentColor = MaterialTheme.colorScheme.onBackground)
         Spacer(Modifier.height(16.dp))
-        OverlayTitle(strings.review)
+        OverlayTitle(strings.review, contentColor = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.height(8.dp))
         Text(
             strings.reviewInstruction,

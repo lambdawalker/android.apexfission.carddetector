@@ -1,32 +1,15 @@
 package com.apexfission.android.carddetector.ui.capture.components
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoMode
-import androidx.compose.material.icons.filled.FlashOff
-import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
@@ -36,68 +19,43 @@ import com.apexfission.android.carddetector.ui.capture.CardSide
 import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
-import com.apexfission.android.carddetector.ui.overlays.CaptureShutterButton
-import com.apexfission.android.carddetector.ui.overlays.IdCaptureIndicatorOverlay
 import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
 import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
-import com.apexfission.android.carddetector.ui.overlays.components.CaptureControlsRow
-import com.apexfission.android.carddetector.ui.overlays.components.InitialGuideOverlay
-import com.apexfission.android.carddetector.ui.overlays.components.OverlayBottomGradient
-import com.apexfission.android.carddetector.ui.overlays.components.OverlayHeader
-import com.apexfission.android.carddetector.ui.overlays.components.OverlayInstructions
-import com.apexfission.android.carddetector.ui.overlays.components.OverlayTitle
-import com.apexfission.android.carddetector.ui.overlays.components.OverlayTopGradient
+import com.apexfission.android.carddetector.ui.overlays.components.CaptureOverlay
 import com.apexfission.android.math.models.ImageBox
 import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.yolo.engine.Feature
 
-/** Component. */
+/** Two-sided copy and readiness policy adapted to the shared capture overlay. */
 @Composable
 internal fun CardDetectorOverlayScope.CaptureCameraOverlay(
     side: CardSide, strings: CardCaptureStrings, autoCaptureEnabled: Boolean,
     onToggleAutoCapture: () -> Unit, showInitialGuide: Boolean,
     canCapture: Boolean, focused: Boolean, onCapture: () -> Unit,
 ) {
-    // The initial guide yields permanently to detection for this capture attempt.
-    if (showInitialGuide && detectionState == null) InitialGuideOverlay()
-    IdCaptureIndicatorOverlay(IdCaptureOverlayConfig())
-    Box(modifier = Modifier.fillMaxSize()) {
-        OverlayTopGradient(modifier = Modifier.align(Alignment.TopCenter))
-        OverlayBottomGradient(modifier = Modifier.align(Alignment.BottomCenter))
-
-        Column(modifier = Modifier.fillMaxSize().safeDrawingPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
-            OverlayHeader(title = strings.title, onBack = { goBack() }, exitContentDescription = strings.exit)
-            Spacer(modifier = Modifier.height(16.dp))
-            OverlayInstructions(
-                title = if (side == CardSide.Front) strings.front else strings.back,
-                subtitle = if (!canCapture) { if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction } else if (focused) strings.ready else strings.focus
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(if (side == CardSide.Front) strings.stepFront else strings.stepBack, color=Color(0xFF75E8CD), fontWeight=FontWeight.Bold)
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            CaptureControlsRow(
-                isCaptureEnabled = canCapture,
-                onCapture = onCapture,
-                autoCaptureEnabled = autoCaptureEnabled,
-                onToggleAutoCapture = onToggleAutoCapture,
-                flashlightAvailable = flashlightAvailable,
-                flashlightEnabled = flashlightEnabled,
-                onToggleFlashlight = { toggleFlashlight() },
-                autoToggleContentDescription = strings.autoToggle,
-                flashContentDescription = strings.flash,
-                shutterContentDescription = strings.shutter,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 24.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(if (autoCaptureEnabled) strings.auto else strings.manual, color=Color.White, fontSize=13.sp)
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
+    CaptureOverlay(
+        config = IdCaptureOverlayConfig(
+            title = strings.title,
+            instructionTitle = if (side == CardSide.Front) strings.front else strings.back,
+            instructionSubTitle = when {
+                !canCapture -> if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction
+                focused -> strings.ready
+                else -> strings.focus
+            },
+        ),
+        showInitialGuide = showInitialGuide,
+        canCapture = canCapture,
+        onCapture = onCapture,
+        autoCaptureEnabled = autoCaptureEnabled,
+        onToggleAutoCapture = onToggleAutoCapture,
+        showAutoCaptureToggle = true,
+        exitContentDescription = strings.exit,
+        autoToggleContentDescription = strings.autoToggle,
+        flashContentDescription = strings.flash,
+        shutterContentDescription = strings.shutter,
+        step = if (side == CardSide.Front) strings.stepFront else strings.stepBack,
+        modeText = if (autoCaptureEnabled) strings.auto else strings.manual,
+    )
 }
 
 @Composable
