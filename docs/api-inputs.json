@@ -193,13 +193,13 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/CaptureReview.kt",
-    "sha256": "a224087ffa2f92cce1a91ec5bd7b3732df8359e7180b224f106795d1f4619612",
+    "sha256": "ca4e45b97b009a1da024303174c65620af625abdbcd4edcb2b203213a7567ab1",
     "guide": null,
     "visibility": "internal/private"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/CaptureTurnOver.kt",
-    "sha256": "c9d93d54522a8c5c3e72d6141b325ee95364f15ebca7186f691f6d2956847255",
+    "sha256": "670dff7bb38a0f2b8267d5343268d9fdc421dc9dcc16f43373b7e0f95ca03253",
     "guide": null,
     "visibility": "internal/private"
   },

@@ -51,8 +51,12 @@ class CaptureLayoutTest {
                         singleInstruction = "Coloca la identificación completa dentro de la guía y mantén visibles todos sus bordes sin reflejos",
                         find = "Buscando una identificación para completar el registro de la familia con buena iluminación",
                     )
-                    scope.SingleSideCaptureOverlay(strings, CaptureGuidance.Looking, true, auto.value, true,
-                        { auto.value = !auto.value }, { captures++ })
+                    scope.IdCaptureOverlay(
+                        config = IdCaptureOverlayConfig(title = strings.title,
+                            instructionTitle = strings.singleInstruction, instructionSubTitle = strings.find),
+                        strings = strings, canCapture = true, autoCaptureEnabled = auto.value,
+                        showInitialGuide = true, showAutoCaptureToggle = true,
+                        onToggleAutoCapture = { auto.value = !auto.value }, onCapture = { captures++ })
                 }
             }
         }
@@ -101,7 +105,11 @@ class CaptureLayoutTest {
             MaterialTheme {
                 Box(Modifier.fillMaxSize()) {
                     strings = defaultCardCaptureStrings()
-                    scope.SingleSideCaptureOverlay(strings, CaptureGuidance.Ready, true, true, false, {}, {})
+                    scope.IdCaptureOverlay(
+                        config = IdCaptureOverlayConfig(title = strings.title,
+                            instructionTitle = strings.singleInstruction, instructionSubTitle = strings.readyToCapture),
+                        strings = strings, canCapture = true, autoCaptureEnabled = true,
+                        showInitialGuide = false, showAutoCaptureToggle = true, onCapture = {})
                 }
             }
         }

@@ -1,6 +1,6 @@
 # Overlays, animation, and drawing
 
-Use scoped composables inside `controlOverlay`. `IdCaptureOverlay` combines indicator and controls; the split functions let the host place them independently. Capture calls the retained-image action; changing UI gating does not implement fresh capture. `DetectionOverlay` renders metadata through the image-space chain; `DebugOverlay` renders diagnostics. Unscoped overloads need explicit data. Missing mapping/detection can suppress drawing.
+Use scoped composables inside `controlOverlay`. `IdCaptureOverlay` combines indicator and controls; the split functions let the host place them independently. By default capture calls the retained-image action; changing UI gating alone does not implement fresh capture. Both complete capture flows use this public overlay with explicit availability, capture callbacks, localized strings and optional step/mode labels. `DetectionOverlay` renders metadata through the image-space chain; `DebugOverlay` renders diagnostics. Unscoped overloads need explicit data. Missing mapping/detection can suppress drawing.
 
 `IdCaptureOverlayConfig` holds text, color, timing, smoothing, opacity and gating defaults; meanings are in [configuration](../configuration.md). Prefer canonical types from `ui.overlays.animation`; older overlay-package aliases/wrappers remain for compatibility. `AnimatedDetectionBounds` offers both structured and coordinate constructors and convenience getters. Bounds are screen-space animation output, not a bitmap.
 

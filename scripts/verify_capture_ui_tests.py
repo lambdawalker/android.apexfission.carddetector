@@ -4,6 +4,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 REQUIRED = {
+    ('CaptureReviewTest', 'largeFontSingleReviewKeepsRetakeReadable'),
     ('CaptureReviewTest', 'reviewExposesSeparateRetakesAndConfirmation'),
     ('CaptureReviewTest', 'singleReviewExposesOnlyFrontRetakeAndConfirmation'),
     ('CaptureReviewTest', 'turnOverWaitsForExplicitContinue'),

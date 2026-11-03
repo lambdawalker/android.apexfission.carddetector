@@ -2,6 +2,9 @@ package com.apexfission.android.carddetector.ui.capture
 
 import android.graphics.Bitmap
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -59,6 +62,25 @@ class CaptureReviewTest {
         compose.runOnIdle { assertEquals(CardSide.Front, retaken); assertEquals(false, confirmed) }
         compose.onNodeWithText(copy.use).performClick()
         compose.runOnIdle { assertTrue(confirmed) }
+    }
+
+    @Test fun largeFontSingleReviewKeepsRetakeReadable() {
+        val front = card()
+        var retaken = false
+        lateinit var copy: CardCaptureStrings
+        compose.setContent {
+            val density = LocalDensity.current
+            copy = defaultCardCaptureStrings().copy(front = "Frente de tu identificación", retakeFront = "Repetir frente")
+            CompositionLocalProvider(LocalDensity provides Density(density.density, 1.6f)) {
+                MaterialTheme { CaptureReview(front, strings = copy, onBack = {},
+                    onRetake = { retaken = true }, onConfirm = {}) }
+            }
+        }
+        val retake = compose.onNodeWithText(copy.retakeFront).performScrollTo()
+        val bounds = retake.fetchSemanticsNode().boundsInRoot
+        assertTrue("Retake text should not wrap into a vertical letter column", bounds.width > bounds.height)
+        retake.performClick()
+        compose.runOnIdle { assertTrue(retaken) }
     }
 
     @Test fun turnOverWaitsForExplicitContinue() {
