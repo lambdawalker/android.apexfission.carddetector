@@ -20,7 +20,8 @@ import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.detector.CardDetectorCamera
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
-import com.apexfission.android.carddetector.ui.capture.components.CaptureCameraOverlay
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlay
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
 import com.apexfission.android.carddetector.ui.capture.components.CaptureReview
 import com.apexfission.android.carddetector.ui.capture.components.CaptureTurnOver
 import kotlinx.coroutines.channels.Channel
@@ -145,21 +146,32 @@ fun TwoSidedCardCapture(
                         },
                         onBack = onBack,
                     ) {
-                        CaptureCameraOverlay(
-                            side = session.side,
+                        val guidance = captureGuidance(latest?.detection, now, config, autoCaptureMode.enabled, lastAutoReady)
+                        IdCaptureOverlay(
+                            config = IdCaptureOverlayConfig(
+                                title = strings.title,
+                                instructionTitle = if (session.side == CardSide.Front) strings.front else strings.back,
+                                instructionSubTitle = when {
+                                    guidance == CaptureGuidance.Looking -> strings.find + " · " + if (session.side == CardSide.Front) strings.frontInstruction else strings.backInstruction
+                                    else -> guidance.text(strings)
+                                }
+                            ),
                             strings = strings,
                             autoCaptureEnabled = autoCaptureMode.enabled,
                             onToggleAutoCapture = { autoCaptureMode = autoCaptureMode.toggled(); lastAutoReady = false },
                             showInitialGuide = detectedAttempt != attempt,
                             canCapture = fresh,
-                            focused = fresh && latest?.detection?.focusScore?.let { it >= config.focusThreshold } == true,
                             onCapture = { capture() },
-                            guidance = captureGuidance(latest?.detection, now, config, autoCaptureMode.enabled, lastAutoReady),
+                            showAutoCaptureToggle = true,
+                            step = if (session.side == CardSide.Front) strings.stepFront else strings.stepBack,
                         )
                     }
                 }
             }
-            CaptureStage.TurnOver -> CaptureTurnOver(session.front!!, strings, onBack) {
+            CaptureStage.TurnOver -> CaptureTurnOver(session.front!!, strings, onBack, onRetake = {
+                session.retake(CardSide.Front)
+                revision++
+            }) {
                 session.continueToBack()
                 revision++
             }

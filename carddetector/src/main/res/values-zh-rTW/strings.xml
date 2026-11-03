@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">掃描您的證件</string>
+    <string name="card_capture_front">卡片正面</string>
+    <string name="card_capture_back">卡片背面</string>
+    <string name="card_capture_front_instruction">請將卡片正面置於方框內。</string>
+    <string name="card_capture_back_instruction">請將卡片背面置於方框內。</string>
+    <string name="card_capture_front_saved">已拍攝正面</string>
+    <string name="card_capture_turn_over">翻轉卡片以拍攝背面。</string>
+    <string name="card_capture_continue">繼續拍攝背面</string>
+    <string name="card_capture_review">雙面皆已拍攝</string>
+    <string name="card_capture_review_instruction">請檢查兩張圖片是否清晰，所有細節是否可讀。</string>
+    <string name="card_capture_use">使用這些照片</string>
+    <string name="card_capture_retake_front">重拍正面</string>
+    <string name="card_capture_retake_back">重拍背面</string>
+    <string name="card_capture_find">正在尋找卡片</string>
+    <string name="card_capture_focus">請拿穩 · 正在對焦</string>
+    <string name="card_capture_ready">已對焦 · 請拿穩</string>
+    <string name="card_capture_manual">點擊拍攝</string>
+    <string name="card_capture_auto">自動拍攝已開啟</string>
+    <string name="card_capture_shutter">拍攝此面</string>
+    <string name="card_capture_exit">返回</string>
+    <string name="card_capture_flash">開關手電筒</string>
+    <string name="card_capture_step_front">1 / 2 · 正面</string>
+    <string name="card_capture_step_back">2 / 2 · 背面</string>
+    <string name="card_capture_complete">2 / 2 · 完成</string>
+    <string name="card_capture_done">照片已準備就緒</string>
+    <string name="card_capture_auto_toggle">開關自動拍攝</string>
+    <string name="card_capture_ready_to_capture">準備拍攝</string>
+    <string name="card_capture_captured">照片已拍攝</string>
+    <string name="card_capture_single_instruction">請將卡片置於輔助框內</string>
+</resources>

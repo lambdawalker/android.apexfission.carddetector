@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">Zeskanuj swój dokument</string>
+    <string name="card_capture_front">Przód dokumentu</string>
+    <string name="card_capture_back">Tył dokumentu</string>
+    <string name="card_capture_front_instruction">Umieść przód dokumentu w ramce.</string>
+    <string name="card_capture_back_instruction">Umieść tył dokumentu w ramce.</string>
+    <string name="card_capture_front_saved">Przód uchwycony</string>
+    <string name="card_capture_turn_over">Odwróć dokument, aby uchwycić tył.</string>
+    <string name="card_capture_continue">Przejdź do tyłu</string>
+    <string name="card_capture_review">Obie strony uchwycone</string>
+    <string name="card_capture_review_instruction">Sprawdź, czy oba zdjęcia są ostre, a wszystkie szczegóły czytelne.</string>
+    <string name="card_capture_use">Użyj tych zdjęć</string>
+    <string name="card_capture_retake_front">Zrób ponownie przód</string>
+    <string name="card_capture_retake_back">Zrób ponownie tył</string>
+    <string name="card_capture_find">Szukanie dokumentu</string>
+    <string name="card_capture_focus">Trzymaj stabilnie · łapanie ostrości</string>
+    <string name="card_capture_ready">Ostrość ustawiona · trzymaj stabilnie</string>
+    <string name="card_capture_manual">Dotknij, aby uchwycić</string>
+    <string name="card_capture_auto">Autozapis włączony</string>
+    <string name="card_capture_shutter">Uchwyć tę stronę</string>
+    <string name="card_capture_exit">Wstecz</string>
+    <string name="card_capture_flash">Włącz/wyłącz latarkę</string>
+    <string name="card_capture_step_front">1 / 2 · Przód</string>
+    <string name="card_capture_step_back">2 / 2 · Tył</string>
+    <string name="card_capture_complete">2 / 2 · Zakończono</string>
+    <string name="card_capture_done">Zdjęcia gotowe</string>
+    <string name="card_capture_auto_toggle">Włącz/wyłącz automatyczne robienie zdjęć</string>
+    <string name="card_capture_ready_to_capture">Gotowe do uchwycenia</string>
+    <string name="card_capture_captured">Zdjęcie uchwycone</string>
+    <string name="card_capture_single_instruction">Umieść dokument w ramce</string>
+</resources>

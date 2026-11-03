@@ -18,7 +18,6 @@ import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.capture.CardSide
-import com.apexfission.android.carddetector.ui.capture.components.CaptureCameraOverlay
 import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
@@ -63,9 +62,21 @@ class CaptureOverlayTest {
                     key(attempt.intValue) {
                         with(scope) {
                             if (side == null) IdCaptureOverlay()
-                            else CaptureCameraOverlay(side, defaultCardCaptureStrings(), true, {},
-                                showInitialGuide = true, canCapture = detected.value,
-                                focused = detected.value, onCapture = {})
+                            else {
+                                val strings = defaultCardCaptureStrings()
+                                IdCaptureOverlay(
+                                    config = IdCaptureOverlayConfig(
+                                        title = strings.title,
+                                        instructionTitle = if (side == CardSide.Front) strings.front else strings.back,
+                                        instructionSubTitle = if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction
+                                    ),
+                                    autoCaptureEnabled = true,
+                                    showInitialGuide = true,
+                                    canCapture = detected.value,
+                                    showAutoCaptureToggle = true,
+                                    step = if (side == CardSide.Front) strings.stepFront else strings.stepBack
+                                )
+                            }
                         }
                     }
                 }

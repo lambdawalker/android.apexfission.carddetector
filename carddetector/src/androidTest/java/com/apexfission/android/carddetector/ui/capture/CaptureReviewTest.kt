@@ -48,7 +48,7 @@ class CaptureReviewTest {
         lateinit var copy: CardCaptureStrings
         compose.setContent {
             copy = defaultCardCaptureStrings()
-            MaterialTheme { CaptureTurnOver(front, copy, {}, { continued = true }) }
+            MaterialTheme { CaptureTurnOver(front, copy, {}, {}, { continued = true }) }
         }
         compose.onNodeWithText(copy.stepFront).assertIsDisplayed()
         compose.runOnIdle { assertEquals(false, continued) }

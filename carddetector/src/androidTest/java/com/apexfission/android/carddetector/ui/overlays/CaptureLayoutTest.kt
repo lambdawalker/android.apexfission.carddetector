@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.capture.*
-import com.apexfission.android.carddetector.ui.capture.components.CaptureCameraOverlay
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
 import org.junit.Assert.*
@@ -72,8 +71,20 @@ class CaptureLayoutTest {
                 MaterialTheme {
                     Box(Modifier.size(280.dp, 480.dp)) {
                         strings = defaultCardCaptureStrings().copy(frontInstruction = "Coloca el frente de tu identificación completo dentro del recuadro con buena iluminación y sin reflejos")
-                        scope.CaptureCameraOverlay(CardSide.Front, strings, true, {}, true, true, false,
-                            { captures++ }, guidance = CaptureGuidance.Looking)
+                        scope.IdCaptureOverlay(
+                            config = IdCaptureOverlayConfig(
+                                title = strings.title,
+                                instructionTitle = strings.front,
+                                instructionSubTitle = strings.find + " · " + strings.frontInstruction
+                            ),
+                            autoCaptureEnabled = true,
+                            showInitialGuide = true,
+                            canCapture = true,
+                            showAutoCaptureToggle = true,
+                            step = strings.stepFront,
+                            strings = strings,
+                            onCapture = { captures++ }
+                        )
                     }
                 }
             }

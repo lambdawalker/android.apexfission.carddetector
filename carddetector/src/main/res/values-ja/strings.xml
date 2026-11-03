@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">ドキュメントをスキャン</string>
+    <string name="card_capture_front">カードの表面</string>
+    <string name="card_capture_back">カードの裏面</string>
+    <string name="card_capture_front_instruction">カードの表面を枠内に配置してください。</string>
+    <string name="card_capture_back_instruction">カードの裏面を枠内に配置してください。</string>
+    <string name="card_capture_front_saved">表面を撮影しました</string>
+    <string name="card_capture_turn_over">カードを裏返して裏面を撮影してください。</string>
+    <string name="card_capture_continue">裏面へ進む</string>
+    <string name="card_capture_review">両面を撮影しました</string>
+    <string name="card_capture_review_instruction">両方の画像が鮮明で、すべての詳細が読み取れることを確認してください。</string>
+    <string name="card_capture_use">これらの写真を使用する</string>
+    <string name="card_capture_retake_front">表面を撮り直す</string>
+    <string name="card_capture_retake_back">裏面を撮り直す</string>
+    <string name="card_capture_find">カードを探しています</string>
+    <string name="card_capture_focus">動かさないでください · ピントを合わせています</string>
+    <string name="card_capture_ready">ピントが合いました · 動かさないでください</string>
+    <string name="card_capture_manual">タップして撮影</string>
+    <string name="card_capture_auto">自動撮影オン</string>
+    <string name="card_capture_shutter">この面を撮影</string>
+    <string name="card_capture_exit">戻る</string>
+    <string name="card_capture_flash">懐中電灯のオン/オフ</string>
+    <string name="card_capture_step_front">1 / 2 · 表面</string>
+    <string name="card_capture_step_back">2 / 2 · 裏面</string>
+    <string name="card_capture_complete">2 / 2 · 完了</string>
+    <string name="card_capture_done">写真の準備ができました</string>
+    <string name="card_capture_auto_toggle">自動撮影のオン/オフ</string>
+    <string name="card_capture_ready_to_capture">撮影準備完了</string>
+    <string name="card_capture_captured">写真を撮影しました</string>
+    <string name="card_capture_single_instruction">カードをガイド内に配置してください</string>
+</resources>

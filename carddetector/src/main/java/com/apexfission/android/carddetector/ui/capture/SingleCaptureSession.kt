@@ -26,6 +26,14 @@ internal class SingleCaptureSession<T>(private val release: (T) -> Unit) {
         return image
     }
 
+    fun reset() {
+        if (closed) return
+        completed = false
+        latest?.let(release)
+        latest = null
+        observedAt = 0L
+    }
+
     fun close() {
         latest?.let(release)
         latest = null

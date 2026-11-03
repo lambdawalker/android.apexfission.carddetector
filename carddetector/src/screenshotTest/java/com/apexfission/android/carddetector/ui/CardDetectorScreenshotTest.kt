@@ -27,13 +27,12 @@ import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
-import com.apexfission.android.carddetector.ui.capture.components.CaptureCameraOverlay
 import com.apexfission.android.carddetector.ui.capture.components.CaptureReview
 import com.apexfission.android.carddetector.ui.capture.components.CaptureTurnOver
 import com.apexfission.android.carddetector.ui.capture.CapturedCardSide
 import com.apexfission.android.carddetector.ui.capture.CardCaptureStrings
 import com.apexfission.android.carddetector.ui.capture.CaptureGuidance
-import com.apexfission.android.carddetector.ui.capture.SingleSideCaptureOverlay
+import com.apexfission.android.carddetector.ui.capture.text
 import com.apexfission.android.carddetector.ui.capture.SingleCaptureComplete
 import com.apexfission.android.carddetector.ui.capture.CardSide
 import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
@@ -162,11 +161,21 @@ private fun CameraScreen(
     showInitialGuide: Boolean = !detected,
     strings: CardCaptureStrings = defaultCardCaptureStrings(),
 ) = Screen(showCard = detected, backCard = side == CardSide.Back) {
-    rememberScope(detected, focused).CaptureCameraOverlay(
-        side = side, strings = strings, autoCaptureEnabled = autoCapture,
-        onToggleAutoCapture = {}, showInitialGuide = showInitialGuide,
-        canCapture = detected, focused = focused, onCapture = {},
-        guidance = if (!detected) CaptureGuidance.Looking else if (!focused) CaptureGuidance.Focusing else CaptureGuidance.Ready,
+    val guidance = if (!detected) CaptureGuidance.Looking else if (!focused) CaptureGuidance.Focusing else CaptureGuidance.Ready
+    rememberScope(detected, focused).IdCaptureOverlay(
+        config = IdCaptureOverlayConfig(
+            title = strings.title,
+            instructionTitle = if (side == CardSide.Front) strings.front else strings.back,
+            instructionSubTitle = guidance.text(strings)
+        ),
+        strings = strings,
+        autoCaptureEnabled = autoCapture,
+        onToggleAutoCapture = {},
+        showInitialGuide = showInitialGuide,
+        canCapture = detected,
+        onCapture = {},
+        showAutoCaptureToggle = true,
+        step = if (side == CardSide.Front) strings.stepFront else strings.stepBack,
     )
 }
 
@@ -191,7 +200,7 @@ fun CaptureTurnOverScreenshot() = TurnOverScreen()
 @Composable
 private fun TurnOverScreen(darkTheme: Boolean = false) = Screen(showCard = false, camera = false, darkTheme = darkTheme) {
     val front = remember { CapturedCardSide(sampleDetection, sampleCard()) }
-    CaptureTurnOver(front, defaultCardCaptureStrings(), {}, {})
+    CaptureTurnOver(front, defaultCardCaptureStrings(), {}, {}, {})
 }
 
 @PreviewTest
@@ -320,9 +329,18 @@ private fun AutoSingleScreen(
     guidance: CaptureGuidance = CaptureGuidance.HoldSteady,
     strings: CardCaptureStrings = defaultCardCaptureStrings(),
 ) = Screen(showCard = guidance != CaptureGuidance.Looking) {
-    rememberScope(guidance != CaptureGuidance.Looking).SingleSideCaptureOverlay(
-        strings, guidance, guidance != CaptureGuidance.Looking, true,
-        guidance == CaptureGuidance.Looking, {}, {},
+    rememberScope(guidance != CaptureGuidance.Looking).IdCaptureOverlay(
+        config = IdCaptureOverlayConfig(
+            title = strings.title,
+            instructionTitle = strings.singleInstruction,
+            instructionSubTitle = guidance.text(strings)
+        ),
+        strings = strings,
+        showInitialGuide = guidance == CaptureGuidance.Looking,
+        autoCaptureEnabled = true,
+        showAutoCaptureToggle = true,
+        canCapture = guidance != CaptureGuidance.Looking,
+        onCapture = {}
     )
 }
 

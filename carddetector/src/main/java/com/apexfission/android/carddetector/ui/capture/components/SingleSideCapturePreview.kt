@@ -16,6 +16,8 @@ import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageS
 import com.apexfission.android.carddetector.ui.capture.*
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlay
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
 import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
 import com.apexfission.android.math.models.ImageBox
 import com.apexfission.android.yolo.engine.Feature
@@ -47,9 +49,21 @@ private fun SingleCapturePreview(detected: Boolean) {
     }
     MaterialTheme {
         Box(Modifier.fillMaxSize().checkerboardBackground()) {
-            scope.SingleSideCaptureOverlay(defaultCardCaptureStrings(),
-                if (detected) CaptureGuidance.HoldSteady else CaptureGuidance.Looking,
-                detected, true, !detected, {}, {})
+            val guidance = if (detected) CaptureGuidance.HoldSteady else CaptureGuidance.Looking
+            val strings = defaultCardCaptureStrings()
+            scope.IdCaptureOverlay(
+                config = IdCaptureOverlayConfig(
+                    title = strings.title,
+                    instructionTitle = strings.singleInstruction,
+                    instructionSubTitle = guidance.text(strings)
+                ),
+                strings = strings,
+                showInitialGuide = !detected,
+                autoCaptureEnabled = true,
+                showAutoCaptureToggle = true,
+                canCapture = detected,
+                onCapture = {}
+            )
         }
     }
 }

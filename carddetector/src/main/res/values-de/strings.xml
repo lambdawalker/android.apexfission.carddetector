@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">Dokument scannen</string>
+    <string name="card_capture_front">Vorderseite der Karte</string>
+    <string name="card_capture_back">Rückseite der Karte</string>
+    <string name="card_capture_front_instruction">Platzieren Sie die Vorderseite Ihrer Karte im Rahmen.</string>
+    <string name="card_capture_back_instruction">Platzieren Sie die Rückseite Ihrer Karte im Rahmen.</string>
+    <string name="card_capture_front_saved">Vorderseite erfasst</string>
+    <string name="card_capture_turn_over">Drehen Sie Ihre Karte um, um die Rückseite zu erfassen.</string>
+    <string name="card_capture_continue">Weiter zur Rückseite</string>
+    <string name="card_capture_review">Beide Seiten erfasst</string>
+    <string name="card_capture_review_instruction">Überprüfen Sie, ob beide Bilder scharf sind und alle Details lesbar sind.</string>
+    <string name="card_capture_use">Diese Fotos verwenden</string>
+    <string name="card_capture_retake_front">Vorderseite wiederholen</string>
+    <string name="card_capture_retake_back">Rückseite wiederholen</string>
+    <string name="card_capture_find">Suche nach einer Karte</string>
+    <string name="card_capture_focus">Ruhig halten · fokussiert</string>
+    <string name="card_capture_ready">Im Fokus · ruhig halten</string>
+    <string name="card_capture_manual">Zum Aufnehmen tippen</string>
+    <string name="card_capture_auto">Automatische Aufnahme an</string>
+    <string name="card_capture_shutter">Diese Seite aufnehmen</string>
+    <string name="card_capture_exit">Zurück</string>
+    <string name="card_capture_flash">Taschenlampe umschalten</string>
+    <string name="card_capture_step_front">1 / 2 · Vorderseite</string>
+    <string name="card_capture_step_back">2 / 2 · Rückseite</string>
+    <string name="card_capture_complete">2 / 2 · Abgeschlossen</string>
+    <string name="card_capture_done">Fotos fertig</string>
+    <string name="card_capture_auto_toggle">Automatische Aufnahme umschalten</string>
+    <string name="card_capture_ready_to_capture">Bereit zur Aufnahme</string>
+    <string name="card_capture_captured">Foto aufgenommen</string>
+    <string name="card_capture_single_instruction">Platzieren Sie Ihre Karte im Rahmen</string>
+</resources>

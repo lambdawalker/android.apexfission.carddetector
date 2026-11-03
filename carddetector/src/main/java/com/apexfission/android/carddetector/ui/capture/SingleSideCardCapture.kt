@@ -18,10 +18,10 @@ import com.apexfission.android.carddetector.domain.tflite.filters.*
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.detector.CardDetectorCamera
-import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
+import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlay
+import com.apexfission.android.carddetector.ui.capture.components.CaptureReview
 import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
-import com.apexfission.android.carddetector.ui.overlays.components.CaptureOverlay
 import kotlinx.coroutines.channels.Channel
 
 private data class SingleCaptureFrame(val card: CapturedCardSide?, val autoReady: Boolean, val generation: Long, val hasDetected: Boolean)
@@ -59,6 +59,7 @@ fun SingleSideCardCapture(
     }
     var mode by remember { mutableStateOf(AutoCaptureMode(config.autoCaptureEnabled)) }
     var current by remember { mutableStateOf<CapturedCardSide?>(null) }
+    var reviewCard by remember { mutableStateOf<CapturedCardSide?>(null) }
     var autoReady by remember { mutableStateOf(false) }
     var hasDetected by remember { mutableStateOf(false) }
     var completed by remember { mutableStateOf(false) }
@@ -69,13 +70,12 @@ fun SingleSideCardCapture(
     fun capture() {
         val card = session.capture(SystemClock.elapsedRealtime(), config.maxDetectionGapMs) ?: return
         current = null
-        completed = true
         if (config.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-        callback(card.detection, card.bitmap)
+        reviewCard = card
     }
 
     DisposableEffect(session) {
-        onDispose { frames.cancel(); session.close() }
+        onDispose { frames.cancel(); reviewCard?.bitmap?.recycle(); session.close() }
     }
     LaunchedEffect(session) {
         while (!session.completed) { kotlinx.coroutines.delay(100); now = SystemClock.elapsedRealtime() }
@@ -92,7 +92,19 @@ fun SingleSideCardCapture(
         }
     }
     Surface(modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        if (completed) SingleCaptureComplete(strings) else {
+        if (completed) SingleCaptureComplete(strings) 
+        else if (reviewCard != null) {
+            CaptureReview(
+                front = reviewCard!!,
+                strings = strings,
+                onBack = { reviewCard?.bitmap?.recycle(); reviewCard = null; session.reset() },
+                onRetake = { reviewCard?.bitmap?.recycle(); reviewCard = null; session.reset() },
+                onConfirm = { 
+                    completed = true
+                    callback(reviewCard!!.detection, reviewCard!!.bitmap)
+                }
+            )
+        } else {
             val owner = remember { SingleCaptureOwner() }
             val readiness = remember { CaptureReadiness(config) }
             DisposableEffect(owner) { onDispose { owner.viewModelStore.clear() } }
@@ -110,14 +122,20 @@ fun SingleSideCardCapture(
                         if (frames.trySend(frame).isFailure) card?.bitmap?.recycle()
                     },
                 ) {
-                    SingleSideCaptureOverlay(
+                    val guidance = captureGuidance(current?.detection, now, config, mode.enabled, autoReady)
+                    IdCaptureOverlay(
+                        config = IdCaptureOverlayConfig(
+                            title = strings.title,
+                            instructionTitle = strings.singleInstruction,
+                            instructionSubTitle = guidance.text(strings)
+                        ),
                         strings = strings,
-                        guidance = captureGuidance(current?.detection, now, config, mode.enabled, autoReady),
                         canCapture = session.isFresh(now, config.maxDetectionGapMs),
                         autoCaptureEnabled = mode.enabled,
                         showInitialGuide = !hasDetected,
                         onToggleAutoCapture = { mode = mode.toggled(); autoReady = false },
                         onCapture = { capture() },
+                        showAutoCaptureToggle = true
                     )
                 }
             }
@@ -125,26 +143,7 @@ fun SingleSideCardCapture(
     }
 }
 
-/** Render-only adapter used by the live flow, editor previews and screenshot tests. */
-@Composable
-internal fun CardDetectorOverlayScope.SingleSideCaptureOverlay(
-    strings: CardCaptureStrings,
-    guidance: CaptureGuidance,
-    canCapture: Boolean,
-    autoCaptureEnabled: Boolean,
-    showInitialGuide: Boolean,
-    onToggleAutoCapture: () -> Unit,
-    onCapture: () -> Unit,
-) = CaptureOverlay(
-    config = IdCaptureOverlayConfig(title = strings.title, instructionTitle = strings.singleInstruction,
-        instructionSubTitle = guidance.text(strings)),
-    showInitialGuide = showInitialGuide, canCapture = canCapture, onCapture = onCapture,
-    autoCaptureEnabled = autoCaptureEnabled, onToggleAutoCapture = onToggleAutoCapture,
-    showAutoCaptureToggle = true, exitContentDescription = strings.exit,
-    autoToggleContentDescription = strings.autoToggle, flashContentDescription = strings.flash,
-    shutterContentDescription = strings.shutter,
-    modeText = if (autoCaptureEnabled) strings.auto else strings.manual,
-)
+
 
 
 @Composable

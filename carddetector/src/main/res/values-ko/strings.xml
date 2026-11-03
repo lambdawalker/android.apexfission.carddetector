@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">신분증 스캔</string>
+    <string name="card_capture_front">신분증 앞면</string>
+    <string name="card_capture_back">신분증 뒷면</string>
+    <string name="card_capture_front_instruction">신분증 앞면을 사각형 안에 맞춰주세요.</string>
+    <string name="card_capture_back_instruction">신분증 뒷면을 사각형 안에 맞춰주세요.</string>
+    <string name="card_capture_front_saved">앞면 촬영됨</string>
+    <string name="card_capture_turn_over">뒷면을 촬영하려면 신분증을 뒤집어주세요.</string>
+    <string name="card_capture_continue">뒷면 계속하기</string>
+    <string name="card_capture_review">양면 촬영 완료</string>
+    <string name="card_capture_review_instruction">두 이미지가 선명하고 모든 세부 정보가 읽을 수 있는지 확인하세요.</string>
+    <string name="card_capture_use">이 사진 사용</string>
+    <string name="card_capture_retake_front">앞면 다시 촬영</string>
+    <string name="card_capture_retake_back">뒷면 다시 촬영</string>
+    <string name="card_capture_find">신분증 찾는 중</string>
+    <string name="card_capture_focus">움직이지 마세요 · 초점 맞추는 중</string>
+    <string name="card_capture_ready">초점 맞음 · 움직이지 마세요</string>
+    <string name="card_capture_manual">탭하여 촬영</string>
+    <string name="card_capture_auto">자동 촬영 켜짐</string>
+    <string name="card_capture_shutter">이 면 촬영</string>
+    <string name="card_capture_exit">뒤로</string>
+    <string name="card_capture_flash">손전등 켜기/끄기</string>
+    <string name="card_capture_step_front">1 / 2 · 앞면</string>
+    <string name="card_capture_step_back">2 / 2 · 뒷면</string>
+    <string name="card_capture_complete">2 / 2 · 완료</string>
+    <string name="card_capture_done">사진 준비 완료</string>
+    <string name="card_capture_auto_toggle">자동 촬영 켜기/끄기</string>
+    <string name="card_capture_ready_to_capture">촬영 준비됨</string>
+    <string name="card_capture_captured">사진 촬영됨</string>
+    <string name="card_capture_single_instruction">신분증을 가이드 안에 맞춰주세요</string>
+</resources>

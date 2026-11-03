@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">Numériser votre document</string>
+    <string name="card_capture_front">Avant de votre carte</string>
+    <string name="card_capture_back">Arrière de votre carte</string>
+    <string name="card_capture_front_instruction">Placez l\'avant de votre carte dans le carré.</string>
+    <string name="card_capture_back_instruction">Placez l\'arrière de votre carte dans le carré.</string>
+    <string name="card_capture_front_saved">Avant capturé</string>
+    <string name="card_capture_turn_over">Retournez votre carte pour capturer l\'arrière.</string>
+    <string name="card_capture_continue">Continuer vers l\'arrière</string>
+    <string name="card_capture_review">Les deux côtés ont été capturés</string>
+    <string name="card_capture_review_instruction">Vérifiez que les deux images sont nettes et que tous les détails sont lisibles.</string>
+    <string name="card_capture_use">Utiliser ces photos</string>
+    <string name="card_capture_retake_front">Reprendre l\'avant</string>
+    <string name="card_capture_retake_back">Reprendre l\'arrière</string>
+    <string name="card_capture_find">Recherche d\'une carte</string>
+    <string name="card_capture_focus">Ne bougez pas · mise au point</string>
+    <string name="card_capture_ready">Net · ne bougez pas</string>
+    <string name="card_capture_manual">Appuyez pour capturer</string>
+    <string name="card_capture_auto">Capture auto activée</string>
+    <string name="card_capture_shutter">Capturer ce côté</string>
+    <string name="card_capture_exit">Retour</string>
+    <string name="card_capture_flash">Activer/désactiver la lampe torche</string>
+    <string name="card_capture_step_front">1 / 2 · Avant</string>
+    <string name="card_capture_step_back">2 / 2 · Arrière</string>
+    <string name="card_capture_complete">2 / 2 · Terminé</string>
+    <string name="card_capture_done">Photos prêtes</string>
+    <string name="card_capture_auto_toggle">Activer/désactiver la capture automatique</string>
+    <string name="card_capture_ready_to_capture">Prêt à capturer</string>
+    <string name="card_capture_captured">Photo capturée</string>
+    <string name="card_capture_single_instruction">Placez votre carte dans le guide</string>
+</resources>

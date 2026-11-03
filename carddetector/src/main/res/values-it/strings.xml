@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">Scansiona il tuo documento</string>
+    <string name="card_capture_front">Fronte della carta</string>
+    <string name="card_capture_back">Retro della carta</string>
+    <string name="card_capture_front_instruction">Posiziona il fronte della tua carta all\'interno del riquadro.</string>
+    <string name="card_capture_back_instruction">Posiziona il retro della tua carta all\'interno del riquadro.</string>
+    <string name="card_capture_front_saved">Fronte acquisito</string>
+    <string name="card_capture_turn_over">Gira la carta per acquisire il retro.</string>
+    <string name="card_capture_continue">Continua con il retro</string>
+    <string name="card_capture_review">Entrambi i lati acquisiti</string>
+    <string name="card_capture_review_instruction">Controlla che entrambe le immagini siano nitide e che tutti i dettagli siano leggibili.</string>
+    <string name="card_capture_use">Usa queste foto</string>
+    <string name="card_capture_retake_front">Scatta di nuovo il fronte</string>
+    <string name="card_capture_retake_back">Scatta di nuovo il retro</string>
+    <string name="card_capture_find">Ricerca della carta</string>
+    <string name="card_capture_focus">Tieni fermo · messa a fuoco in corso</string>
+    <string name="card_capture_ready">A fuoco · tieni fermo</string>
+    <string name="card_capture_manual">Tocca per acquisire</string>
+    <string name="card_capture_auto">Acquisizione automatica attiva</string>
+    <string name="card_capture_shutter">Acquisisci questo lato</string>
+    <string name="card_capture_exit">Indietro</string>
+    <string name="card_capture_flash">Attiva/disattiva torcia</string>
+    <string name="card_capture_step_front">1 / 2 · Fronte</string>
+    <string name="card_capture_step_back">2 / 2 · Retro</string>
+    <string name="card_capture_complete">2 / 2 · Completato</string>
+    <string name="card_capture_done">Foto pronte</string>
+    <string name="card_capture_auto_toggle">Attiva/disattiva acquisizione automatica</string>
+    <string name="card_capture_ready_to_capture">Pronto per l\'acquisizione</string>
+    <string name="card_capture_captured">Foto acquisita</string>
+    <string name="card_capture_single_instruction">Posiziona la carta all\'interno della guida</string>
+</resources>

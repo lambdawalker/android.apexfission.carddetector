@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">Digitalizar o seu documento</string>
+    <string name="card_capture_front">Frente do seu cartão</string>
+    <string name="card_capture_back">Verso do seu cartão</string>
+    <string name="card_capture_front_instruction">Coloque a frente do seu cartão dentro do quadrado.</string>
+    <string name="card_capture_back_instruction">Coloque o verso do seu cartão dentro do quadrado.</string>
+    <string name="card_capture_front_saved">Frente capturada</string>
+    <string name="card_capture_turn_over">Vire o seu cartão para capturar o verso.</string>
+    <string name="card_capture_continue">Continuar para o verso</string>
+    <string name="card_capture_review">Ambos os lados capturados</string>
+    <string name="card_capture_review_instruction">Verifique se ambas as imagens estão nítidas e se todos os detalhes são legíveis.</string>
+    <string name="card_capture_use">Usar estas fotos</string>
+    <string name="card_capture_retake_front">Capturar novamente a frente</string>
+    <string name="card_capture_retake_back">Capturar novamente o verso</string>
+    <string name="card_capture_find">À procura de um cartão</string>
+    <string name="card_capture_focus">Mantenha a posição · a focar</string>
+    <string name="card_capture_ready">Focado · mantenha a posição</string>
+    <string name="card_capture_manual">Toque para capturar</string>
+    <string name="card_capture_auto">Captura automática ativada</string>
+    <string name="card_capture_shutter">Capturar este lado</string>
+    <string name="card_capture_exit">Voltar</string>
+    <string name="card_capture_flash">Ligar/desligar lanterna</string>
+    <string name="card_capture_step_front">1 / 2 · Frente</string>
+    <string name="card_capture_step_back">2 / 2 · Verso</string>
+    <string name="card_capture_complete">2 / 2 · Concluído</string>
+    <string name="card_capture_done">Fotos prontas</string>
+    <string name="card_capture_auto_toggle">Ativar/desativar captura automática</string>
+    <string name="card_capture_ready_to_capture">Pronto para capturar</string>
+    <string name="card_capture_captured">Foto capturada</string>
+    <string name="card_capture_single_instruction">Coloque o seu cartão no guia</string>
+</resources>

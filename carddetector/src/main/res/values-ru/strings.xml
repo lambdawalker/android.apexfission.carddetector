@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_capture_title">Отсканируйте документ</string>
+    <string name="card_capture_front">Лицевая сторона документа</string>
+    <string name="card_capture_back">Обратная сторона документа</string>
+    <string name="card_capture_front_instruction">Поместите лицевую сторону документа в рамку.</string>
+    <string name="card_capture_back_instruction">Поместите обратную сторону документа в рамку.</string>
+    <string name="card_capture_front_saved">Лицевая сторона снята</string>
+    <string name="card_capture_turn_over">Переверните документ, чтобы снять обратную сторону.</string>
+    <string name="card_capture_continue">Перейти к обратной стороне</string>
+    <string name="card_capture_review">Обе стороны сняты</string>
+    <string name="card_capture_review_instruction">Убедитесь, что оба изображения четкие, а все детали читаемы.</string>
+    <string name="card_capture_use">Использовать эти фото</string>
+    <string name="card_capture_retake_front">Переснять лицевую сторону</string>
+    <string name="card_capture_retake_back">Переснять обратную сторону</string>
+    <string name="card_capture_find">Поиск документа</string>
+    <string name="card_capture_focus">Держите ровно · фокусировка</string>
+    <string name="card_capture_ready">В фокусе · держите ровно</string>
+    <string name="card_capture_manual">Нажмите, чтобы снять</string>
+    <string name="card_capture_auto">Автосъемка включена</string>
+    <string name="card_capture_shutter">Снять эту сторону</string>
+    <string name="card_capture_exit">Назад</string>
+    <string name="card_capture_flash">Включить/выключить фонарик</string>
+    <string name="card_capture_step_front">1 / 2 · Лицевая сторона</string>
+    <string name="card_capture_step_back">2 / 2 · Обратная сторона</string>
+    <string name="card_capture_complete">2 / 2 · Готово</string>
+    <string name="card_capture_done">Фото готовы</string>
+    <string name="card_capture_auto_toggle">Включить/выключить автосъемку</string>
+    <string name="card_capture_ready_to_capture">Готово к съемке</string>
+    <string name="card_capture_captured">Фото снято</string>
+    <string name="card_capture_single_instruction">Поместите документ в рамку</string>
+</resources>

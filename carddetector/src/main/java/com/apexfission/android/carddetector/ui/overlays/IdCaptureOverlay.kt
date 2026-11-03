@@ -20,6 +20,7 @@ import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
+import com.apexfission.android.carddetector.ui.capture.CardCaptureStrings
 import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
@@ -142,7 +143,27 @@ fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
     autoCaptureEnabled: Boolean = false,
     onToggleAutoCapture: () -> Unit = {},
     showAutoCaptureToggle: Boolean = false,
-) = SingleSideCaptureOverlay(config, false, autoCaptureEnabled, onToggleAutoCapture, showAutoCaptureToggle, false)
+    step: String? = null,
+    modeText: String? = if (showAutoCaptureToggle) { if (autoCaptureEnabled) defaultCardCaptureStrings().auto else defaultCardCaptureStrings().manual } else null,
+    canCapture: Boolean = !config.requiresCardDetectionForCapture || captureEnabled,
+    onCapture: () -> Unit = { capture() },
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
+) = CaptureOverlay(
+    config = config,
+    showInitialGuide = false,
+    canCapture = canCapture,
+    onCapture = onCapture,
+    autoCaptureEnabled = autoCaptureEnabled,
+    onToggleAutoCapture = onToggleAutoCapture,
+    showAutoCaptureToggle = showAutoCaptureToggle,
+    exitContentDescription = strings.exit,
+    autoToggleContentDescription = strings.autoToggle,
+    flashContentDescription = strings.flash,
+    shutterContentDescription = strings.shutter,
+    step = step,
+    modeText = modeText,
+    showIndicator = false,
+)
 
 /**
  * Built-in single-side capture overlay. The initial white guide fades out over 250 ms
@@ -158,34 +179,27 @@ fun CardDetectorOverlayScope.IdCaptureOverlay(
     autoCaptureEnabled: Boolean = false,
     onToggleAutoCapture: () -> Unit = {},
     showAutoCaptureToggle: Boolean = false,
-) = SingleSideCaptureOverlay(config, showInitialGuide, autoCaptureEnabled, onToggleAutoCapture, showAutoCaptureToggle, true)
-
-@Composable
-private fun CardDetectorOverlayScope.SingleSideCaptureOverlay(
-    config: IdCaptureOverlayConfig,
-    showInitialGuide: Boolean,
-    autoCaptureEnabled: Boolean,
-    onToggleAutoCapture: () -> Unit,
-    showAutoCaptureToggle: Boolean,
-    showIndicator: Boolean,
-) {
-    val strings = defaultCardCaptureStrings()
-    CaptureOverlay(
-        config = config,
-        showInitialGuide = showInitialGuide,
-        canCapture = !config.requiresCardDetectionForCapture || captureEnabled,
-        onCapture = { capture() },
-        autoCaptureEnabled = autoCaptureEnabled,
-        onToggleAutoCapture = onToggleAutoCapture,
-        showAutoCaptureToggle = showAutoCaptureToggle,
-        exitContentDescription = strings.exit,
-        autoToggleContentDescription = strings.autoToggle,
-        flashContentDescription = strings.flash,
-        shutterContentDescription = strings.shutter,
-        modeText = if (showAutoCaptureToggle) { if (autoCaptureEnabled) strings.auto else strings.manual } else null,
-        showIndicator = showIndicator,
-    )
-}
+    step: String? = null,
+    modeText: String? = if (showAutoCaptureToggle) { if (autoCaptureEnabled) defaultCardCaptureStrings().auto else defaultCardCaptureStrings().manual } else null,
+    canCapture: Boolean = !config.requiresCardDetectionForCapture || captureEnabled,
+    onCapture: () -> Unit = { capture() },
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
+) = CaptureOverlay(
+    config = config,
+    showInitialGuide = showInitialGuide,
+    canCapture = canCapture,
+    onCapture = onCapture,
+    autoCaptureEnabled = autoCaptureEnabled,
+    onToggleAutoCapture = onToggleAutoCapture,
+    showAutoCaptureToggle = showAutoCaptureToggle,
+    exitContentDescription = strings.exit,
+    autoToggleContentDescription = strings.autoToggle,
+    flashContentDescription = strings.flash,
+    shutterContentDescription = strings.shutter,
+    step = step,
+    modeText = modeText,
+    showIndicator = true,
+)
 
 @Composable
 private fun IdCaptureOverlayPreviewContent(hasDetection: Boolean) {

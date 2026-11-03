@@ -2,12 +2,18 @@ package com.apexfission.android.carddetector.ui.capture.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -31,15 +37,57 @@ import androidx.core.graphics.createBitmap
 
 /** Component. */
 @Composable
-internal fun CaptureTurnOver(front: CapturedCardSide, strings: CardCaptureStrings, onBack: () -> Unit, onContinue: () -> Unit) {
+internal fun CaptureTurnOver(
+    front: CapturedCardSide, strings: CardCaptureStrings, 
+    onBack: () -> Unit, onRetake: () -> Unit, onContinue: () -> Unit
+) {
     Column(Modifier.fillMaxSize().safeDrawingPadding(), horizontalAlignment=Alignment.CenterHorizontally) {
         OverlayHeader(title = strings.title, onBack = onBack, exitContentDescription = strings.exit, contentColor = MaterialTheme.colorScheme.onBackground)
         Spacer(Modifier.height(24.dp))
         OverlayTitle(strings.frontSaved, contentColor = MaterialTheme.colorScheme.primary)
         Text(strings.turnOver, color=MaterialTheme.colorScheme.onSurface, textAlign=TextAlign.Center, modifier=Modifier.padding(16.dp))
-        Image(front.bitmap.asImageBitmap(), strings.frontSaved, Modifier.weight(1f).fillMaxWidth().padding(24.dp), contentScale=ContentScale.Fit)
+        
+        Column(
+            Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
+                .padding(16.dp)
+        ) {
+            Image(
+                front.bitmap.asImageBitmap(), 
+                strings.frontSaved, 
+                Modifier.fillMaxSize(),
+                contentScale=ContentScale.Fit
+            )
+        }
+        
         Text(strings.stepFront, color=MaterialTheme.colorScheme.onSurface)
-        Button(onClick=onContinue, modifier=Modifier.fillMaxWidth().padding(24.dp)) { Text(strings.continueToBack) }
+        Spacer(Modifier.height(16.dp))
+        
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(onClick=onContinue, modifier=Modifier.fillMaxWidth()) { 
+                Text(strings.continueToBack) 
+            }
+            Spacer(Modifier.height(8.dp))
+            TextButton(onClick = onRetake) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(strings.retakeFront, color = MaterialTheme.colorScheme.primary)
+            }
+        }
+        Spacer(Modifier.height(16.dp))
     }
 }
 
@@ -57,6 +105,7 @@ private fun CaptureTurnOverPreview() {
                 front = front,
                 strings = defaultCardCaptureStrings(),
                 onBack = {},
+                onRetake = {},
                 onContinue = {}
             )
         }
