@@ -4,9 +4,12 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.FlashOff
@@ -55,35 +58,35 @@ internal fun CardDetectorOverlayScope.CaptureCameraOverlay(
     if (detectionState != null) IdCaptureIndicatorOverlay(IdCaptureOverlayConfig())
     Column(Modifier.fillMaxSize().safeDrawingPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
         CaptureHeader(strings, { goBack() })
-        Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha=0.65f)).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface.copy(alpha=0.65f)).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             CaptureTitle(if (side == CardSide.Front) strings.front else strings.back)
         }
         Spacer(Modifier.weight(1f))
-        Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha=0.75f)).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(if (!canCapture) { if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction } else if (focused) strings.ready else strings.focus, color=Color.White, textAlign=TextAlign.Center)
+        Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface.copy(alpha=0.75f)).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(if (!canCapture) { if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction } else if (focused) strings.ready else strings.focus, color=MaterialTheme.colorScheme.onSurface, textAlign=TextAlign.Center)
             Spacer(Modifier.height(12.dp))
-            Text(if (side == CardSide.Front) strings.stepFront else strings.stepBack, color=Color(0xFF75E8CD), fontWeight=FontWeight.Bold)
+            Text(if (side == CardSide.Front) strings.stepFront else strings.stepBack, color=MaterialTheme.colorScheme.primary, fontWeight=FontWeight.Bold)
             Spacer(Modifier.height(12.dp))
             Row(verticalAlignment=Alignment.CenterVertically, horizontalArrangement=Arrangement.Center) {
                 IconToggleButton(checked = autoCaptureEnabled, onCheckedChange = { onToggleAutoCapture() },
                     modifier = Modifier.width(64.dp)) {
                     Icon(Icons.Default.AutoMode, contentDescription = strings.autoToggle,
-                        tint = if (autoCaptureEnabled) Color(0xFF75E8CD) else Color.White.copy(alpha = 0.6f),
+                        tint = if (autoCaptureEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         modifier = Modifier.size(28.dp))
                 }
                 Button(onClick=onCapture, enabled=canCapture, shape=CircleShape,
-                    contentPadding=PaddingValues(8.dp), colors=ButtonDefaults.buttonColors(containerColor=Color.White),
-                    modifier=Modifier.size(76.dp).border(3.dp, Color.White, CircleShape).semantics { contentDescription=strings.shutter }) {}
+                    contentPadding=PaddingValues(8.dp), colors=ButtonDefaults.buttonColors(containerColor=MaterialTheme.colorScheme.onSurface),
+                    modifier=Modifier.size(76.dp).border(3.dp, MaterialTheme.colorScheme.onSurface, CircleShape).semantics { contentDescription=strings.shutter }) {}
                 IconToggleButton(checked = flashlightEnabled, onCheckedChange = { toggleFlashlight() },
                     enabled = flashlightAvailable, modifier = Modifier.width(64.dp)) {
                     Icon(if (flashlightEnabled) Icons.Default.FlashOn else Icons.Default.FlashOff,
                         contentDescription = strings.flash,
-                        tint = Color.White.copy(alpha = if (flashlightAvailable) 1f else 0.38f),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (flashlightAvailable) 1f else 0.38f),
                         modifier = Modifier.size(28.dp))
                 }
             }
             Spacer(Modifier.height(8.dp))
-            Text(if (autoCaptureEnabled) strings.auto else strings.manual, color=Color.White, fontSize=13.sp)
+            Text(if (autoCaptureEnabled) strings.auto else strings.manual, color=MaterialTheme.colorScheme.onSurface, fontSize=13.sp)
         }
     }
 }
@@ -113,8 +116,8 @@ private fun CaptureCameraOverlayPreview() {
             override fun capture() = Unit
         }
     }
-    MaterialTheme {
-        Box(Modifier.fillMaxSize().background(Color(0xFF111D27))) {
+    MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
+        Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
             with(scope) {
                 CaptureCameraOverlay(
                     side = CardSide.Front,

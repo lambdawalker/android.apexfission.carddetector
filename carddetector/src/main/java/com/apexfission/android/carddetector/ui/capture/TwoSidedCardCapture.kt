@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -113,7 +112,7 @@ fun TwoSidedCardCapture(
     // Reading revision makes the pure state machine observable without exposing Compose in it.
     @Suppress("UNUSED_VARIABLE") val observedRevision = revision
     val fresh = latest != null && now - receivedAt in 0..config.maxDetectionGapMs
-    Box(modifier.fillMaxSize().background(Color(0xFF111D27))) {
+    Box(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         when (session.stage) {
             CaptureStage.Camera -> key(session.attempt) {
                 val attempt = session.attempt
@@ -165,7 +164,7 @@ fun TwoSidedCardCapture(
                         onComplete(TwoSidedCardCaptureResult(front, back))
                     }
                 })
-            CaptureStage.Complete -> Text(strings.done, color = Color.White, modifier = Modifier.align(Alignment.Center))
+            CaptureStage.Complete -> Text(strings.done, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.align(Alignment.Center))
             CaptureStage.Closed -> Unit
         }
     }
