@@ -28,6 +28,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
+import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
 import com.apexfission.android.carddetector.ui.capture.CardCaptureStrings
@@ -39,7 +41,9 @@ import com.apexfission.android.carddetector.ui.overlays.CaptureShutterButton
 import com.apexfission.android.carddetector.ui.overlays.IdCaptureIndicatorOverlay
 import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
 import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
+import com.apexfission.android.math.models.ImageBox
 import com.apexfission.android.math.models.ImageSpaceChain
+import com.apexfission.android.yolo.engine.Feature
 
 /** Component. */
 @Composable
@@ -140,21 +144,29 @@ internal fun CardDetectorOverlayScope.CaptureCameraOverlay(
     }
 }
 
-@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun CaptureCameraOverlayPreview() {
+private fun CaptureCameraOverlayPreviewContent(side: CardSide, hasDetection: Boolean) {
     val density = LocalDensity.current
     val chain = remember(density) {
         with(density) { createPreviewImageSpaceChain(393, 852, 393.dp.roundToPx(), 852.dp.roundToPx()) }
     }
-    val scope = remember(chain) {
+    val sampleDetection = if (hasDetection) {
+        CardDetection(
+            lockOnProgress = 0.5f,
+            id = 12345L,
+            card = Feature(ImageBox.from2P(40, 328, 353, 524), 0.95f, 0),
+            features = emptyList(),
+            lockingStatus = LockingStatus.LockingCard,
+            focusScore = 150f,
+        )
+    } else null
+    val scope = remember(chain, sampleDetection) {
         object : CardDetectorOverlayScope {
-            override val detectionState = null
-            override val detectionSequence = 0L
-            override val latestBestDetection = null
+            override val detectionState = sampleDetection
+            override val detectionSequence = if (hasDetection) 1L else 0L
+            override val latestBestDetection = sampleDetection
             override val imageSpaceChain: ImageSpaceChain = chain
-            override val captureEnabled = false
+            override val captureEnabled = hasDetection
             override val detectorPreset = CardDetectorPreset.HighPerformance
             override val cameraPreset = CameraPreset.HighResolution
             override val classLabels = mapOf(0 to "SAMPLE_CARD")
@@ -169,16 +181,44 @@ private fun CaptureCameraOverlayPreview() {
         Box(Modifier.fillMaxSize().checkerboardBackground()) {
             with(scope) {
                 CaptureCameraOverlay(
-                    side = CardSide.Front,
+                    side = side,
                     strings = defaultCardCaptureStrings(),
                     autoCaptureEnabled = true,
                     onToggleAutoCapture = {},
-                    showInitialGuide = true,
-                    canCapture = false,
-                    focused = false,
+                    showInitialGuide = !hasDetection,
+                    canCapture = hasDetection,
+                    focused = hasDetection,
                     onCapture = {},
                 )
             }
         }
     }
+}
+
+@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CaptureCameraOverlayFrontPreview() {
+    CaptureCameraOverlayPreviewContent(side = CardSide.Front, hasDetection = false)
+}
+
+@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CaptureCameraOverlayBackPreview() {
+    CaptureCameraOverlayPreviewContent(side = CardSide.Back, hasDetection = false)
+}
+
+@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CaptureCameraOverlayFrontDetectedPreview() {
+    CaptureCameraOverlayPreviewContent(side = CardSide.Front, hasDetection = true)
+}
+
+@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CaptureCameraOverlayBackDetectedPreview() {
+    CaptureCameraOverlayPreviewContent(side = CardSide.Back, hasDetection = true)
 }
