@@ -1,5 +1,6 @@
 package com.apexfission.android.carddetector.ui.overlays
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,11 +44,21 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
+import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
+import com.apexfission.android.math.models.ImageBox
+import com.apexfission.android.math.models.ImageSpaceChain
+import com.apexfission.android.yolo.engine.Feature
+import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
+import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
+import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
 import com.apexfission.android.carddetector.ui.overlays.draw.lerpF
 
 /**
@@ -244,27 +256,6 @@ fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
 
             val isCaptureEnabled = if (config.requiresCardDetectionForCapture) captureEnabled else true
 
-            val animatedShutterAlpha by animateFloatAsState(
-                targetValue = if (isCaptureEnabled) 1.0f else 0.4f,
-                animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
-                label = "shutterAlpha"
-            )
-
-            val animatedInnerSize by animateDpAsState(
-                targetValue = if (isCaptureEnabled) 64.dp else 52.dp,
-                animationSpec = spring(
-                    stiffness = Spring.StiffnessMediumLow,
-                    dampingRatio = Spring.DampingRatioMediumBouncy
-                ),
-                label = "shutterInnerSize"
-            )
-
-            val animatedBorderAlpha by animateFloatAsState(
-                targetValue = if (isCaptureEnabled) 1.0f else 0.5f,
-                animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
-                label = "shutterBorderAlpha"
-            )
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -277,34 +268,10 @@ fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
                 Spacer(modifier = Modifier.size(48.dp))
 
                 // Centered Shutter / Capture Button
-                Box(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .alpha(animatedShutterAlpha)
-                        .clickable(
-                            enabled = isCaptureEnabled,
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = { capture() }), contentAlignment = Alignment.Center
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .border(
-                                width = 4.dp,
-                                color = Color.White.copy(alpha = animatedBorderAlpha),
-                                shape = CircleShape
-                            )
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(animatedInnerSize)
-                            .background(
-                                color = Color.White.copy(alpha = animatedShutterAlpha),
-                                shape = CircleShape
-                            )
-                    )
-                }
+                CaptureShutterButton(
+                    isCaptureEnabled = isCaptureEnabled,
+                    onClick = { capture() }
+                )
 
                 if (flashlightAvailable) {
                     IconButton(
@@ -341,5 +308,47 @@ fun CardDetectorOverlayScope.IdCaptureOverlay(
     Box(modifier = Modifier.fillMaxSize()) {
         IdCaptureIndicatorOverlay(config)
         IdCaptureControlsOverlay(config)
+    }
+}
+
+@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun IdCaptureOverlayPreview() {
+    val density = LocalDensity.current
+    val chain = remember(density) {
+        with(density) { createPreviewImageSpaceChain(393, 852, 393.dp.roundToPx(), 852.dp.roundToPx()) }
+    }
+    val sampleDetection = CardDetection(
+        lockOnProgress = 0.5f,
+        id = 12345L,
+        card = Feature(ImageBox.from2P(40, 328, 353, 524), 0.95f, 0),
+        features = emptyList(),
+        lockingStatus = LockingStatus.LockingCard,
+        focusScore = 150f,
+    )
+    val scope = remember(chain) {
+        object : CardDetectorOverlayScope {
+            override val detectionState = sampleDetection
+            override val detectionSequence = 1L
+            override val latestBestDetection = sampleDetection
+            override val imageSpaceChain = chain
+            override val captureEnabled = false
+            override val detectorPreset = CardDetectorPreset.HighPerformance
+            override val cameraPreset = CameraPreset.HighResolution
+            override val classLabels = mapOf(0 to "SAMPLE_CARD")
+            override val flashlightEnabled = false
+            override val flashlightAvailable = true
+            override fun goBack() = Unit
+            override fun toggleFlashlight() = Unit
+            override fun capture() = Unit
+        }
+    }
+    MaterialTheme {
+        Box(Modifier.fillMaxSize().checkerboardBackground()) {
+            with(scope) {
+                IdCaptureOverlay()
+            }
+        }
     }
 }

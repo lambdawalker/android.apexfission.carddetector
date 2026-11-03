@@ -1,9 +1,23 @@
 package com.apexfission.android.carddetector.ui.overlays
 
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
+import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
+import com.apexfission.android.math.models.ImageBox
+import com.apexfission.android.yolo.engine.Feature
+import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
+import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
+import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.overlays.draw.buildConnectors
 import com.apexfission.android.carddetector.ui.overlays.draw.buildCorners
@@ -133,6 +147,46 @@ fun CardDetectorOverlayScope.CardLockOnOverlay(
                     )
                 }
             }
+        }
+    }
+}
+
+@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CardLockOnOverlayPreview() {
+    val density = LocalDensity.current
+    val chain = remember(density) {
+        with(density) { createPreviewImageSpaceChain(393, 852, 393.dp.roundToPx(), 852.dp.roundToPx()) }
+    }
+    val sampleDetection = CardDetection(
+        lockOnProgress = 0.5f,
+        id = 12345L,
+        card = Feature(ImageBox.from2P(40, 328, 353, 524), 0.95f, 0),
+        features = emptyList(),
+        lockingStatus = LockingStatus.LockingCard,
+        focusScore = 150f,
+    )
+    val scope = remember(chain) {
+        object : CardDetectorOverlayScope {
+            override val detectionState = sampleDetection
+            override val detectionSequence = 1L
+            override val latestBestDetection = sampleDetection
+            override val imageSpaceChain = chain
+            override val captureEnabled = false
+            override val detectorPreset = CardDetectorPreset.HighPerformance
+            override val cameraPreset = CameraPreset.HighResolution
+            override val classLabels = mapOf(0 to "SAMPLE_CARD")
+            override val flashlightEnabled = false
+            override val flashlightAvailable = true
+            override fun goBack() = Unit
+            override fun toggleFlashlight() = Unit
+            override fun capture() = Unit
+        }
+    }
+    with(scope) {
+        Box(Modifier.fillMaxSize().checkerboardBackground()) {
+            CardLockOnOverlay()
         }
     }
 }

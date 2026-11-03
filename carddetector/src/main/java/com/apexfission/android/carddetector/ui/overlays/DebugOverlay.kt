@@ -1,5 +1,6 @@
 package com.apexfission.android.carddetector.ui.overlays
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -192,20 +193,23 @@ fun DebugOverlay(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun DebugOverlayPreview() {
-    DebugOverlay(
-        isDetectionEnabled = true,
-        useGpu = false,
-        showBoundingBoxes = true,
-        showLockOnProgress = true,
-        imageMode = PreProcessingImageTransformation.FullImage,
-        inferenceIntervalMs = 100L,
-        tapToFocusEnabled = true,
-        focusOnCardEnabled = true,
-        lockOnThreshold = 3,
-        numThreads = NumThreads.Default
-    )
+    Box(Modifier.fillMaxSize().checkerboardBackground()) {
+        DebugOverlay(
+            isDetectionEnabled = true,
+            useGpu = false,
+            showBoundingBoxes = true,
+            showLockOnProgress = true,
+            imageMode = PreProcessingImageTransformation.FullImage,
+            inferenceIntervalMs = 100L,
+            tapToFocusEnabled = true,
+            focusOnCardEnabled = true,
+            lockOnThreshold = 3,
+            numThreads = NumThreads.Default
+        )
+    }
 }
 

@@ -1,24 +1,32 @@
 package com.apexfission.android.carddetector.ui.overlays
 
+import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
+import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
+import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
+import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
+import com.apexfission.android.math.models.ImageBox
 import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.math.transformations.translate
-import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
-import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
-import androidx.compose.ui.tooling.preview.Preview
+import com.apexfission.android.yolo.engine.Feature
 
 /**
  * Component.
@@ -101,14 +109,30 @@ fun DetectionOverlay(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun DetectionOverlayPreview() {
-    DetectionOverlay(
-        cardDetection = null,
-        imageSpaceChain = ImageSpaceChain.Empty,
-        showClassNames = false,
-        classLabels = emptyMap()
+    val density = LocalDensity.current
+    val chain = remember(density) {
+        with(density) { createPreviewImageSpaceChain(393, 852, 393.dp.roundToPx(), 852.dp.roundToPx()) }
+    }
+    val sampleDetection = CardDetection(
+        lockOnProgress = 0.5f,
+        id = 12345L,
+        card = Feature(ImageBox.from2P(40, 328, 353, 524), 0.95f, 0),
+        features = emptyList(),
+        lockingStatus = LockingStatus.LockingCard,
+        focusScore = 150f,
     )
+
+    Box(Modifier.fillMaxSize().checkerboardBackground()) {
+        DetectionOverlay(
+            cardDetection = sampleDetection,
+            imageSpaceChain = chain,
+            showClassNames = true,
+            classLabels = mapOf(0 to "SAMPLE_CARD")
+        )
+    }
 }
 
