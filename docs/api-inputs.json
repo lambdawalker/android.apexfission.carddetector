@@ -175,13 +175,13 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/SingleCaptureSession.kt",
-    "sha256": "81d429b39dfd0bb3361abf4a1f1a7e673dc3baedc0ef2d2651f526043819a68f",
+    "sha256": "6f1e686005444a19c1f7812d437cec45677dc28aa763f12c909c8ac7325373f7",
     "guide": null,
     "visibility": "internal/private"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/SingleSideCardCapture.kt",
-    "sha256": "788d908fb11c5de6d390f94eb42dd3cb0b83df488171d04865f35b391e27079b",
+    "sha256": "eb355a7f4f5073852ee6d62186ac5a931d2eff70eeb26c2fc6fc36168bcaa1a9",
     "guide": "docs/agents/api/components.md",
     "visibility": "public"
   },

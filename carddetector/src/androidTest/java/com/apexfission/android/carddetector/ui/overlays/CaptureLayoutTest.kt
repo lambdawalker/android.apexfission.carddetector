@@ -1,5 +1,6 @@
 package com.apexfission.android.carddetector.ui.overlays
 
+import android.graphics.Bitmap
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
@@ -17,6 +18,10 @@ import androidx.compose.ui.unit.dp
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.capture.*
+import com.apexfission.android.carddetector.ui.capture.components.CaptureTurnOver
+import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
+import com.apexfission.android.math.models.ImageBox
+import com.apexfission.android.yolo.engine.Feature
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
 import org.junit.Assert.*
@@ -114,5 +119,23 @@ class CaptureLayoutTest {
             }
         }
         compose.onNodeWithContentDescription(strings.shutter).assertIsDisplayed()
+    }
+
+    @Test fun landscapeTurnOverCanScrollToFullImageAndKeepActionsVisible() {
+        compose.runOnUiThread { compose.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
+        compose.waitUntil(10_000) { compose.activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
+        val front = CapturedCardSide(
+            CardDetection(1f, 1L, Feature(ImageBox.from2P(0, 0, 100, 60), 1f, 0), emptyList(), LockingStatus.CardLocked),
+            Bitmap.createBitmap(100, 60, Bitmap.Config.ARGB_8888),
+        )
+        lateinit var strings: CardCaptureStrings
+        compose.setContent {
+            strings = defaultCardCaptureStrings()
+            MaterialTheme { CaptureTurnOver(front, strings, {}, {}, {}) }
+        }
+        compose.onNodeWithContentDescription(strings.frontSaved).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(strings.continueToBack).assertIsDisplayed()
+        compose.onNodeWithText(strings.retakeFront).assertIsDisplayed()
+        compose.runOnIdle { front.bitmap.recycle() }
     }
 }

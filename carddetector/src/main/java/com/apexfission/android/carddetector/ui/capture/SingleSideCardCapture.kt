@@ -24,7 +24,7 @@ import com.apexfission.android.carddetector.ui.capture.components.CaptureReview
 import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
 import kotlinx.coroutines.channels.Channel
 
-private data class SingleCaptureFrame(val card: CapturedCardSide?, val autoReady: Boolean, val generation: Long, val hasDetected: Boolean)
+private data class SingleCaptureFrame(val attempt: Long, val card: CapturedCardSide?, val autoReady: Boolean, val generation: Long, val hasDetected: Boolean)
 private class SingleCaptureOwner : ViewModelStoreOwner {
     override val viewModelStore = ViewModelStore()
 }
@@ -82,8 +82,7 @@ fun SingleSideCardCapture(
     }
     LaunchedEffect(frames) {
         for (frame in frames) {
-            session.offer(frame.card, frame.card?.detection?.observedAtElapsedRealtimeMs ?: 0)
-            if (session.completed) continue
+            if (!session.offer(frame.card, frame.card?.detection?.observedAtElapsedRealtimeMs ?: 0, frame.attempt)) continue
             current = frame.card
             autoReady = mode.accepts(frame.generation, frame.autoReady)
             hasDetected = hasDetected || frame.hasDetected
@@ -107,12 +106,13 @@ fun SingleSideCardCapture(
                 }
             )
         } else {
+            val cameraAttempt = session.attempt
             val owner = remember { SingleCaptureOwner() }
             val readiness = remember { CaptureReadiness(config) }
             DisposableEffect(owner) { onDispose { owner.viewModelStore.clear() } }
             CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
                 CardDetectorCamera(
-                    instanceKey = instanceKey, modelPath = modelPath, classLabels = classLabels,
+                    instanceKey = "$instanceKey:$cameraAttempt", modelPath = modelPath, classLabels = classLabels,
                     cardClasses = cardClasses, detectorPreset = detectorPreset, cameraPreset = cameraPreset,
                     cardFilters = cardFilters, onBack = onBack,
                     onFrameEvaluation = { detection, bitmap ->
@@ -120,7 +120,7 @@ fun SingleSideCardCapture(
                         val ready = readiness.evaluate(detection, SystemClock.elapsedRealtime(), evaluatedMode)
                         val card = if (detection != null && bitmap != null) CapturedCardSide(detection, bitmap) else null
                         if (card == null) bitmap?.recycle()
-                        val frame = SingleCaptureFrame(card, ready, evaluatedMode.generation, readiness.hasDetected)
+                        val frame = SingleCaptureFrame(cameraAttempt, card, ready, evaluatedMode.generation, readiness.hasDetected)
                         if (frames.trySend(frame).isFailure) card?.bitmap?.recycle()
                     },
                 ) {
