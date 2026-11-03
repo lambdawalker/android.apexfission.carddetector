@@ -19,9 +19,11 @@ ${es?'El flujo de dos caras guía al usuario desde el frente hasta la revisión 
 
 ${gallery([
  [`capture-front-${lang}`,es?'1. Frente':'1. Front',es?'Coloca la tarjeta dentro de la guía.':'Place the card inside the guide.'],
- [`capture-turn-over-${lang}`,es?'2. Girar':'2. Turn over',es?'Cambia de cara después de la primera captura.':'Switch sides after the first capture.'],
- [`capture-back-${lang}`,es?'3. Reverso':'3. Back',es?'Captura la segunda cara.':'Capture the second side.'],
- [`capture-review-${lang}`,es?'4. Revisar':'4. Review',es?'Confirma el par o repite una captura.':'Confirm the pair or retake a side.'],
+ [`capture-front-ready-${lang}`,es?'2. Frente detectado':'2. Front detected',es?'El cuadrado blanco deja paso al indicador de detección.':'The white square yields to the detection indicator.'],
+ [`capture-turn-over-${lang}`,es?'3. Girar':'3. Turn over',es?'Cambia de cara después de la primera captura.':'Switch sides after the first capture.'],
+ [`capture-back-${lang}`,es?'4. Reverso':'4. Back',es?'Captura la segunda cara.':'Capture the second side.'],
+ [`capture-back-ready-${lang}`,es?'5. Reverso detectado':'5. Back detected',es?'La guía sigue la segunda cara detectada.':'The guide follows the detected second side.'],
+ [`capture-review-${lang}`,es?'6. Revisar':'6. Review',es?'Confirma el par o repite una captura.':'Confirm the pair or retake a side.'],
 ])}
 
 ## ${es?'Una cara y capas visuales':'Single-side capture and overlays'}
