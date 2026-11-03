@@ -8,6 +8,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
+import com.apexfission.android.carddetector.ui.capture.components.CaptureReview
+import com.apexfission.android.carddetector.ui.capture.components.CaptureTurnOver
 import com.apexfission.android.math.models.ImageBox
 import com.apexfission.android.yolo.engine.Feature
 import org.junit.Assert.assertEquals

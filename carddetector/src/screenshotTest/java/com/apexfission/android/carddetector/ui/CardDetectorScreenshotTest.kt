@@ -25,9 +25,9 @@ import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
-import com.apexfission.android.carddetector.ui.capture.CaptureCameraOverlay
-import com.apexfission.android.carddetector.ui.capture.CaptureReview
-import com.apexfission.android.carddetector.ui.capture.CaptureTurnOver
+import com.apexfission.android.carddetector.ui.capture.components.CaptureCameraOverlay
+import com.apexfission.android.carddetector.ui.capture.components.CaptureReview
+import com.apexfission.android.carddetector.ui.capture.components.CaptureTurnOver
 import com.apexfission.android.carddetector.ui.capture.CapturedCardSide
 import com.apexfission.android.carddetector.ui.capture.CardSide
 import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
