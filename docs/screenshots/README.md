@@ -28,7 +28,7 @@ A release that changes UI or camera behavior needs current device verification; 
 
 ## Render current UI states on the host
 
-The website overview groups the reviewed previews into two-sided capture, single-side capture and overlays, and the demo catalog. `ui-manifest.json` records the 19 curated images and their hashes, dimensions, render commits, and workflow runs. Per-image provenance overrides the top-level render when a later run supplied the image. English and Spanish overviews select the matching capture and welcome screens; overlay examples are shared. These development previews are illustrative on every version's overview; they do not assert that an archived release provides the displayed UI.
+The website overview groups the reviewed previews into two-sided capture, single-side capture and overlays, and the demo catalog. `ui-manifest.json` records the 21 curated images and their hashes, dimensions, render commits, and workflow runs. Per-image provenance overrides the top-level render when a later run supplied the image. English and Spanish overviews select the matching capture and welcome screens; overlay examples are shared. These development previews are illustrative on every version's overview; they do not assert that an archived release provides the displayed UI.
 
 The **Render documentation screens** workflow renders Compose previews for `:carddetector` and `:app`, then compares a second render with those generated images. It runs for PRs and pushes to main/previews and can be dispatched manually. Download `compose-previews-carddetector` and `compose-previews-app` from the run. Each archive includes PNGs, reports, and `render-manifest.json` with the exact source SHA and image hashes. Missing, duplicate or unexpected scenarios fail the job; `scripts/screenshot-scenarios.json` lists the required scenario names, rather than only an image count. Run `python3 scripts/screenshot_manifest.py --module carddetector` (or `--module app`) after rendering to validate them locally and write the candidate manifest.
 
@@ -51,10 +51,10 @@ The existing workflow generates candidates and compares another render from the 
 
 ## Initial-guide transition verification
 
-`CaptureOverlayTest` runs on an API 35 emulator in the **Capture guide fade transitions** job. It exercises the actual single-side/front/back wrappers without starting a camera or model. With the Compose clock paused, it samples pixels on the initial white square before detection and midway through the 250 ms fade, verifies removal after the fade, verifies that a missed detection does not restore it, and verifies that a fresh composition/capture attempt restores it. JVM tests also cover the one-way guide-state policy. Run just these UI tests with:
+`CaptureOverlayTest` runs on an API 35 emulator in the **Capture guide and layout tests** job. It exercises the actual single-side/front/back wrappers without starting a camera or model. With the Compose clock paused, it samples pixels on the initial white square before detection and midway through the 250 ms fade, verifies removal after the fade, verifies that a missed detection does not restore it, and verifies that a fresh composition/capture attempt restores it. JVM tests also cover the one-way guide-state policy. Run just these UI tests with:
 
 ```bash
-./gradlew :carddetector:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.apexfission.android.carddetector.ui.overlays.CaptureOverlayTest
+./gradlew :carddetector:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.package=com.apexfission.android.carddetector.ui.overlays
 ```
 
 Static after-miss snapshots deliberately supply the final guide-hidden state; they are not animation evidence. The current UI also uses theme-aware text on turn-over/review screens while camera headers retain their white text over gradients. Refresh curated images only from the reviewed render artifacts and retain their actual source SHA and hashes.

@@ -43,3 +43,7 @@ The simulator's [MainViewModel](../../app/src/main/java/com/apexfission/android/
 ## Screenshots and tests
 
 The accepted image above is deterministically extracted from the supplied video, with timestamp, input hash, tool configuration, and pixel hash in the media manifest. It is not a newly captured app screenshot. Current device screenshots are optional; no device screenshot baseline is claimed. Existing image-test outputs concern detector fixtures and are not silently repurposed as UI evidence. See [maintenance](../maintenance.md) for candidate/update/verify commands.
+
+The single-side automatic demo uses the same focus/stability gate as the two-sided flow. It delivers one current crop and returns to the catalog; automatic/manual mode remains selectable.
+
+![Single-side automatic capture](../screenshots/single-side-auto-en.png)

@@ -33,6 +33,7 @@ ${es?'Usa una captura de una sola cara o construye tus propios controles sobre l
 ${gallery([
  ['single-side-idle',es?'Guía inicial':'Initial guide',es?'Orientación antes de detectar una tarjeta.':'Guidance before a card is detected.'],
  ['single-side-detected',es?'Tarjeta detectada':'Card detected',es?'Controles y estado después de la detección.':'Controls and state after detection.'],
+ [`single-side-auto-${lang}`,es?'Captura automática de un lado':'Single-side automatic capture',es?'Espera enfoque y estabilidad; permite cambiar a captura manual.':'Waits for focus and stability; supports switching to manual capture.'],
  ['detection-overlay',es?'Detección':'Detection',es?'Geometría del resultado detectado.':'Geometry of the detection result.'],
  ['lock-on-overlay',es?'Seguimiento':'Lock-on',es?'Guía alineada con la tarjeta.':'Tracking guide aligned with the card.'],
  ['debug-overlay',es?'Diagnóstico':'Debug',es?'Información adicional para desarrollo.':'Additional information for development.'],

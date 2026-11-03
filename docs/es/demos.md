@@ -43,3 +43,7 @@ El [MainViewModel](../../app/src/main/java/com/apexfission/android/carddetector/
 ## Capturas de pantalla y pruebas
 
 La imagen aceptada anterior se extrae de forma determinista del vídeo suministrado, con la marca temporal, el hash de entrada, la configuración de herramientas y el hash de píxeles en el manifiesto multimedia. No es una captura de pantalla nueva de la aplicación. Las capturas actuales de dispositivos son opcionales; no se afirma disponer de una referencia de capturas de dispositivo. Las salidas existentes de pruebas de imágenes corresponden a datos de prueba del detector y no se reutilizan implícitamente como pruebas de la interfaz. Consulte [mantenimiento](../maintenance.md) para los comandos de generación de candidatos, actualización y verificación.
+
+La demo automática de un lado usa el mismo control de enfoque y estabilidad que el flujo de ambos lados. Entrega un recorte actual y vuelve al catálogo; permite seleccionar el modo automático o manual.
+
+![Single-side automatic capture](../screenshots/single-side-auto-es.png)
