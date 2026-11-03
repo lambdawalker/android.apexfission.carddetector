@@ -25,15 +25,17 @@ import com.apexfission.android.yolo.engine.Feature
 import com.apexfission.android.carddetector.ui.capture.CapturedCardSide
 import com.apexfission.android.carddetector.ui.capture.CardCaptureStrings
 import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayHeader
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayTitle
 import androidx.core.graphics.createBitmap
 
 /** Component. */
 @Composable
 internal fun CaptureTurnOver(front: CapturedCardSide, strings: CardCaptureStrings, onBack: () -> Unit, onContinue: () -> Unit) {
     Column(Modifier.fillMaxSize().safeDrawingPadding(), horizontalAlignment=Alignment.CenterHorizontally) {
-        CaptureHeader(strings, onBack)
+        OverlayHeader(title = strings.title, onBack = onBack, exitContentDescription = strings.exit)
         Spacer(Modifier.height(24.dp))
-        CaptureTitle(strings.frontSaved)
+        OverlayTitle(strings.frontSaved)
         Text(strings.turnOver, color=MaterialTheme.colorScheme.onSurface, textAlign=TextAlign.Center, modifier=Modifier.padding(16.dp))
         Image(front.bitmap.asImageBitmap(), strings.frontSaved, Modifier.weight(1f).fillMaxWidth().padding(24.dp), contentScale=ContentScale.Fit)
         Text(strings.stepFront, color=MaterialTheme.colorScheme.onSurface)

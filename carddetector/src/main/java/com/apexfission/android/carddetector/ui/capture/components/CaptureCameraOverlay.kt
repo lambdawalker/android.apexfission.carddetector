@@ -1,7 +1,6 @@
 package com.apexfission.android.carddetector.ui.capture.components
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -41,6 +40,13 @@ import com.apexfission.android.carddetector.ui.overlays.CaptureShutterButton
 import com.apexfission.android.carddetector.ui.overlays.IdCaptureIndicatorOverlay
 import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
 import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
+import com.apexfission.android.carddetector.ui.overlays.components.CaptureControlsRow
+import com.apexfission.android.carddetector.ui.overlays.components.InitialGuideOverlay
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayBottomGradient
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayHeader
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayInstructions
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayTitle
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayTopGradient
 import com.apexfission.android.math.models.ImageBox
 import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.yolo.engine.Feature
@@ -53,90 +59,40 @@ internal fun CardDetectorOverlayScope.CaptureCameraOverlay(
     canCapture: Boolean, focused: Boolean, onCapture: () -> Unit,
 ) {
     // The initial guide yields permanently to detection for this capture attempt.
-    if (showInitialGuide && detectionState == null) Canvas(Modifier.fillMaxSize()) {
-        val edge = minOf(size.width * 0.85f, size.height * 0.48f)
-        drawRoundRect(Color.White.copy(alpha = 0.5f), Offset((size.width-edge)/2, (size.height-edge)/2),
-            Size(edge, edge), CornerRadius(18.dp.toPx()), style = Stroke(2.dp.toPx()))
-    }
-    if (detectionState != null) IdCaptureIndicatorOverlay(IdCaptureOverlayConfig())
+    if (showInitialGuide && detectionState == null) InitialGuideOverlay()
+    IdCaptureIndicatorOverlay(IdCaptureOverlayConfig())
     Box(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .fillMaxWidth()
-                .height(180.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Black,
-                            Color.Black.copy(alpha = 0.75f),
-                            Color.Transparent
-                        )
-                    )
-                )
-        )
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(280.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.75f),
-                            Color.Black
-                        )
-                    )
-                )
-        )
+        OverlayTopGradient(modifier = Modifier.align(Alignment.TopCenter))
+        OverlayBottomGradient(modifier = Modifier.align(Alignment.BottomCenter))
 
         Column(modifier = Modifier.fillMaxSize().safeDrawingPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
-            CaptureHeader(strings, { goBack() })
+            OverlayHeader(title = strings.title, onBack = { goBack() }, exitContentDescription = strings.exit)
             Spacer(modifier = Modifier.height(16.dp))
-            CaptureTitle(if (side == CardSide.Front) strings.front else strings.back)
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(if (!canCapture) { if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction } else if (focused) strings.ready else strings.focus, color=Color.White, textAlign=TextAlign.Center)
+            OverlayInstructions(
+                title = if (side == CardSide.Front) strings.front else strings.back,
+                subtitle = if (!canCapture) { if (side == CardSide.Front) strings.frontInstruction else strings.backInstruction } else if (focused) strings.ready else strings.focus
+            )
 
             Spacer(modifier = Modifier.weight(1f))
 
             Spacer(modifier = Modifier.height(12.dp))
             Text(if (side == CardSide.Front) strings.stepFront else strings.stepBack, color=Color(0xFF75E8CD), fontWeight=FontWeight.Bold)
             Spacer(modifier = Modifier.height(12.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp, vertical = 24.dp)
-            ) {
-                CaptureShutterButton(
-                    isCaptureEnabled = canCapture,
-                    onClick = onCapture,
-                    modifier = Modifier.align(Alignment.Center).semantics { contentDescription=strings.shutter }
-                )
-                
-                Row(
-                    modifier = Modifier.align(Alignment.CenterEnd),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconToggleButton(checked = autoCaptureEnabled, onCheckedChange = { onToggleAutoCapture() },
-                        modifier = Modifier.size(48.dp).background(Color.Black.copy(alpha = 0.5f), CircleShape)) {
-                        Icon(Icons.Default.AutoMode, contentDescription = strings.autoToggle,
-                            tint = if (autoCaptureEnabled) Color(0xFF75E8CD) else Color.White.copy(alpha = 0.6f))
-                    }
-                    if (flashlightAvailable) {
-                        IconToggleButton(checked = flashlightEnabled, onCheckedChange = { toggleFlashlight() },
-                            modifier = Modifier.size(48.dp).background(Color.Black.copy(alpha = 0.5f), CircleShape)) {
-                            Icon(if (flashlightEnabled) Icons.Default.FlashOn else Icons.Default.FlashOff,
-                                contentDescription = strings.flash,
-                                tint = if (flashlightEnabled) Color.Yellow else Color.White)
-                        }
-                    } else {
-                        Spacer(modifier = Modifier.size(48.dp))
-                    }
-                }
-            }
+            
+            CaptureControlsRow(
+                isCaptureEnabled = canCapture,
+                onCapture = onCapture,
+                autoCaptureEnabled = autoCaptureEnabled,
+                onToggleAutoCapture = onToggleAutoCapture,
+                flashlightAvailable = flashlightAvailable,
+                flashlightEnabled = flashlightEnabled,
+                onToggleFlashlight = { toggleFlashlight() },
+                autoToggleContentDescription = strings.autoToggle,
+                flashContentDescription = strings.flash,
+                shutterContentDescription = strings.shutter,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 24.dp)
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
             Text(if (autoCaptureEnabled) strings.auto else strings.manual, color=Color.White, fontSize=13.sp)
             Spacer(modifier = Modifier.height(16.dp))

@@ -33,6 +33,8 @@ import com.apexfission.android.carddetector.ui.capture.CapturedCardSide
 import com.apexfission.android.carddetector.ui.capture.CardCaptureStrings
 import com.apexfission.android.carddetector.ui.capture.CardSide
 import com.apexfission.android.carddetector.ui.capture.defaultCardCaptureStrings
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayHeader
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayTitle
 import androidx.core.graphics.createBitmap
 
 /** Component. */
@@ -48,9 +50,9 @@ internal fun CaptureReview(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CaptureHeader(strings, onBack)
+        OverlayHeader(title = strings.title, onBack = onBack, exitContentDescription = strings.exit)
         Spacer(Modifier.height(16.dp))
-        CaptureTitle(strings.review)
+        OverlayTitle(strings.review)
         Spacer(Modifier.height(8.dp))
         Text(
             strings.reviewInstruction,

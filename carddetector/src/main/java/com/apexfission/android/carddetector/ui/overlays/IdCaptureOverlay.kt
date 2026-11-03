@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -59,6 +60,12 @@ import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
+import com.apexfission.android.carddetector.ui.overlays.components.CaptureControlsRow
+import com.apexfission.android.carddetector.ui.overlays.components.InitialGuideOverlay
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayBottomGradient
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayHeader
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayInstructions
+import com.apexfission.android.carddetector.ui.overlays.components.OverlayTopGradient
 import com.apexfission.android.carddetector.ui.overlays.draw.lerpF
 
 /**
@@ -174,121 +181,55 @@ fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
  */
 @Composable
 fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
-    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig()
+    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig(),
+    autoCaptureEnabled: Boolean = false,
+    onToggleAutoCapture: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .fillMaxWidth()
-                .height(180.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Black,
-                            Color.Black.copy(alpha = 0.75f),
-                            Color.Transparent
-                        )
-                    )
-                )
-        )
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(180.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.75f),
-                            Color.Black
-                        )
-                    )
-                )
-        )
+        OverlayTopGradient(modifier = Modifier.align(Alignment.TopCenter))
+        OverlayBottomGradient(modifier = Modifier.align(Alignment.BottomCenter))
 
         // Overlay UI layer (Header, instructions, controls)
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
             // Top Bar with back button & title
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 2.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(onClick = { goBack() }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White
-                    )
-                }
-
-                Text(
-                    text = config.title, color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center
-                )
-
-                // Spacer for top bar balance
-                Spacer(modifier = Modifier.size(48.dp))
-            }
+            OverlayHeader(title = config.title, onBack = { goBack() })
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Instruction title and subtitle
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = config.instructionTitle, color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = config.instructionSubTitle, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, textAlign = TextAlign.Center
-                )
-            }
+            OverlayInstructions(
+                title = config.instructionTitle,
+                subtitle = config.instructionSubTitle
+            )
 
             Spacer(modifier = Modifier.weight(1f))
 
             val isCaptureEnabled = if (config.requiresCardDetectionForCapture) captureEnabled else true
 
-            Row(
+            CaptureControlsRow(
+                isCaptureEnabled = isCaptureEnabled,
+                onCapture = { capture() },
+                autoCaptureEnabled = autoCaptureEnabled,
+                onToggleAutoCapture = onToggleAutoCapture,
+                flashlightAvailable = flashlightAvailable,
+                flashlightEnabled = flashlightEnabled,
+                onToggleFlashlight = { toggleFlashlight() },
+                autoToggleContentDescription = "Toggle automatic capture",
+                flashContentDescription = "Toggle Flashlight",
+                shutterContentDescription = "Capture",
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(horizontal = 32.dp, vertical = 24.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Spacer on left to balance right button
-                Spacer(modifier = Modifier.size(48.dp))
+                    .padding(horizontal = 32.dp, vertical = 24.dp)
+            )
 
-                // Centered Shutter / Capture Button
-                CaptureShutterButton(
-                    isCaptureEnabled = isCaptureEnabled,
-                    onClick = { capture() }
-                )
-
-                if (flashlightAvailable) {
-                    IconButton(
-                        onClick = { toggleFlashlight() }, modifier = Modifier
-                            .size(48.dp)
-                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
-                    ) {
-                        Icon(
-                            imageVector = if (flashlightEnabled) Icons.Default.FlashOn else Icons.Default.FlashOff,
-                            contentDescription = "Toggle Flashlight",
-                            tint = if (flashlightEnabled) Color.Yellow else Color.White
-                        )
-                    }
-                } else {
-                    Spacer(modifier = Modifier.size(48.dp))
-                }
-            }
+            Text(
+                text = if (autoCaptureEnabled) "Auto-capture on" else "Auto-capture off",
+                color = Color.White,
+                fontSize = 13.sp,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -303,37 +244,41 @@ fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
  */
 @Composable
 fun CardDetectorOverlayScope.IdCaptureOverlay(
-    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig()
+    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig(),
+    showInitialGuide: Boolean = true,
+    autoCaptureEnabled: Boolean = false,
+    onToggleAutoCapture: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
+        if (showInitialGuide && detectionState == null) InitialGuideOverlay()
         IdCaptureIndicatorOverlay(config)
-        IdCaptureControlsOverlay(config)
+        IdCaptureControlsOverlay(config, autoCaptureEnabled, onToggleAutoCapture)
     }
 }
 
-@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun IdCaptureOverlayPreview() {
+private fun IdCaptureOverlayPreviewContent(hasDetection: Boolean) {
     val density = LocalDensity.current
     val chain = remember(density) {
         with(density) { createPreviewImageSpaceChain(393, 852, 393.dp.roundToPx(), 852.dp.roundToPx()) }
     }
-    val sampleDetection = CardDetection(
-        lockOnProgress = 0.5f,
-        id = 12345L,
-        card = Feature(ImageBox.from2P(40, 328, 353, 524), 0.95f, 0),
-        features = emptyList(),
-        lockingStatus = LockingStatus.LockingCard,
-        focusScore = 150f,
-    )
-    val scope = remember(chain) {
+    val sampleDetection = if (hasDetection) {
+        CardDetection(
+            lockOnProgress = 0.5f,
+            id = 12345L,
+            card = Feature(ImageBox.from2P(40, 328, 353, 524), 0.95f, 0),
+            features = emptyList(),
+            lockingStatus = LockingStatus.LockingCard,
+            focusScore = 150f,
+        )
+    } else null
+    val scope = remember(chain, sampleDetection) {
         object : CardDetectorOverlayScope {
             override val detectionState = sampleDetection
-            override val detectionSequence = 1L
+            override val detectionSequence = if (hasDetection) 1L else 0L
             override val latestBestDetection = sampleDetection
             override val imageSpaceChain = chain
-            override val captureEnabled = false
+            override val captureEnabled = hasDetection
             override val detectorPreset = CardDetectorPreset.HighPerformance
             override val cameraPreset = CameraPreset.HighResolution
             override val classLabels = mapOf(0 to "SAMPLE_CARD")
@@ -351,4 +296,18 @@ private fun IdCaptureOverlayPreview() {
             }
         }
     }
+}
+
+@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun IdCaptureOverlayDetectedPreview() {
+    IdCaptureOverlayPreviewContent(hasDetection = true)
+}
+
+@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun IdCaptureOverlayIdlePreview() {
+    IdCaptureOverlayPreviewContent(hasDetection = false)
 }
