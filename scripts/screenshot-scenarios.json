@@ -1,0 +1,36 @@
+{
+  "carddetector": [
+    "single-side-idle-en",
+    "single-side-idle-es",
+    "single-side-detected-en",
+    "single-side-detected-es",
+    "capture-front-en",
+    "capture-front-es",
+    "capture-back-en",
+    "capture-back-es",
+    "capture-turn-over-en",
+    "capture-turn-over-es",
+    "capture-review-en",
+    "capture-review-es",
+    "debug-overlay",
+    "detection-overlay",
+    "lock-on-overlay",
+    "capture-front-ready-en",
+    "capture-front-ready-es",
+    "capture-back-ready-en",
+    "capture-back-ready-es",
+    "capture-front-focusing-en",
+    "capture-front-manual-en",
+    "capture-turn-over-dark-en",
+    "capture-turn-over-dark-es",
+    "capture-review-dark-en",
+    "capture-review-dark-es",
+    "capture-review-large-font-en",
+    "shutter-enabled",
+    "shutter-disabled"
+  ],
+  "app": [
+    "welcome-en",
+    "welcome-es"
+  ]
+}
