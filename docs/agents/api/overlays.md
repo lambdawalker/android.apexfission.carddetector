@@ -57,6 +57,43 @@ fun shouldRunContinuousAnimations(
 ): Boolean /* expression body omitted */
 ```
 
+### CaptureShutterButton (carddetector)
+
+[Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/CaptureShutterButton.kt)
+
+```kotlin
+package com.apexfission.android.carddetector.ui.overlays
+
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun CaptureShutterButton(
+    isCaptureEnabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) /* body omitted */
+```
+
 ### CardLockOnOverlay (carddetector)
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/CardLockOnOverlay.kt)
@@ -64,10 +101,24 @@ fun shouldRunContinuousAnimations(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
 
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
+import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
+import com.apexfission.android.math.models.ImageBox
+import com.apexfission.android.yolo.engine.Feature
+import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
+import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
+import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.overlays.draw.buildConnectors
 import com.apexfission.android.carddetector.ui.overlays.draw.buildCorners
@@ -93,6 +144,7 @@ fun CardDetectorOverlayScope.CardLockOnOverlay(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -155,25 +207,33 @@ fun DebugOverlay(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
 
+import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
+import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
+import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
+import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
+import com.apexfission.android.math.models.ImageBox
 import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.math.transformations.translate
-import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
-import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
-import androidx.compose.ui.tooling.preview.Preview
+import com.apexfission.android.yolo.engine.Feature
 
 @Composable
 fun CardDetectorOverlayScope.DetectionOverlay(
@@ -194,6 +254,7 @@ fun DetectionOverlay(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -222,6 +283,7 @@ import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -236,11 +298,21 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
+import com.apexfission.android.carddetector.domain.tflite.model.LockingStatus
+import com.apexfission.android.math.models.ImageBox
+import com.apexfission.android.math.models.ImageSpaceChain
+import com.apexfission.android.yolo.engine.Feature
+import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
+import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
+import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
 import com.apexfission.android.carddetector.ui.overlays.draw.lerpF
 
 @Composable
