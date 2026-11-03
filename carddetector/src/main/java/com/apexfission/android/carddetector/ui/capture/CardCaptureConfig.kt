@@ -6,6 +6,7 @@ data class CardCaptureConfig(
     val focusThreshold: Float = 100f,
     val stableDurationMs: Long = 600L,
     val maxDetectionGapMs: Long = 400L,
+    val hapticFeedbackEnabled: Boolean = false,
 ) {
     init {
         require(focusThreshold.isFinite() && focusThreshold > 0f)

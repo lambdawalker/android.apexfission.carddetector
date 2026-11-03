@@ -45,6 +45,9 @@ class WelcomeActivity : ComponentActivity() {
 
     private fun demoIntent(demo: DemoDestination): Intent = when (demo) {
         DemoDestination.SingleSide -> Intent(this, DocumentationQuickstartActivity::class.java)
+        DemoDestination.SingleSideAutomatic -> Intent(this, CardDetectionActivity::class.java)
+            .putExtra(CardDetectionActivity.EXTRA_SINGLE_SIDE, true)
+            .putExtra(CardDetectionActivity.EXTRA_AUTO_CAPTURE, true)
         DemoDestination.TwoSidesManual -> Intent(this, CardDetectionActivity::class.java)
             .putExtra(CardDetectionActivity.EXTRA_AUTO_CAPTURE, false)
         DemoDestination.TwoSidesAutomatic -> Intent(this, CardDetectionActivity::class.java)
@@ -71,6 +74,8 @@ internal enum class DemoDestination(
 ) {
     SingleSide(R.string.welcome_single_title, R.string.welcome_single_description,
         R.string.welcome_single_action, "CardDetectorLite", Icons.Default.PhotoCamera),
+    SingleSideAutomatic(R.string.welcome_single_auto_title, R.string.welcome_single_auto_description,
+        R.string.welcome_single_auto_action, "SingleSideCardCapture", Icons.Default.AutoAwesome),
     TwoSidesManual(R.string.welcome_manual_title, R.string.welcome_manual_description,
         R.string.welcome_manual_action, "TwoSidedCardCapture", Icons.Default.Flip),
     TwoSidesAutomatic(R.string.welcome_auto_title, R.string.welcome_auto_description,

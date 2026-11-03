@@ -33,10 +33,24 @@
     "single-side-after-miss-en",
     "capture-front-after-miss-en",
     "capture-back-after-miss-en",
-    "single-side-no-flash-en"
+    "single-side-no-flash-en",
+    "single-auto-narrow-es",
+    "single-auto-landscape-en",
+    "single-auto-large-font-es",
+    "single-auto-long-spanish",
+    "two-side-narrow-es",
+    "two-side-landscape-en",
+    "two-side-large-font-es",
+    "two-side-long-spanish",
+    "review-landscape-es",
+    "single-auto-ready-en",
+    "single-auto-complete-en"
   ],
   "app": [
     "welcome-en",
-    "welcome-es"
+    "welcome-es",
+    "welcome-narrow-es",
+    "welcome-landscape-en",
+    "welcome-large-font-es"
   ]
 }

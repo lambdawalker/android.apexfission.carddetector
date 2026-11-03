@@ -21,6 +21,7 @@ import com.apexfission.android.carddetector.tfmodel.classes
 import com.apexfission.android.carddetector.tfmodel.modelPath
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 import com.apexfission.android.carddetector.ui.capture.TwoSidedCardCapture
+import com.apexfission.android.carddetector.ui.capture.SingleSideCardCapture
 import com.apexfission.android.carddetector.ui.capture.CardCaptureConfig
 import com.apexfission.android.carddetector.ui.detector.CardDetectorPreset
 import com.apexfission.android.carddetector.demo.ui.theme.CardDetectorDemoTheme
@@ -37,6 +38,7 @@ private const val CAMERA_BODY = "Allow camera access to capture a document when 
 
 class CardDetectionActivity : ComponentActivity() {
     companion object {
+        const val EXTRA_SINGLE_SIDE = "com.apexfission.android.carddetector.demo.SINGLE_SIDE"
         const val EXTRA_AUTO_CAPTURE = "com.apexfission.android.carddetector.demo.AUTO_CAPTURE"
     }
 
@@ -79,7 +81,17 @@ class CardDetectionActivity : ComponentActivity() {
                                 }
                             }
 
-                            TwoSidedCardCapture(
+                            if (intent.getBooleanExtra(EXTRA_SINGLE_SIDE, false)) {
+                                SingleSideCardCapture(
+                                    instanceKey = "single-side-auto-demo",
+                                    modelPath = ModelCatalog.TfLite.modelPath,
+                                    classLabels = ModelCatalog.TfLite.classes,
+                                    cardClasses = ModelCatalog.TfLite.cardClasses,
+                                    config = CardCaptureConfig(autoCaptureEnabled = intent.getBooleanExtra(EXTRA_AUTO_CAPTURE, true), hapticFeedbackEnabled = true),
+                                    onBack = mainViewModel::onBackRequested,
+                                    onCapture = { _, bitmap -> bitmap.recycle(); finish() },
+                                )
+                            } else TwoSidedCardCapture(
                                 modifier = Modifier.fillMaxSize(),
                                 instanceKey = "card-detection-camera",
                                 modelPath = ModelCatalog.TfLite.modelPath,

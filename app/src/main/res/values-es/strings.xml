@@ -18,4 +18,7 @@
     <string name="welcome_video_action">Reproducir demo de vídeo</string>
     <string name="welcome_footer">Estas demos procesan las imágenes en el dispositivo y no las suben. Las demos de cámara solicitan permiso al abrirse.</string>
     <string name="welcome_settings_action">Abrir ajustes de la aplicación</string>
+    <string name="welcome_single_auto_title">Un lado · automático</string>
+    <string name="welcome_single_auto_description">Captura un lado cuando la tarjeta esté enfocada y estable. Puedes cambiar a captura manual en cualquier momento.</string>
+    <string name="welcome_single_auto_action">Probar captura automática de un lado</string>
 </resources>
