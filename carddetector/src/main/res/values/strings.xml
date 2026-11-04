@@ -29,4 +29,5 @@
     <string name="card_capture_ready_to_capture">Ready to capture</string>
     <string name="card_capture_captured">Photo captured</string>
     <string name="card_capture_single_instruction">Place your card inside the guide</string>
+    <string name="card_capture_privacy_terms">By continuing, you agree to the Attestra Privacy Terms.</string>
 </resources>

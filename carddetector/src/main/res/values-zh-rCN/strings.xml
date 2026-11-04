@@ -29,4 +29,5 @@
     <string name="card_capture_ready_to_capture">准备拍摄</string>
     <string name="card_capture_captured">照片已拍摄</string>
     <string name="card_capture_single_instruction">请将卡片置于辅助框内</string>
+    <string name="card_capture_privacy_terms">继续即表示您同意 Attestra 隐私条款。</string>
 </resources>
