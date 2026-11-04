@@ -13,7 +13,7 @@ uploads and older destination releases are never installation recommendations.
 
 ## carddetector: android.apexfission.carddetector
 
-Confirmed version: **0.1.5**. Source: [bf95b17d684bcf8f7facf83979382b61490d1f8c](https://github.com/lambdawalker/android.apexfission.carddetector/commit/bf95b17d684bcf8f7facf83979382b61490d1f8c).
+Confirmed version: **0.1.6**. Source: [fb397dec6f3dc11775a9784a8a991240c6b52504](https://github.com/lambdawalker/android.apexfission.carddetector/commit/fb397dec6f3dc11775a9784a8a991240c6b52504).
 
 Choose **one** destination below and **one** dependency syntax. Each destination provides this same release; do not add duplicate dependencies.
 
@@ -41,7 +41,7 @@ In the app's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.5")
+    implementation("com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.6")
 }
 ```
 
@@ -63,7 +63,7 @@ In the app's `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.5'
+    implementation 'com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.6'
 }
 ```
 
@@ -73,7 +73,7 @@ Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
 
 ```toml
 [libraries]
-carddetector = { module = "com.github.lambdawalker:android.apexfission.carddetector", version = "carddetector~v0.1.5" }
+carddetector = { module = "com.github.lambdawalker:android.apexfission.carddetector", version = "carddetector~v0.1.6" }
 ```
 
 Then use this instead of the direct dependency in the app's `build.gradle.kts`:
@@ -107,7 +107,7 @@ Add these repositories and dependency to `pom.xml`:
   <dependency>
     <groupId>com.github.lambdawalker</groupId>
     <artifactId>android.apexfission.carddetector</artifactId>
-    <version>carddetector~v0.1.5</version>
+    <version>carddetector~v0.1.6</version>
     <type>aar</type>
   </dependency>
 </dependencies>
