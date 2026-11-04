@@ -1,5 +1,7 @@
 package com.apexfission.android.carddetector.ui.overlays.components
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -7,8 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
@@ -43,17 +43,17 @@ internal fun CardDetectorOverlayScope.CaptureOverlay(
         OverlayTopGradient(Modifier.align(Alignment.TopCenter))
         OverlayBottomGradient(Modifier.align(Alignment.BottomCenter))
         val header: @Composable () -> Unit = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(Modifier.background(MaterialTheme.colorScheme.surface), horizontalAlignment = Alignment.CenterHorizontally) {
                 OverlayHeader(config.title, { goBack() }, exitContentDescription)
                 Spacer(Modifier.height(16.dp))
                 OverlayInstructions(config.instructionTitle, config.instructionSubTitle)
             }
         }
         val actions: @Composable () -> Unit = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(Modifier.background(MaterialTheme.colorScheme.surface), horizontalAlignment = Alignment.CenterHorizontally) {
                 if (step != null) {
                     Spacer(Modifier.height(12.dp))
-                    Text(step, color = Color(0xFF75E8CD), fontWeight = FontWeight.Bold)
+                    Text(step, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
                     Spacer(Modifier.height(12.dp))
                 }
                 CaptureControlsRow(
@@ -72,7 +72,7 @@ internal fun CardDetectorOverlayScope.CaptureOverlay(
                 )
                 if (modeText != null) {
                     Spacer(Modifier.height(8.dp))
-                    Text(modeText, color = Color.White, fontSize = 13.sp)
+                    Text(modeText, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.bodySmall)
                     Spacer(Modifier.height(16.dp))
                 }
             }

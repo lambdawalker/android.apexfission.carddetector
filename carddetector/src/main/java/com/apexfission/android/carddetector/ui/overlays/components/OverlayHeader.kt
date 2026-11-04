@@ -1,5 +1,6 @@
 package com.apexfission.android.carddetector.ui.overlays.components
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,23 +20,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
 
 @Composable
 fun OverlayHeader(
     title: String,
     onBack: () -> Unit,
-    exitContentDescription: String = "Back",
+    exitContentDescription: String = androidx.compose.ui.res.stringResource(com.apexfission.android.carddetector.R.string.card_capture_exit),
     modifier: Modifier = Modifier,
-    contentColor: Color = Color.White,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Row(
         modifier = modifier
@@ -55,8 +54,7 @@ fun OverlayHeader(
             text = title,
             modifier = Modifier.weight(1f),
             color = contentColor,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.size(48.dp))
@@ -64,13 +62,12 @@ fun OverlayHeader(
 }
 
 @Composable
-fun OverlayTitle(title: String, modifier: Modifier = Modifier, contentColor: Color = Color(0xFF75E8CD)) {
+fun OverlayTitle(title: String, modifier: Modifier = Modifier, contentColor: Color = MaterialTheme.colorScheme.primary) {
     Text(
         text = title,
         modifier = modifier,
         color = contentColor,
-        fontSize = 24.sp,
-        fontWeight = FontWeight.Bold,
+        style = MaterialTheme.typography.headlineSmall,
         textAlign = TextAlign.Center
     )
 }
@@ -92,8 +89,8 @@ fun OverlayInstructions(
         Text(
             text = subtitle,
             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-            color = Color.White,
-            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
         )
     }

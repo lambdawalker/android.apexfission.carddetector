@@ -26,7 +26,7 @@ class IdCaptureOverlayConfigTest {
         assertEquals("Verify Your Identity", config.title)
         assertEquals("Position your ID within the frame", config.instructionTitle)
         assertEquals("We'll use this to pre-fill your information securely", config.instructionSubTitle)
-        assertEquals(Color(0xFF2979FF), config.guideColor)
+        assertEquals(Color.Unspecified, config.guideColor)
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.apexfission.android.carddetector.ui.overlays
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -131,7 +132,7 @@ fun DebugOverlay(
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .padding(8.dp)
-                .background(Color.Black.copy(alpha = 0.75f))
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(8.dp)
         ) {
             LazyVerticalGrid(
@@ -158,28 +159,24 @@ fun DebugOverlay(
                     }
 
                     val valueColor = when (val value = item.value) {
-                        is Boolean -> if (value) Color(0xFF8BC34A) else Color(0xFFE91E63)
-                        is Number -> Color(0xFF2196F3)
+                        is Boolean -> if (value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                        is Number -> MaterialTheme.colorScheme.secondary
                         is PreProcessingImageTransformation -> when (value) {
-                            is PreProcessingImageTransformation.SquareCrop, is PreProcessingImageTransformation.CenterSquareCrop -> Color(0xFFFFC107)
-                            is PreProcessingImageTransformation.FullImage -> Color(0xFF9C27B0)
-                            is PreProcessingImageTransformation.VisibleImage, is PreProcessingImageTransformation.CenterVisibleImage -> Color(
-                                0xFF00BCD4
-                            )
+                            is PreProcessingImageTransformation.SquareCrop, is PreProcessingImageTransformation.CenterSquareCrop -> MaterialTheme.colorScheme.tertiary
+                            is PreProcessingImageTransformation.FullImage -> MaterialTheme.colorScheme.secondary
+                            is PreProcessingImageTransformation.VisibleImage, is PreProcessingImageTransformation.CenterVisibleImage -> MaterialTheme.colorScheme.tertiary
 
-                            is PreProcessingImageTransformation.VisibleImageSquareCrop, is PreProcessingImageTransformation.CenterVisibleImageSquareCrop -> Color(
-                                0xFFF44336
-                            )
+                            is PreProcessingImageTransformation.VisibleImageSquareCrop, is PreProcessingImageTransformation.CenterVisibleImageSquareCrop -> MaterialTheme.colorScheme.error
                         }
 
-                        is NumThreads -> Color.White
-                        else -> Color.White
+                        is NumThreads -> MaterialTheme.colorScheme.onSurface
+                        else -> MaterialTheme.colorScheme.onSurface
                     }
 
                     Text(
-                        fontSize = 10.sp,
+                        style = MaterialTheme.typography.labelSmall,
                         text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = Color.White)) {
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
                                 append("${item.name}: ")
                             }
                             withStyle(style = SpanStyle(color = valueColor)) {
@@ -212,4 +209,3 @@ private fun DebugOverlayPreview() {
         )
     }
 }
-

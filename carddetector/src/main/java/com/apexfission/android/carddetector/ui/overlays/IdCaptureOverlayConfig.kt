@@ -1,6 +1,9 @@
 package com.apexfission.android.carddetector.ui.overlays
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.res.stringResource
+import com.apexfission.android.carddetector.R
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -22,7 +25,7 @@ import androidx.compose.ui.graphics.Color
  * @property title Header text displayed at the top of the overlay. Defaults to "Verify Your Identity".
  * @property instructionTitle Main instruction title. Defaults to "Position your ID within the frame".
  * @property instructionSubTitle Sub-instruction text. Defaults to "We'll use this to pre-fill your information securely".
- * @property guideColor Accent color for the card guide frame. Defaults to bright blue (0xFF2979FF).
+ * @property guideColor Accent color for the card guide frame. Defaults to the host theme primary color when unspecified.
  */
 @Immutable
 data class IdCaptureOverlayConfig(
@@ -38,6 +41,14 @@ data class IdCaptureOverlayConfig(
     val title: String = "Verify Your Identity",
     val instructionTitle: String = "Position your ID within the frame",
     val instructionSubTitle: String = "We'll use this to pre-fill your information securely",
-    val guideColor: Color = Color(0xFF2979FF),
+    val guideColor: Color = Color.Unspecified,
     val enableContinuousAnimations: Boolean = false,
+)
+
+/** Localized built-in copy; explicit configuration text remains a host override. */
+@Composable
+fun defaultIdCaptureOverlayConfig() = IdCaptureOverlayConfig(
+    title = stringResource(R.string.card_overlay_title),
+    instructionTitle = stringResource(R.string.card_overlay_instruction),
+    instructionSubTitle = stringResource(R.string.card_overlay_subtitle),
 )

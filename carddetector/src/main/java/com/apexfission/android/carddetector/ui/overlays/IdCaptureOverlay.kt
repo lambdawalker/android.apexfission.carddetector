@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,8 +40,10 @@ import com.apexfission.android.yolo.engine.Feature
  */
 @Composable
 fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
-    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig()
+    config: IdCaptureOverlayConfig = defaultIdCaptureOverlayConfig()
 ) {
+    val guideColor = if (config.guideColor.isSpecified) config.guideColor else MaterialTheme.colorScheme.primary
+    val lockedColor = MaterialTheme.colorScheme.tertiary
     AnimatedDetectionCanvas(
         config = DetectionAnimationConfig(
             idleOpacity = config.idleOpacity,
@@ -65,8 +68,8 @@ fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
         val strokeWidth = lerpF(2.dp.toPx(), 6.dp.toPx(), progress)
 
         // Transition guide color to bright electric blue on lock-on
-        val brightBlue = Color(0xFF00E5FF)
-        val activeColor = lerp(config.guideColor, brightBlue, progress)
+        val brightBlue = lockedColor
+        val activeColor = lerp(guideColor, brightBlue, progress)
         val color = activeColor.copy(alpha = bounds.opacity)
 
         // Padding to offset the corner brackets from the dashed line
@@ -139,7 +142,7 @@ fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
  */
 @Composable
 fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
-    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig(),
+    config: IdCaptureOverlayConfig = defaultIdCaptureOverlayConfig(),
     autoCaptureEnabled: Boolean = false,
     onToggleAutoCapture: () -> Unit = {},
     showAutoCaptureToggle: Boolean = false,
@@ -174,7 +177,7 @@ fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
  */
 @Composable
 fun CardDetectorOverlayScope.IdCaptureOverlay(
-    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig(),
+    config: IdCaptureOverlayConfig = defaultIdCaptureOverlayConfig(),
     showInitialGuide: Boolean = true,
     autoCaptureEnabled: Boolean = false,
     onToggleAutoCapture: () -> Unit = {},

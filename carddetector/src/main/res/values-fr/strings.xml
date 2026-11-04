@@ -30,4 +30,7 @@
     <string name="card_capture_captured">Photo capturée</string>
     <string name="card_capture_single_instruction">Placez votre carte dans le guide</string>
     <string name="card_capture_privacy_terms">En continuant, vous acceptez les conditions de confidentialité d\'Attestra.</string>
+    <string name="card_overlay_title">Vérifiez votre identité</string>
+    <string name="card_overlay_instruction">Placez votre pièce d’identité dans le cadre</string>
+    <string name="card_overlay_subtitle">Nous utiliserons ceci pour préremplir vos informations en toute sécurité</string>
 </resources>

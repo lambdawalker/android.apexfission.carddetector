@@ -21,6 +21,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -74,6 +75,7 @@ fun CameraPreview(
     focusOnCardEnabled: Boolean = true,
     showFocusIndicator: Boolean = true,
 ) {
+    val focusColor = MaterialTheme.colorScheme.primary
     val context = LocalContext.current
     val mainExecutor = remember(context) { ContextCompat.getMainExecutor(context) }
     val onFrameState = rememberUpdatedState(onFrame)
@@ -105,7 +107,7 @@ fun CameraPreview(
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val radius = 30f
                     drawCircle(
-                        color = Color.White.copy(alpha = alpha),
+                        color = focusColor.copy(alpha = alpha),
                         radius = radius,
                         center = Offset(currentFocusPoint.x, currentFocusPoint.y),
                         style = Stroke(width = 3f)

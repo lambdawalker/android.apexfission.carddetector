@@ -1,5 +1,6 @@
 package com.apexfission.android.carddetector.ui.overlays.components
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.FlashOff
@@ -15,9 +15,9 @@ import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,12 +50,13 @@ fun CaptureControlsRow(
             onCheckedChange = { onToggleAutoCapture() },
             modifier = Modifier
                 .size(48.dp)
-                .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                .clip(MaterialTheme.shapes.small)
+                .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.small)
         ) {
             Icon(
                 imageVector = Icons.Default.AutoMode,
                 contentDescription = autoToggleContentDescription,
-                tint = if (autoCaptureEnabled) Color(0xFF75E8CD) else Color.White.copy(alpha = 0.6f)
+                tint = if (autoCaptureEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
         } else Spacer(Modifier.size(48.dp))
         
@@ -71,12 +72,13 @@ fun CaptureControlsRow(
                 onCheckedChange = { onToggleFlashlight() },
                 modifier = Modifier
                     .size(48.dp)
-                    .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                .clip(MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.small)
             ) {
                 Icon(
                     imageVector = if (flashlightEnabled) Icons.Default.FlashOn else Icons.Default.FlashOff,
                     contentDescription = flashContentDescription,
-                    tint = if (flashlightEnabled) Color.Yellow else Color.White
+                    tint = if (flashlightEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             }
         } else {

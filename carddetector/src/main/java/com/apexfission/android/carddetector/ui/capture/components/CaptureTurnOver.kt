@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
@@ -51,13 +50,13 @@ internal fun CaptureTurnOver(
             OverlayHeader(title = strings.title, onBack = onBack, exitContentDescription = strings.exit, contentColor = MaterialTheme.colorScheme.onBackground)
             Spacer(Modifier.height(24.dp))
             OverlayTitle(strings.frontSaved, contentColor = MaterialTheme.colorScheme.primary)
-            Text(strings.turnOver, color=MaterialTheme.colorScheme.onSurface, textAlign=TextAlign.Center, modifier=Modifier.padding(16.dp))
+            Text(strings.turnOver, style = MaterialTheme.typography.bodyLarge, color=MaterialTheme.colorScheme.onSurface, textAlign=TextAlign.Center, modifier=Modifier.padding(16.dp))
 
             Column(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerLow, MaterialTheme.shapes.large)
                     .padding(16.dp)
             ) {
                 Image(
@@ -78,11 +77,11 @@ internal fun CaptureTurnOver(
                 .padding(horizontal = 24.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick=onContinue, modifier=Modifier.fillMaxWidth()) {
+            Button(shape = MaterialTheme.shapes.small, onClick=onContinue, modifier=Modifier.fillMaxWidth()) {
                 Text(strings.continueToBack)
             }
             Spacer(Modifier.height(8.dp))
-            TextButton(onClick = onRetake) {
+            TextButton(shape = MaterialTheme.shapes.small, onClick = onRetake) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
                     contentDescription = null,
