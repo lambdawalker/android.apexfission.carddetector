@@ -20,7 +20,7 @@ ${es?'El flujo de dos caras guía al usuario desde el frente hasta la revisión 
 ${gallery([
  [`capture-front-${lang}`,es?'1. Frente':'1. Front',es?'Coloca la tarjeta dentro de la guía.':'Place the card inside the guide.'],
  [`capture-front-ready-${lang}`,es?'2. Frente detectado':'2. Front detected',es?'El cuadrado blanco deja paso al indicador de detección.':'The white square yields to the detection indicator.'],
- [`capture-turn-over-${lang}`,es?'3. Girar':'3. Turn over',es?'Cambia de cara después de la primera captura.':'Switch sides after the first capture.'],
+ [`capture-turn-over-${lang}`,es?'3. Girar':'3. Turn over',es?'Revisa el frente, repítelo si hace falta y continúa al reverso.':'Inspect or retake the front before continuing to the back.'],
  [`capture-back-${lang}`,es?'4. Reverso':'4. Back',es?'Captura la segunda cara.':'Capture the second side.'],
  [`capture-back-ready-${lang}`,es?'5. Reverso detectado':'5. Back detected',es?'La guía sigue la segunda cara detectada.':'The guide follows the detected second side.'],
  [`capture-review-${lang}`,es?'6. Revisar':'6. Review',es?'Confirma el par o repite una captura.':'Confirm the pair or retake a side.'],
@@ -34,6 +34,7 @@ ${gallery([
  ['single-side-idle',es?'Guía inicial':'Initial guide',es?'Orientación antes de detectar una tarjeta.':'Guidance before a card is detected.'],
  ['single-side-detected',es?'Tarjeta detectada':'Card detected',es?'Controles y estado después de la detección.':'Controls and state after detection.'],
  [`single-side-auto-${lang}`,es?'Captura automática de un lado':'Single-side automatic capture',es?'Espera enfoque y estabilidad; permite cambiar a captura manual.':'Waits for focus and stability; supports switching to manual capture.'],
+ [`single-review-${lang}`,es?'Revisar una cara':'Review one side',es?'Repite la foto o confirma antes de entregarla a la aplicación.':'Retake or confirm before the image is delivered to the host app.'],
  ['detection-overlay',es?'Detección':'Detection',es?'Geometría del resultado detectado.':'Geometry of the detection result.'],
  ['lock-on-overlay',es?'Seguimiento':'Lock-on',es?'Guía alineada con la tarjeta.':'Tracking guide aligned with the card.'],
  ['debug-overlay',es?'Diagnóstico':'Debug',es?'Información adicional para desarrollo.':'Additional information for development.'],

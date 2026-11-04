@@ -213,10 +213,10 @@ private fun TurnOverScreen(darkTheme: Boolean = false) = Screen(showCard = false
 fun CaptureReviewScreenshot() = ReviewScreen()
 
 @Composable
-private fun ReviewScreen(darkTheme: Boolean = false, singleSide: Boolean = false) = Screen(showCard = false, camera = false, darkTheme = darkTheme) {
+private fun ReviewScreen(darkTheme: Boolean = false, singleSide: Boolean = false, strings: CardCaptureStrings = defaultCardCaptureStrings()) = Screen(showCard = false, camera = false, darkTheme = darkTheme) {
     val front = remember { CapturedCardSide(sampleDetection, sampleCard()) }
     val back = remember { CapturedCardSide(sampleDetection, sampleCard(back = true)) }
-    CaptureReview(front, back.takeUnless { singleSide }, defaultCardCaptureStrings(), {}, {}, {})
+    CaptureReview(front, back.takeUnless { singleSide }, strings, {}, {}, {})
 }
 
 @PreviewTest
@@ -426,3 +426,16 @@ fun TurnOverLayoutScreenshot() = TurnOverScreen()
 @Preview(name = "single-auto-zh", widthDp = 393, heightDp = 852, locale = "zh-rCN", fontScale = 1f)
 @Composable
 fun LocalizedSingleCaptureScreenshot() = AutoSingleScreen(CaptureGuidance.Looking)
+
+@PreviewTest
+@Preview(name = "single-review-de", widthDp = 393, heightDp = 852, locale = "de", fontScale = 1f)
+@Preview(name = "single-review-ja", widthDp = 393, heightDp = 852, locale = "ja", fontScale = 1f)
+@Preview(name = "single-review-zh", widthDp = 393, heightDp = 852, locale = "zh-rCN", fontScale = 1f)
+@Composable
+fun LocalizedReviewScreenshot() = ReviewScreen(singleSide = true)
+
+@PreviewTest
+@Preview(name = "single-review-custom-copy", widthDp = 393, heightDp = 852, locale = "en", fontScale = 1f)
+@Composable
+fun CustomReviewPrivacyScreenshot() = ReviewScreen(singleSide = true,
+    strings = defaultCardCaptureStrings().copy(privacyTerms = "Sample host privacy notice · no upload in this demo"))

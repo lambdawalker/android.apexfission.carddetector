@@ -13,3 +13,9 @@ Replace `HandleCameraPermission` from old examples with your runtime permission 
 `Feature` comes from YOLO and contains metadata, not `image: Bitmap`. The delivered callback bitmap is separate. Use the YOLO preprocessing type in presets; the old similarly named carddetector type remains exposed but is not assignment-compatible.
 
 Overlay compatibility aliases remain in `ui.overlays`; the canonical animation types live in `ui.overlays.animation`. Prefer canonical imports in new custom drawing. `AI_AGENT_GUIDE.md` now redirects to the focused integration guides. Existing module docs link to those canonical guides.
+
+## Current capture defaults and review copy
+
+In current development source, `CardCaptureConfig.hapticFeedbackEnabled` defaults to `true`; integrations that require the previous silent behavior should pass `CardCaptureConfig(hapticFeedbackEnabled = false)`. Automatic capture still defaults to `false`. These are independent settings.
+
+The review privacy notice now comes from `CardCaptureStrings.privacyTerms` and the localized Android resources instead of a fixed English literal. Existing `CardCaptureStrings` constructors remain source-compatible through its default value. Use `defaultCardCaptureStrings().copy(privacyTerms = "Your privacy notice")` to replace it for the host application. The notice is plain text; it does not provide a clickable policy link.

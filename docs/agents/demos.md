@@ -47,3 +47,8 @@ The accepted image above is deterministically extracted from the supplied video,
 The single-side automatic demo uses the same focus/stability gate as the two-sided flow. It opens review after capture, allows retake, and returns to the catalog only after confirming the image; automatic/manual mode remains selectable.
 
 ![Single-side automatic capture](../screenshots/single-side-auto-en.png)
+
+
+Single-side capture opens the shared review screen with one crop. Retake discards it; confirm delivers it to the host.
+
+![Single-side review and retake](../screenshots/single-review-en.png)

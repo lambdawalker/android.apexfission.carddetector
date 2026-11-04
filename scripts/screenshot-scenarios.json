@@ -57,7 +57,11 @@
     "single-auto-de",
     "single-auto-ja",
     "single-auto-uk",
-    "single-auto-zh"
+    "single-auto-zh",
+    "single-review-de",
+    "single-review-ja",
+    "single-review-zh",
+    "single-review-custom-copy"
   ],
   "app": [
     "welcome-en",

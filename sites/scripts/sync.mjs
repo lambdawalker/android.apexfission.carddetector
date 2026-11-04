@@ -23,8 +23,8 @@ const manifest=JSON.parse(await read('docs/screenshots/manifest.json'));
 for(const s of manifest.scenarios)await copyFile(resolve(root,'docs/screenshots',s.file),resolve('public/screenshots',s.file));
 await copyFile(resolve(root,'docs/screenshots/manifest.json'),'public/screenshots/manifest.json');
 const ui=JSON.parse(await read('docs/screenshots/ui-manifest.json'));
-if(!/^[a-f0-9]{40}$/.test(ui.source)||ui.images.length!==21)throw new Error('Invalid UI screenshot provenance');
-const expectedUi=new Set([...['front','back','front-ready','back-ready','turn-over','review'].flatMap(s=>['en','es'].map(l=>`capture-${s}-${l}.png`)), ...['single-side-detected','single-side-idle','detection-overlay','lock-on-overlay','debug-overlay','welcome-en','welcome-es','single-side-auto-en','single-side-auto-es'].map(s=>s+'.png')]);
+if(!/^[a-f0-9]{40}$/.test(ui.source)||ui.images.length!==23)throw new Error('Invalid UI screenshot provenance');
+const expectedUi=new Set([...['front','back','front-ready','back-ready','turn-over','review'].flatMap(s=>['en','es'].map(l=>`capture-${s}-${l}.png`)), ...['single-side-detected','single-side-idle','detection-overlay','lock-on-overlay','debug-overlay','welcome-en','welcome-es','single-side-auto-en','single-side-auto-es','single-review-en','single-review-es'].map(s=>s+'.png')]);
 for(const item of ui.images){
  if(!expectedUi.delete(item.file))throw new Error(`Unexpected or duplicate UI screenshot: ${item.file}`);
  const path=resolve(root,'docs/screenshots',item.file),bytes=await readFile(path);

@@ -78,10 +78,10 @@ internal fun CaptureReview(
                         .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(16.dp))
                         .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)
                 ) {
-                    Row(
+                    FlowRow(
                         Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             if (side == CardSide.Front) strings.front else strings.back,
