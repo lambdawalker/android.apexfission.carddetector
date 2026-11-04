@@ -30,4 +30,7 @@
     <string name="card_capture_captured">Zdjęcie uchwycone</string>
     <string name="card_capture_single_instruction">Umieść dokument w ramce</string>
     <string name="card_capture_privacy_terms">Kontynuując, wyrażasz zgodę na Warunki prywatności Attestra.</string>
+    <string name="card_overlay_title">Potwierdź swoją tożsamość</string>
+    <string name="card_overlay_instruction">Umieść dokument w ramce</string>
+    <string name="card_overlay_subtitle">Użyjemy tego do bezpiecznego wstępnego uzupełnienia danych</string>
 </resources>

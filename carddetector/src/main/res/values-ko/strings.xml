@@ -30,4 +30,7 @@
     <string name="card_capture_captured">사진 촬영됨</string>
     <string name="card_capture_single_instruction">신분증을 가이드 안에 맞춰주세요</string>
     <string name="card_capture_privacy_terms">계속 진행함으로써 Attestra 개인정보 보호 약관에 동의하게 됩니다.</string>
+    <string name="card_overlay_title">본인 확인</string>
+    <string name="card_overlay_instruction">신분증을 프레임 안에 맞춰주세요</string>
+    <string name="card_overlay_subtitle">정보를 안전하게 미리 입력하는 데 사용합니다</string>
 </resources>

@@ -30,4 +30,7 @@
     <string name="card_capture_captured">Foto aufgenommen</string>
     <string name="card_capture_single_instruction">Platzieren Sie Ihre Karte im Rahmen</string>
     <string name="card_capture_privacy_terms">Indem Sie fortfahren, stimmen Sie den Datenschutzbestimmungen von Attestra zu.</string>
+    <string name="card_overlay_title">Identität bestätigen</string>
+    <string name="card_overlay_instruction">Positionieren Sie Ihren Ausweis im Rahmen</string>
+    <string name="card_overlay_subtitle">Damit füllen wir Ihre Angaben sicher vorab aus</string>
 </resources>

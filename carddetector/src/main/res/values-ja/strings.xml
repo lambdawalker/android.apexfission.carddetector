@@ -30,4 +30,7 @@
     <string name="card_capture_captured">写真を撮影しました</string>
     <string name="card_capture_single_instruction">カードをガイド内に配置してください</string>
     <string name="card_capture_privacy_terms">続行することにより、Attestraのプライバシーポリシーに同意したことになります。</string>
+    <string name="card_overlay_title">本人確認</string>
+    <string name="card_overlay_instruction">身分証明書を枠内に合わせてください</string>
+    <string name="card_overlay_subtitle">情報を安全に事前入力するために使用します</string>
 </resources>

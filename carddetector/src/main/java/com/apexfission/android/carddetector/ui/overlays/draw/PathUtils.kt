@@ -82,7 +82,7 @@ fun DrawScope.drawGlowPath(
     drawBlurredPath(
         points = points,
         blurRadius = blurRadius / 2f,
-        color = Color.White.copy(alpha = 0.65f),
+        color = color.copy(alpha = color.alpha * 0.65f),
         strokeWidth = strokeWidth * 0.75f,
         rounded = rounded,
         cornerRadius = cornerRadius

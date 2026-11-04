@@ -1,5 +1,6 @@
 package com.apexfission.android.carddetector.ui.overlays
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,6 +42,7 @@ fun CardDetectorOverlayScope.CardLockOnOverlay(
         fadeAnimationDurationMs = 300
     )
 ) {
+    val colors = MaterialTheme.colorScheme
     AnimatedDetectionCanvas(config = config) {
         if (bounds.opacity <= 0f) return@AnimatedDetectionCanvas
 
@@ -64,9 +66,9 @@ fun CardDetectorOverlayScope.CardLockOnOverlay(
         val radius = 22.dp.toPx()
         val strokeWidth = 0.8.dp.toPx()
 
-        val idleColor = Color.White.copy(alpha = 0.42f * bounds.opacity)
-        val trackingColor = Color(0xFF9BE7FF).copy(alpha = 0.95f * bounds.opacity)
-        val lockedColor = Color(0xFF4CFF98).copy(alpha = bounds.opacity)
+        val idleColor = colors.onSurface.copy(alpha = 0.42f * bounds.opacity)
+        val trackingColor = colors.primary.copy(alpha = 0.95f * bounds.opacity)
+        val lockedColor = colors.tertiary.copy(alpha = bounds.opacity)
 
         val frameColor = when {
             progress < 0.55f ->
@@ -136,7 +138,7 @@ fun CardDetectorOverlayScope.CardLockOnOverlay(
 
             if (endX > startX) {
                 val sweepPoints = listOf(startX to top, endX to top)
-                val sweepColor = Color.White.copy(alpha = 0.85f * sweepAlpha)
+                val sweepColor = colors.onSurface.copy(alpha = 0.85f * sweepAlpha)
 
                 listOf(2, 2, 4).forEach {
                     drawGlowPath(

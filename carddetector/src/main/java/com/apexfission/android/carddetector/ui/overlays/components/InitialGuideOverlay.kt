@@ -1,5 +1,6 @@
 package com.apexfission.android.carddetector.ui.overlays.components
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -39,10 +40,11 @@ internal fun InitialCaptureGuide(requested: Boolean, hasDetection: Boolean) {
 
 @Composable
 fun InitialGuideOverlay(modifier: Modifier = Modifier) {
+    val guideColor = MaterialTheme.colorScheme.primary
     Canvas(modifier = modifier.fillMaxSize()) {
         val edge = minOf(size.width * 0.85f, size.height * 0.48f)
         drawRoundRect(
-            color = Color.White.copy(alpha = 0.5f),
+            color = guideColor.copy(alpha = 0.75f),
             topLeft = Offset((size.width - edge) / 2, (size.height - edge) / 2),
             size = Size(edge, edge),
             cornerRadius = CornerRadius(18.dp.toPx()),

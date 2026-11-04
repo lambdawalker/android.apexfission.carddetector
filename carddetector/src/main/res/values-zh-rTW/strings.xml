@@ -30,4 +30,7 @@
     <string name="card_capture_captured">照片已拍攝</string>
     <string name="card_capture_single_instruction">請將卡片置於輔助框內</string>
     <string name="card_capture_privacy_terms">繼續即表示您同意 Attestra 隱私權條款。</string>
+    <string name="card_overlay_title">驗證您的身分</string>
+    <string name="card_overlay_instruction">請將身分證件放入框內</string>
+    <string name="card_overlay_subtitle">我們將使用此資訊安全地預填您的資料</string>
 </resources>

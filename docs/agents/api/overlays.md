@@ -64,6 +64,7 @@ fun shouldRunContinuousAnimations(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -76,14 +77,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -101,6 +101,7 @@ fun CaptureShutterButton(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -144,6 +145,7 @@ fun CardDetectorOverlayScope.CardLockOnOverlay(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -207,6 +209,7 @@ fun DebugOverlay(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.layout.Box
@@ -217,7 +220,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -266,6 +268,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -285,12 +288,12 @@ import com.apexfission.android.yolo.engine.Feature
 
 @Composable
 fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
-    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig()
+    config: IdCaptureOverlayConfig = defaultIdCaptureOverlayConfig()
 ) /* body omitted */
 
 @Composable
 fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
-    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig(),
+    config: IdCaptureOverlayConfig = defaultIdCaptureOverlayConfig(),
     autoCaptureEnabled: Boolean = false,
     onToggleAutoCapture: () -> Unit = {},
     showAutoCaptureToggle: Boolean = false,
@@ -303,7 +306,7 @@ fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
 
 @Composable
 fun CardDetectorOverlayScope.IdCaptureOverlay(
-    config: IdCaptureOverlayConfig = IdCaptureOverlayConfig(),
+    config: IdCaptureOverlayConfig = defaultIdCaptureOverlayConfig(),
     showInitialGuide: Boolean = true,
     autoCaptureEnabled: Boolean = false,
     onToggleAutoCapture: () -> Unit = {},
@@ -323,7 +326,10 @@ fun CardDetectorOverlayScope.IdCaptureOverlay(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.res.stringResource
+import com.apexfission.android.carddetector.R
 import androidx.compose.ui.graphics.Color
 
 data class IdCaptureOverlayConfig(
@@ -339,9 +345,12 @@ data class IdCaptureOverlayConfig(
     val title: String = "Verify Your Identity",
     val instructionTitle: String = "Position your ID within the frame",
     val instructionSubTitle: String = "We'll use this to pre-fill your information securely",
-    val guideColor: Color = Color(0xFF2979FF),
+    val guideColor: Color = Color.Unspecified,
     val enableContinuousAnimations: Boolean = false,
 )
+
+@Composable
+fun defaultIdCaptureOverlayConfig() /* expression body omitted */
 ```
 
 ### AnimatedDetectionBounds (carddetector)
@@ -545,6 +554,7 @@ fun rememberAnimatedOpacity(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.components
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -552,7 +562,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.FlashOff
@@ -560,9 +569,9 @@ import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -594,6 +603,7 @@ fun CaptureControlsRow(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.components
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -626,6 +636,7 @@ fun InitialGuideOverlay(modifier: Modifier = Modifier) /* body omitted */
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.components
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -654,6 +665,7 @@ fun OverlayBottomGradient(modifier: Modifier = Modifier, height: Dp = 280.dp) /*
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.components
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -673,27 +685,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
 
 @Composable
 fun OverlayHeader(
     title: String,
     onBack: () -> Unit,
-    exitContentDescription: String = "Back",
+    exitContentDescription: String = androidx.compose.ui.res.stringResource(com.apexfission.android.carddetector.R.string.card_capture_exit),
     modifier: Modifier = Modifier,
-    contentColor: Color = Color.White,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) /* body omitted */
 
 @Composable
-fun OverlayTitle(title: String, modifier: Modifier = Modifier, contentColor: Color = Color(0xFF75E8CD)) /* body omitted */
+fun OverlayTitle(title: String, modifier: Modifier = Modifier, contentColor: Color = MaterialTheme.colorScheme.primary) /* body omitted */
 
 @Composable
 fun OverlayInstructions(

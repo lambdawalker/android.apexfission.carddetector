@@ -30,4 +30,7 @@
     <string name="card_capture_captured">Foto capturada</string>
     <string name="card_capture_single_instruction">Coloque o seu cartão no guia</string>
     <string name="card_capture_privacy_terms">Ao continuar, concorda com os Termos de Privacidade da Attestra.</string>
+    <string name="card_overlay_title">Verifique a sua identidade</string>
+    <string name="card_overlay_instruction">Coloque o documento dentro da moldura</string>
+    <string name="card_overlay_subtitle">Usaremos isto para preencher previamente os seus dados com segurança</string>
 </resources>
