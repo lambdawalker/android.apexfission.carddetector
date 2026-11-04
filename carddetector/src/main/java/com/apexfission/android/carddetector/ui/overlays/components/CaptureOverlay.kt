@@ -36,7 +36,7 @@ internal fun CardDetectorOverlayScope.CaptureOverlay(
     Box(Modifier.fillMaxSize()) {
         if (showIndicator) {
             InitialCaptureGuide(showInitialGuide, detectionState != null || latestBestDetection != null)
-            // The white initial guide owns the idle state. Tracking fades to transparent
+            // The initial guide owns the idle state. Tracking fades to transparent
             // on misses instead of adding a second, centered idle rectangle.
             IdCaptureIndicatorOverlay(config.copy(idleOpacity = 0f))
         }

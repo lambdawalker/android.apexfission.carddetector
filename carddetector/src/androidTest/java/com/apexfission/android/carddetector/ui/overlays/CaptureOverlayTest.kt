@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +58,7 @@ class CaptureOverlayTest {
         }
         compose.mainClock.autoAdvance = false
         compose.setContent {
-            MaterialTheme {
+            MaterialTheme(colorScheme = lightColorScheme(primary = Color.Green)) {
                 Box(Modifier.size(240.dp, 480.dp).background(Color.Black)) {
                     key(attempt.intValue) {
                         with(scope) {
@@ -83,8 +84,14 @@ class CaptureOverlayTest {
             }
         }
         val guide = compose.onNodeWithTag("initial-capture-guide")
-        val before = borderBrightness(guide.assertExists().captureToImage())
-        assertTrue("The initial white guide must be visible", before > 0.1f)
+        val initialImage = guide.assertExists().captureToImage()
+        val before = borderBrightness(initialImage)
+        val pixels = initialImage.toPixelMap()
+        val edgeX = (initialImage.width * 0.075f).roundToInt()
+        val edgeY = initialImage.height / 2
+        assertTrue("Guide must use the green host primary",
+            (edgeX - 4..edgeX + 4).any { pixels[it, edgeY].green > pixels[it, edgeY].red + 0.1f })
+        assertTrue("The host theme guide must be visible", before > 0.1f)
         compose.runOnIdle { detected.value = true }
         compose.mainClock.advanceTimeByFrame()
         compose.mainClock.advanceTimeBy(125)
@@ -103,6 +110,6 @@ class CaptureOverlayTest {
     private fun borderBrightness(image: ImageBitmap): Float {
         val pixels = image.toPixelMap()
         val x = (image.width * 0.075f).roundToInt()
-        return (x - 4..x + 4).maxOf { pixels[it, image.height / 2].red }
+        return (x - 4..x + 4).maxOf { pixels[it, image.height / 2].green }
     }
 }

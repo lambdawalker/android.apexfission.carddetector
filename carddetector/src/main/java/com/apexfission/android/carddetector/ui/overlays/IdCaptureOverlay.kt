@@ -67,7 +67,7 @@ fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
         val cornerLen = lerpF(15.dp.toPx(), 22.dp.toPx(), progress)
         val strokeWidth = lerpF(2.dp.toPx(), 6.dp.toPx(), progress)
 
-        // Transition guide color to bright electric blue on lock-on
+        // Transition guide color to the host theme tertiary color on lock-on
         val brightBlue = lockedColor
         val activeColor = lerp(guideColor, brightBlue, progress)
         val color = activeColor.copy(alpha = bounds.opacity)
@@ -169,7 +169,7 @@ fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
 )
 
 /**
- * Built-in single-side capture overlay. The initial white guide fades out over 250 ms
+ * Built-in single-side capture overlay. The initial theme-colored guide fades out over 250 ms
  * after the first detection and stays hidden on misses until this overlay is remounted.
  * Detection indicators remain separate from that initial guide. Use a new detector
  * instanceKey (or a composition key) to start a new capture attempt.
