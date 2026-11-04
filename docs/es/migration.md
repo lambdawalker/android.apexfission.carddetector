@@ -13,3 +13,9 @@ Sustituya `HandleCameraPermission` de los ejemplos antiguos por su control de pe
 `Feature` procede de YOLO y contiene metadatos, no `image: Bitmap`. El mapa de bits entregado por el callback es independiente. Use el tipo de preprocesamiento de YOLO en los preajustes; el tipo antiguo de carddetector con un nombre similar sigue expuesto, pero no es compatible para asignación.
 
 Los alias de compatibilidad de superposiciones permanecen en `ui.overlays`; los tipos de animación canónicos están en `ui.overlays.animation`. Prefiera las importaciones canónicas para nuevo dibujo personalizado. `AI_AGENT_GUIDE.md` ahora redirige a las guías de integración específicas. La documentación existente de los módulos enlaza a esas guías canónicas.
+
+## Valores actuales de captura y texto de revisión
+
+En el código de desarrollo actual, `CardCaptureConfig.hapticFeedbackEnabled` vale `true` de forma predeterminada. Para conservar el comportamiento silencioso anterior, pase `CardCaptureConfig(hapticFeedbackEnabled = false)`. La captura automática sigue desactivada (`false`) de forma predeterminada. Son ajustes independientes.
+
+El aviso de privacidad de la revisión procede ahora de `CardCaptureStrings.privacyTerms` y de los recursos localizados de Android, en lugar de un texto fijo en inglés. Su valor predeterminado conserva la compatibilidad de los constructores existentes de `CardCaptureStrings`. Use `defaultCardCaptureStrings().copy(privacyTerms = "Tu aviso de privacidad")` para personalizarlo. Es texto sin enlace interactivo a una política.

@@ -83,7 +83,7 @@ data class CardCaptureConfig(
     val focusThreshold: Float = 100f,
     val stableDurationMs: Long = 600L,
     val maxDetectionGapMs: Long = 400L,
-    val hapticFeedbackEnabled: Boolean = false,
+    val hapticFeedbackEnabled: Boolean = true,
 ) {
 
 }
@@ -130,6 +130,7 @@ data class CardCaptureStrings(
     val readyToCapture: String = "Ready to capture",
     val captured: String = "Photo captured",
     val singleInstruction: String = "Place your card inside the guide",
+    val privacyTerms: String = "By continuing, you agree to the Attestra Privacy Terms.",
 )
 
 @Composable

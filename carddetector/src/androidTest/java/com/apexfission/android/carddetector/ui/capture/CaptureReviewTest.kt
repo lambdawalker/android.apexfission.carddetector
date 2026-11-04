@@ -99,4 +99,17 @@ class CaptureReviewTest {
         compose.onNodeWithText(copy.continueToBack).performClick()
         compose.runOnIdle { assertTrue(continued) }
     }
+
+    @Test fun reviewDisplaysHostPrivacyNotice() {
+        val front = card()
+        val notice = "Host privacy notice for this capture"
+        lateinit var original: CardCaptureStrings
+        compose.setContent {
+            original = defaultCardCaptureStrings()
+            MaterialTheme { CaptureReview(front, strings = original.copy(privacyTerms = notice),
+                onBack = {}, onRetake = {}, onConfirm = {}) }
+        }
+        compose.onNodeWithText(notice).assertIsDisplayed()
+        compose.onNodeWithText(original.privacyTerms).assertDoesNotExist()
+    }
 }
