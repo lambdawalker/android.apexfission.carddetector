@@ -35,6 +35,7 @@ data class CardCaptureStrings(
     val readyToCapture: String = "Ready to capture",
     val captured: String = "Photo captured",
     val singleInstruction: String = "Place your card inside the guide",
+    val privacyTerms: String = "By continuing, you agree to the Attestra Privacy Terms.",
 )
 
 /** Component. */
@@ -69,4 +70,5 @@ fun defaultCardCaptureStrings() = CardCaptureStrings(
     readyToCapture = stringResource(R.string.card_capture_ready_to_capture),
     captured = stringResource(R.string.card_capture_captured),
     singleInstruction = stringResource(R.string.card_capture_single_instruction),
+    privacyTerms = stringResource(R.string.card_capture_privacy_terms),
 )

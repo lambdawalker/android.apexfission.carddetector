@@ -29,4 +29,5 @@
     <string name="card_capture_ready_to_capture">Lista para capturar</string>
     <string name="card_capture_captured">Foto capturada</string>
     <string name="card_capture_single_instruction">Coloca tu tarjeta dentro de la guía</string>
+    <string name="card_capture_privacy_terms">Al continuar, aceptas los Términos de Privacidad de Attestra.</string>
 </resources>

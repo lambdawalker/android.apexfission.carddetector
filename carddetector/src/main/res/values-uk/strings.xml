@@ -29,4 +29,5 @@
     <string name="card_capture_ready_to_capture">Готово до зйомки</string>
     <string name="card_capture_captured">Фото знято</string>
     <string name="card_capture_single_instruction">Помістіть документ у рамку</string>
+    <string name="card_capture_privacy_terms">Продовжуючи, ви погоджуєтеся з Умовами конфіденційності Attestra.</string>
 </resources>

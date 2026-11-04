@@ -21,6 +21,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -74,7 +75,7 @@ internal fun CaptureReview(
                     Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(16.dp))
                         .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)
                 ) {
                     Row(
@@ -122,6 +123,8 @@ internal fun CaptureReview(
         Column(
             Modifier
                 .fillMaxWidth()
+                .shadow(elevation = 4.dp)
+                .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -133,7 +136,7 @@ internal fun CaptureReview(
             }
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "By continuing, you agree to the Attestra Privacy Terms.",
+                text = strings.privacyTerms,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
@@ -184,7 +187,8 @@ private fun CaptureReviewPreview() {
                     stepFront = "1 / 2 · Front",
                     stepBack = "2 / 2 · Back",
                     complete = "2 / 2 · Complete",
-                    done = "Photos ready"
+                    done = "Photos ready",
+                    privacyTerms = "By continuing, you agree to the Attestra Privacy Terms."
                 ),
                 onBack = {},
                 onRetake = {},
