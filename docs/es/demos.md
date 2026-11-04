@@ -47,3 +47,8 @@ La imagen aceptada anterior se extrae de forma determinista del vídeo suministr
 La demo automática de un lado usa el mismo control de enfoque y estabilidad que el flujo de ambos lados. Abre la revisión después de capturar, permite repetir y vuelve al catálogo solo al confirmar la imagen; permite seleccionar el modo automático o manual.
 
 ![Single-side automatic capture](../screenshots/single-side-auto-es.png)
+
+
+La captura de una cara abre la revisión compartida con un recorte. Repetir lo descarta; confirmar lo entrega a la aplicación.
+
+![Revisión y repetición de una cara](../screenshots/single-review-es.png)

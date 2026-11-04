@@ -35,7 +35,7 @@ class CameraPresetTest {
     fun testFixedFocusCameraPreset() {
         val preset = CameraPreset.FixedFocus
 
-        assertEquals(Size(1920, 1080), preset.analysisTargetResolution)
+        assertEquals(Size(2048, 1080), preset.analysisTargetResolution)
         assertFalse(preset.tapToFocusEnabled)
         assertFalse(preset.focusOnCardEnabled)
     }

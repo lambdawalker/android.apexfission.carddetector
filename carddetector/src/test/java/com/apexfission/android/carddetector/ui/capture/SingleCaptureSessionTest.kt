@@ -46,4 +46,18 @@ class SingleCaptureSessionTest {
         assertNull(session.capture(200, 400))
         assertEquals(listOf("pending", "late"), released)
     }
+    @Test fun retakeRejectsLateFramesFromTheDiscardedAttempt() {
+        val released = mutableListOf<String>()
+        val session = SingleCaptureSession<String> { released += it }
+        val oldAttempt = session.attempt
+        session.offer("discarded", 100, oldAttempt)
+        assertEquals("discarded", session.capture(200, 400))
+        session.reset()
+        assertFalse(session.offer("late-old", 300, oldAttempt))
+        assertNull(session.capture(300, 400))
+        assertTrue(session.offer("new", 400, session.attempt))
+        assertEquals("new", session.capture(500, 400))
+        session.close()
+        assertEquals(listOf("late-old"), released)
+    }
 }

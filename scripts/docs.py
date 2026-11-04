@@ -109,7 +109,9 @@ Call composables from a lifecycle-aware Compose host. Obtain camera permission f
 
 `CardDetectorLite` returns Unit and wires CameraX to worker detection; its camera default is HighResolution. Both callback lambdas receive a host-owned cutout; always consume/recycle them. `onBack` is an overlay user action. The default overlay is empty. Simulator uses a readable `videoUri`, requires `onCardDetection`, and names its actions `onCaptureRequested` / `onBackRequested`. It has no torch. See [ownership and lifetime](../concepts.md).
 
-`TwoSidedCardCapture` adds an opt-in front/back flow with a square guide, explicit turn-over, review and retakes. Its `onComplete` transfers two owned bitmaps on the main thread. `CardCaptureConfig` controls optional automatic capture; `CardCaptureStrings` supports localized instruction overrides. See [both-side capture](../recipes.md#capture-both-sides).
+`SingleSideCardCapture` adds manual/optional-automatic capture, one-image review and retake. Its `onCapture` delivers a host-owned crop on the main thread only after confirmation; unconfirmed images remain session-owned. See [single-side capture](../recipes.md#single-side-automatic-capture).
+
+`TwoSidedCardCapture` adds an opt-in front/back flow with a square guide, explicit turn-over (including front retake), review and independent retakes. Its `onComplete` transfers two owned bitmaps on the main thread. `CardCaptureConfig` controls optional automatic capture; `CardCaptureStrings` supports localized instruction overrides. See [both-side capture](../recipes.md#capture-both-sides).
 
 Scope `detectionState`/`cardDetection` describe the current evaluation, `detectionSequence` changes on misses too, and `latestBestDetection`/`captureEnabled` refer to retained capture. `capture()` copies retained data, `goBack()` invokes the host action, and `toggleFlashlight()` requests torch state where available. `imageSpaceChain` can be null before preview measurement.
 ''',
@@ -125,7 +127,7 @@ The `ModelCatalog` marker belongs to core; tfmodel extension properties require 
 ''',
  'overlays': '''# Overlays, animation, and drawing
 
-Use scoped composables inside `controlOverlay`. `IdCaptureOverlay` combines indicator and controls; the split functions let the host place them independently. Capture calls the retained-image action; changing UI gating does not implement fresh capture. `DetectionOverlay` renders metadata through the image-space chain; `DebugOverlay` renders diagnostics. Unscoped overloads need explicit data. Missing mapping/detection can suppress drawing.
+Use scoped composables inside `controlOverlay`. `IdCaptureOverlay` combines indicator and controls; the split functions let the host place them independently. By default capture calls the retained-image action; changing UI gating alone does not implement fresh capture. Both complete capture flows use this public overlay with explicit availability, capture callbacks, localized strings and optional step/mode labels. `DetectionOverlay` renders metadata through the image-space chain; `DebugOverlay` renders diagnostics. Unscoped overloads need explicit data. Missing mapping/detection can suppress drawing.
 
 `IdCaptureOverlayConfig` holds text, color, timing, smoothing, opacity and gating defaults; meanings are in [configuration](../configuration.md). Prefer canonical types from `ui.overlays.animation`; older overlay-package aliases/wrappers remain for compatibility. `AnimatedDetectionBounds` offers both structured and coordinate constructors and convenience getters. Bounds are screen-space animation output, not a bitmap.
 

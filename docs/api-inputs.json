@@ -163,25 +163,25 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CardCaptureConfig.kt",
-    "sha256": "71aca5c53ca7815d0ed6552b3e13f68f12daf0053712fe24db4c9cb5010dea6e",
+    "sha256": "d26e214e9567a8d8ecf619ad636a5605f14e7bc969b6a6d99eb409995fd32def",
     "guide": "docs/agents/api/components.md",
     "visibility": "public"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CardCaptureStrings.kt",
-    "sha256": "16de8be2dcfc160f3e104ed156c87000ae1e95fdbdb9b265db5ea4effef7d79f",
+    "sha256": "aefa1ee9c21fef1f3271068511d19c08cd098428bf6baae7ecf33cd3328869ba",
     "guide": "docs/agents/api/components.md",
     "visibility": "public"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/SingleCaptureSession.kt",
-    "sha256": "81d429b39dfd0bb3361abf4a1f1a7e673dc3baedc0ef2d2651f526043819a68f",
+    "sha256": "6f1e686005444a19c1f7812d437cec45677dc28aa763f12c909c8ac7325373f7",
     "guide": null,
     "visibility": "internal/private"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/SingleSideCardCapture.kt",
-    "sha256": "788d908fb11c5de6d390f94eb42dd3cb0b83df488171d04865f35b391e27079b",
+    "sha256": "eb355a7f4f5073852ee6d62186ac5a931d2eff70eeb26c2fc6fc36168bcaa1a9",
     "guide": "docs/agents/api/components.md",
     "visibility": "public"
   },
@@ -193,13 +193,13 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/CaptureReview.kt",
-    "sha256": "a224087ffa2f92cce1a91ec5bd7b3732df8359e7180b224f106795d1f4619612",
+    "sha256": "96183226ef1202e555ec82dff4ee7725668278f6188a2e7324a19f25f67cd4c5",
     "guide": null,
     "visibility": "internal/private"
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/components/CaptureTurnOver.kt",
-    "sha256": "c9d93d54522a8c5c3e72d6141b325ee95364f15ebca7186f691f6d2956847255",
+    "sha256": "aa6f7760e6338151d4eca9248766175e8c8e2247e444394a6b2b10aaa9cb8c8a",
     "guide": null,
     "visibility": "internal/private"
   },
