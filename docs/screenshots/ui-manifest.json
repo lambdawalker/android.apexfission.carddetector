@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "source": "15bc113fd4fc89a1312dd3b8421bd55152beab0f",
-  "workflow_run": "https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/41691471112",
+  "source": "8288c3f7063200555f43ba2bcd5b1e0a0f363b6e",
+  "workflow_run": "https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/41750177482",
   "renderer": "Compose Preview Screenshot Testing 0.0.1-alpha16",
   "kind": "host-rendered synthetic UI; no camera or model execution",
   "viewport_dp": {
@@ -41,28 +41,28 @@
     {
       "file": "capture-turn-over-en.png",
       "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/CaptureTurnOverScreenshot_capture-turn-over-en_9fb47645_0.png",
-      "sha256": "909cbdb81af8c93d84e08244ba5df17d0e649d0a70dc2ab761ac571357111249",
+      "sha256": "ca6ab5b208181fd0e751009c12e28610b4065c763f730af5c98b9821249327bd",
       "width": 1032,
       "height": 2237
     },
     {
       "file": "capture-turn-over-es.png",
       "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/CaptureTurnOverScreenshot_capture-turn-over-es_526a2750_0.png",
-      "sha256": "acee5d6591233445ed4346f3c43b45f4c019df305c8c4fa15e1736042ba304a9",
+      "sha256": "a0b79f7789fa3bc56810d411443c6d9569168d85020b6c752fd9ac78b5002898",
       "width": 1032,
       "height": 2237
     },
     {
       "file": "capture-review-en.png",
       "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/CaptureReviewScreenshot_capture-review-en_8e607258_0.png",
-      "sha256": "d26ddf13fd1f877748b73dd6d0486614ee0709a8e703c8baad267d18adc1e7f7",
+      "sha256": "979cf73b697ebba630c3aad44df3eb7f8a46e5ca6fc6b6cea2c7d1b4f7b03583",
       "width": 1032,
       "height": 2237
     },
     {
       "file": "capture-review-es.png",
       "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/CaptureReviewScreenshot_capture-review-es_d24ed41e_0.png",
-      "sha256": "787023b774ff65a3cbf9a81f2921f315cba542caf4271055ee03b09fb1e478cc",
+      "sha256": "afd49fac4ab1ea75dcb470a45862fc504cbbd322d8ceab1ef430b59c5d5169f5",
       "width": 1032,
       "height": 2237
     },
@@ -164,14 +164,14 @@
     {
       "file": "single-review-en.png",
       "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/SingleReviewScreenshot_single-review-en_3ce1bc25_0.png",
-      "sha256": "1bb2b55672e838ebccdd47c634c66de4b632c6b8d3a57c1a683bd41a4378d743",
+      "sha256": "6ef352a92a97d3cd4405a3a35b624bc529dd9cb269b0a1b26d8f4f9e87252ae6",
       "width": 1032,
       "height": 2237
     },
     {
       "file": "single-review-es.png",
       "preview": "com/apexfission/android/carddetector/ui/CardDetectorScreenshotTestKt/SingleReviewScreenshot_single-review-es_761f1bff_0.png",
-      "sha256": "ff9d76def2352cc507367d2f35968ca450085e5a4e9ecbcf5fa407cead1e50d3",
+      "sha256": "d76f63d2b780cba8ad18f7b846b95801675c2fb4fe14d1471526bc1dad812cf3",
       "width": 1032,
       "height": 2237
     }
