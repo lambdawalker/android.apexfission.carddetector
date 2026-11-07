@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import com.apexfission.android.carddetector.ui.detector.CardDetectorOverlayScope
 import com.apexfission.android.carddetector.ui.overlays.IdCaptureIndicatorOverlay
 import com.apexfission.android.carddetector.ui.overlays.IdCaptureOverlayConfig
+import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
 import android.content.res.Configuration
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
@@ -143,7 +144,7 @@ private fun CaptureOverlayPreviewContent(hasDetection: Boolean) {
         }
     }
     MaterialTheme {
-        Box(Modifier.fillMaxSize()) {
+        Box(Modifier.fillMaxSize().checkerboardBackground()) {
             with(scope) {
                 CaptureOverlay(
                     config = IdCaptureOverlayConfig(),
