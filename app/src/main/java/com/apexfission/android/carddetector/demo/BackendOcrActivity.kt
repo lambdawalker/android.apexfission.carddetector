@@ -1,5 +1,16 @@
 package com.apexfission.android.carddetector.demo
 
+import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthState
+import net.openid.appauth.AuthorizationResponse
+import net.openid.appauth.AuthorizationException
+import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.ResponseTypeValues
+import androidx.activity.result.contract.ActivityResultContracts
+import android.net.Uri
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.TimeoutCancellationException
 import android.Manifest
 import android.os.Bundle
 import android.view.WindowManager
@@ -15,7 +26,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -36,17 +46,83 @@ import kotlinx.coroutines.withContext
 
 /** Runs a confirmed synthetic card pair through the isolated backend bench. */
 class BackendOcrActivity : ComponentActivity() {
+    private lateinit var authorization: AuthorizationService
+    private var session by mutableStateOf<AuthState?>(null)
+    private var signingIn by mutableStateOf(false)
+    private var loginError by mutableStateOf<String?>(null)
+    private val login = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val intent = result.data
+        val response = intent?.let { AuthorizationResponse.fromIntent(it) }
+        val exception = intent?.let { AuthorizationException.fromIntent(it) }
+        if (response == null || exception != null) {
+            signingIn = false
+            loginError = "Sign-in was cancelled or failed. Please try again."
+        } else {
+            val state = AuthState(response, exception)
+            authorization.performTokenRequest(response.createTokenExchangeRequest()) { token, error ->
+                state.update(token, error)
+                session = state.takeIf { it.isAuthorized }
+                signingIn = false
+                loginError = if (session == null) "Sign-in failed. Please try again." else null
+            }
+        }
+    }
+
+    private fun signIn() {
+        session = null
+        signingIn = true
+        loginError = null
+        lifecycleScope.launch {
+            try {
+                val config = withContext(Dispatchers.IO) { demoJson("/android-config.json") }
+                val issuer = Uri.parse(config.getString("login"))
+                require(issuer.scheme == "https" && issuer.host?.endsWith(".amazoncognito.com") == true)
+                val service = AuthorizationServiceConfiguration(
+                    Uri.parse("$issuer/oauth2/authorize"), Uri.parse("$issuer/oauth2/token"))
+                val request = AuthorizationRequest.Builder(service, config.getString("clientId"),
+                    ResponseTypeValues.CODE,
+                    Uri.parse("com.apexfission.carddetector.demo:/oauth2redirect"))
+                    .setScope("openid demo-ocr/run").setPrompt("login").build()
+                login.launch(authorization.getAuthorizationRequestIntent(request))
+            } catch (cancel: CancellationException) {
+                throw cancel
+            } catch (_: Exception) {
+                signingIn = false
+                loginError = "Could not open sign-in. Check your connection and try again."
+            }
+        }
+    }
+
+    private suspend fun accessToken(): String = suspendCancellableCoroutine { continuation ->
+        val current = session
+        if (current == null) {
+            continuation.resumeWith(Result.failure(IllegalStateException("Sign in to continue.")))
+        } else {
+            current.performActionWithFreshTokens(authorization) { access, _, error ->
+                if (continuation.isActive) {
+                    if (access != null && error == null) continuation.resumeWith(Result.success(access))
+                    else continuation.resumeWith(Result.failure(IllegalStateException("Session expired. Sign in again.")))
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        authorization.dispose()
+        super.onDestroy()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        authorization = AuthorizationService(this)
         enableEdgeToEdge()
         setContent {
             CardDetectorDemoTheme {
-                var code by remember { mutableStateOf("") }
                 var capturing by remember { mutableStateOf(false) }
                 var busy by remember { mutableStateOf(false) }
                 var result by remember { mutableStateOf<BackendOcrResult?>(null) }
-                var error by remember { mutableStateOf(false) }
+                var error by remember { mutableStateOf<String?>(null) }
                 Scaffold { insets ->
                     Box(Modifier.fillMaxSize().padding(insets).consumeWindowInsets(insets)) {
                         if (capturing) {
@@ -70,18 +146,19 @@ class BackendOcrActivity : ComponentActivity() {
                                     cardClasses = ModelCatalog.TfLite.cardClasses,
                                     onBack = { capturing = false },
                                     onComplete = { photos ->
-                                        val pairingCode = code.trim()
                                         capturing = false
                                         busy = true
                                         lifecycleScope.launch(start = CoroutineStart.UNDISPATCHED) {
                                             try {
                                                 result = withContext(Dispatchers.IO) {
-                                                    runBackendOcr(photos.front.bitmap, photos.back.bitmap, pairingCode)
+                                                    runBackendOcr(photos.front.bitmap, photos.back.bitmap, ::accessToken)
                                                 }
+                                            } catch (_: TimeoutCancellationException) {
+                                                error = "OCR timed out. Please try again."
                                             } catch (cancel: CancellationException) {
                                                 throw cancel
-                                            } catch (_: Exception) {
-                                                error = true
+                                            } catch (failure: Exception) {
+                                                error = failure.message ?: "Could not complete OCR."
                                             } finally {
                                                 photos.front.bitmap.recycle()
                                                 photos.back.bitmap.recycle()
@@ -92,9 +169,13 @@ class BackendOcrActivity : ComponentActivity() {
                                 )
                             }
                         } else {
-                            BackendOcrScreen(code, { code = it }, busy, result, error) {
+                            BackendOcrScreen(session?.isAuthorized == true, {
                                 result = null
-                                error = false
+                                error = null
+                                signIn()
+                            }, busy || signingIn, result, error ?: loginError) {
+                                result = null
+                                error = null
                                 capturing = true
                             }
                         }
@@ -107,11 +188,11 @@ class BackendOcrActivity : ComponentActivity() {
 
 @Composable
 private fun BackendOcrScreen(
-    code: String,
-    onCode: (String) -> Unit,
+    signedIn: Boolean,
+    onSignIn: () -> Unit,
     busy: Boolean,
     result: BackendOcrResult?,
-    error: Boolean,
+    error: String?,
     onCapture: () -> Unit,
 ) {
     Column(
@@ -120,18 +201,13 @@ private fun BackendOcrScreen(
     ) {
         Text(stringResource(R.string.ocr_demo_title), style = MaterialTheme.typography.headlineMedium)
         Text(stringResource(R.string.ocr_demo_instructions))
-        OutlinedTextField(
-            value = code,
-            onValueChange = onCode,
-            enabled = !busy,
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            label = { Text(stringResource(R.string.ocr_demo_pairing)) },
-            modifier = Modifier.fillMaxWidth(),
-        )
+        Text(stringResource(if (signedIn) R.string.ocr_demo_signed_in else R.string.ocr_demo_sign_in_help))
+        TextButton(onClick = onSignIn, enabled = !busy) {
+            Text(stringResource(R.string.ocr_demo_sign_in))
+        }
         Button(
             onClick = onCapture,
-            enabled = !busy && code.trim().length == 48,
+            enabled = !busy && signedIn,
             shape = MaterialTheme.shapes.small,
         ) {
             Text(stringResource(R.string.ocr_demo_open))
@@ -140,7 +216,7 @@ private fun BackendOcrScreen(
             LinearProgressIndicator(Modifier.fillMaxWidth())
             Text(stringResource(R.string.ocr_demo_running))
         }
-        if (error) Text(stringResource(R.string.ocr_demo_error), color = MaterialTheme.colorScheme.error)
+        if (error != null) Text(error, color = MaterialTheme.colorScheme.error)
         result?.let {
             when {
                 it.error != null -> Text(stringResource(R.string.ocr_demo_failed, it.error), color = MaterialTheme.colorScheme.error)
@@ -156,23 +232,23 @@ private fun BackendOcrScreen(
 @PreviewLightDark
 @Composable
 private fun BackendOcrSetupPreview() {
-    CardDetectorDemoTheme { BackendOcrScreen("", {}, false, null, false, {}) }
+    CardDetectorDemoTheme { BackendOcrScreen(false, {}, false, null, null, {}) }
 }
 
 @PreviewLightDark
 @Composable
 private fun BackendOcrRunningPreview() {
-    CardDetectorDemoTheme { BackendOcrScreen("demo", {}, true, null, false, {}) }
+    CardDetectorDemoTheme { BackendOcrScreen(true, {}, true, null, null, {}) }
 }
 
 @PreviewLightDark
 @Composable
 private fun BackendOcrResultPreview() {
-    CardDetectorDemoTheme { BackendOcrScreen("demo", {}, false, BackendOcrResult(1234, 1040, "Sample result", null), false, {}) }
+    CardDetectorDemoTheme { BackendOcrScreen(true, {}, false, BackendOcrResult(1234, 1040, "Sample result", null), null, {}) }
 }
 
 @PreviewLightDark
 @Composable
 private fun BackendOcrErrorPreview() {
-    CardDetectorDemoTheme { BackendOcrScreen("demo", {}, false, null, true, {}) }
+    CardDetectorDemoTheme { BackendOcrScreen(true, {}, false, null, "Could not complete OCR.", {}) }
 }

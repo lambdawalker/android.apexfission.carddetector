@@ -14,6 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.apexfission.android.carddetector.demo"
+        manifestPlaceholders["appAuthRedirectScheme"] = "com.apexfission.carddetector.demo"
         minSdk = 28
         versionCode = 1
         versionName = "1.0"
@@ -43,6 +44,7 @@ kotlin {
 }
 
 dependencies {
+    implementation("net.openid:appauth:0.11.1")
     screenshotTestImplementation(libs.screenshot.validation.api)
     screenshotTestImplementation(libs.androidx.ui.tooling)
 

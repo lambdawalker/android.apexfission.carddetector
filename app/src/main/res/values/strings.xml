@@ -23,12 +23,14 @@
     <string name="welcome_single_auto_action">Try single-side auto capture</string>
     <string name="ocr_demo_title">Backend OCR</string>
     <string name="ocr_demo_description">Capture a synthetic card and read it using the isolated OCR bench.</string>
-    <string name="ocr_demo_instructions">Use synthetic cards only. Start the OCR bench bridge on your computer, run adb reverse tcp:8765 tcp:8765, and enter the pairing code. The confirmed photos will be sent to the test backend.</string>
-    <string name="ocr_demo_pairing">Pairing code</string>
+    <string name="ocr_demo_instructions">Use synthetic cards only. Sign in with your invited email account, then scan both sides. The photos are combined in color and sent directly to the demo backend.</string>
+    <string name="ocr_demo_sign_in">Sign in / switch account</string>
+    <string name="ocr_demo_signed_in">Signed in. Ready to scan.</string>
+    <string name="ocr_demo_sign_in_help">Use the email and temporary password from your invitation. You can set a new password during sign-in.</string>
     <string name="ocr_demo_open">Scan for backend OCR</string>
     <string name="ocr_demo_camera">Camera</string>
     <string name="ocr_demo_running">Reading the card…</string>
-    <string name="ocr_demo_error">Could not complete the request. Check the bridge, pairing code, and AWS session.</string>
+    <string name="ocr_demo_error">Could not complete the request. Check your connection and sign in again.</string>
     <string name="ocr_demo_failed">OCR request failed: %1$s</string>
     <string name="ocr_demo_timings">Backend: %1$d ms · OCR inference: %2$d ms</string>
     <string name="ocr_demo_no_fields">OCR succeeded. This deployment did not return extracted fields.</string>
