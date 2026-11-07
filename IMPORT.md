@@ -11,15 +11,101 @@ is available from multiple destinations, choose one destination; the examples in
 all repositories needed by that artifact and its pinned dependencies. Unconfirmed
 uploads and older destination releases are never installation recommendations.
 
-## carddetector: android.apexfission.carddetector
+## carddetector: card-detector
 
-Confirmed version: **0.1.8**. Source: [cacf37a91aee0570f68f57b7033e43ab9c896773](https://github.com/lambdawalker/android.apexfission.carddetector/commit/cacf37a91aee0570f68f57b7033e43ab9c896773).
+Choose one publishing destination and one dependency syntax.
 
-Choose **one** destination below and **one** dependency syntax. Each destination provides this same release; do not add duplicate dependencies.
+### maven-central
+
+Repository: **maven-central**. Confirmed version **0.1.1**. [Source commit](https://github.com/lambdawalker/android.apexfission.carddetector/commit/acb0035aee1a0aec0c6886617243514a040fa650).
+
+#### Gradle Kotlin DSL
+
+In `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+In the app's `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation("com.apexfission.android.carddetector:card-detector:0.1.1")
+}
+```
+
+#### Gradle Groovy DSL
+
+In `settings.gradle`:
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+In the app's `build.gradle`:
+
+```groovy
+dependencies {
+    implementation 'com.apexfission.android.carddetector:card-detector:0.1.1'
+}
+```
+
+#### Version catalog
+
+Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
+
+```toml
+[libraries]
+carddetector = { module = "com.apexfission.android.carddetector:card-detector", version = "0.1.1" }
+```
+
+Then use this instead of the direct dependency in the app's `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation(libs.carddetector)
+}
+```
+
+#### Maven
+
+Add these repositories and dependency to `pom.xml`:
+
+```xml
+<repositories>
+  <repository>
+    <id>google</id>
+    <url>https://dl.google.com/dl/android/maven2</url>
+  </repository>
+  <repository>
+    <id>central</id>
+    <url>https://repo.maven.apache.org/maven2</url>
+  </repository>
+</repositories>
+<dependencies>
+  <dependency>
+    <groupId>com.apexfission.android.carddetector</groupId>
+    <artifactId>card-detector</artifactId>
+    <version>0.1.1</version>
+    <type>aar</type>
+  </dependency>
+</dependencies>
+```
 
 ### jitpack
 
-Repository: **jitpack**.
+Repository: **jitpack**. Confirmed version **0.1.10**. [Source commit](https://github.com/lambdawalker/android.apexfission.carddetector/commit/39e57dcf08453daf350d3f402eeea301f834aced).
 
 Choose either the detector or the model dependency. Their module tags share one JitPack artifact ID; adding both creates a version conflict. The model already includes its pinned detector dependency.
 
@@ -41,7 +127,7 @@ In the app's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.8")
+    implementation("com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.10-jitpack")
 }
 ```
 
@@ -63,7 +149,7 @@ In the app's `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.8'
+    implementation 'com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.10-jitpack'
 }
 ```
 
@@ -73,7 +159,7 @@ Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
 
 ```toml
 [libraries]
-carddetector = { module = "com.github.lambdawalker:android.apexfission.carddetector", version = "carddetector~v0.1.8" }
+carddetector = { module = "com.github.lambdawalker:android.apexfission.carddetector", version = "carddetector~v0.1.10-jitpack" }
 ```
 
 Then use this instead of the direct dependency in the app's `build.gradle.kts`:
@@ -107,7 +193,7 @@ Add these repositories and dependency to `pom.xml`:
   <dependency>
     <groupId>com.github.lambdawalker</groupId>
     <artifactId>android.apexfission.carddetector</artifactId>
-    <version>carddetector~v0.1.8</version>
+    <version>carddetector~v0.1.10-jitpack</version>
     <type>aar</type>
   </dependency>
 </dependencies>
