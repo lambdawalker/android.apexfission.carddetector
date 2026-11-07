@@ -60,6 +60,42 @@ fun TwoSidedCardCapture(
     cameraPreset: CameraPreset = CameraPreset.HighResolution,
     cardFilters: List<CardValidator> = listOf(MarginValidator(), AspectRatioValidator()),
     onBack: () -> Unit = {},
+) = TwoSidedCardCapture(
+    instanceKey = instanceKey,
+    modelPath = modelPath,
+    classLabels = classLabels,
+    cardClasses = cardClasses,
+    onComplete = onComplete,
+    onSideChanged = { _, _ -> },
+    modifier = modifier,
+    config = config,
+    strings = strings,
+    detectorPreset = detectorPreset,
+    cameraPreset = cameraPreset,
+    cardFilters = cardFilters,
+    onBack = onBack,
+)
+
+/**
+ * [onSideChanged] reports accepted crops immediately and sends null when a side is retaken.
+ * The bitmap is borrowed for the synchronous callback on the main thread. Copy its pixels
+ * before returning if needed later. The session owns it until [onComplete] transfers the pair.
+ */
+@Composable
+fun TwoSidedCardCapture(
+    instanceKey: String,
+    modelPath: String,
+    classLabels: Map<Int, String>,
+    cardClasses: Set<Int>,
+    onComplete: (TwoSidedCardCaptureResult) -> Unit,
+    onSideChanged: (CardSide, CapturedCardSide?) -> Unit,
+    modifier: Modifier = Modifier,
+    config: CardCaptureConfig = CardCaptureConfig(),
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
+    detectorPreset: CardDetectorPreset = CardDetectorPreset.HighPerformance,
+    cameraPreset: CameraPreset = CameraPreset.HighResolution,
+    cardFilters: List<CardValidator> = listOf(MarginValidator(), AspectRatioValidator()),
+    onBack: () -> Unit = {},
 ) = key(instanceKey, modelPath, classLabels.toMap(), cardClasses.toSet(),
     detectorPreset, cameraPreset, cardFilters.map { it.configurationKey }, config) {
     val session = remember { CaptureSession<CapturedCardSide> { it.bitmap.recycle() } }
@@ -76,14 +112,24 @@ fun TwoSidedCardCapture(
     var lastAutoReady by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
 
+    val currentOnSideChanged by rememberUpdatedState(onSideChanged)
+
     fun capture() {
         val image = latest ?: return
         if (receivedAt <= 0L || SystemClock.elapsedRealtime() - receivedAt !in 0..currentConfig.maxDetectionGapMs) return
         val token = session.requestCapture() ?: return
         latest = null // transfer our retained frame, not the detector's older best image
+        val side = session.side
         val accepted = session.accept(token, image)
         if (accepted && config.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.Confirm)
         revision++
+        if (accepted) currentOnSideChanged(side, image)
+    }
+
+    fun retake(side: CardSide) {
+        if (!session.retake(side)) return
+        revision++
+        currentOnSideChanged(side, null)
     }
 
     DisposableEffect(session) {
@@ -169,14 +215,13 @@ fun TwoSidedCardCapture(
                 }
             }
             CaptureStage.TurnOver -> CaptureTurnOver(session.front!!, strings, onBack, onRetake = {
-                session.retake(CardSide.Front)
-                revision++
+                retake(CardSide.Front)
             }) {
                 session.continueToBack()
                 revision++
             }
             CaptureStage.Review -> CaptureReview(session.front!!, session.back!!, strings, onBack,
-                onRetake = { session.retake(it); revision++ },
+                onRetake = ::retake,
                 onConfirm = {
                     session.complete()?.let { (front, back) ->
                         revision++

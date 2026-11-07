@@ -46,14 +46,15 @@ internal class CaptureSession<T>(private val release: (T) -> Unit) {
         stage = CaptureStage.Camera
     }
 
-    fun retake(target: CardSide) {
-        if (stage != CaptureStage.Review) return
+    fun retake(target: CardSide): Boolean {
+        if (stage != CaptureStage.Review && !(stage == CaptureStage.TurnOver && target == CardSide.Front)) return false
         if (target == CardSide.Front) { front?.let(release); front = null }
         else { back?.let(release); back = null }
         side = target
         attempt++
         pending = false
         stage = CaptureStage.Camera
+        return true
     }
 
     fun complete(): Pair<T, T>? {
