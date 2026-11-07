@@ -105,9 +105,16 @@ internal fun WelcomeScreen(
                             style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                         Text(stringResource(R.string.welcome_title),
                             style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
-                        Text(stringResource(R.string.welcome_description),
-                            style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Spacer(Modifier.height(8.dp))
+                        Text(stringResource(R.string.welcome_note), style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        OutlinedButton(
+                            onClick = onOpenSettings,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.welcome_settings_action))
+                        }
                     }
                 }
                 items(DemoDestination.entries, key = { it.name }) { demo ->
@@ -118,14 +125,12 @@ internal fun WelcomeScreen(
                                 Surface(shape = MaterialTheme.shapes.medium,
                                     color = MaterialTheme.colorScheme.primaryContainer) {
                                     Icon(demo.icon, contentDescription = null,
-                                        modifier = Modifier.padding(12.dp).size(24.dp),
+                                        modifier = Modifier.padding(8.dp).size(18.dp),
                                         tint = MaterialTheme.colorScheme.onPrimaryContainer)
                                 }
                                 Column(Modifier.weight(1f)) {
-                                    Text(stringResource(demo.title), style = MaterialTheme.typography.titleMedium,
+                                    Text(stringResource(demo.title), style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.SemiBold)
-                                    Text(demo.component, style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.primary)
                                 }
                             }
                             Text(stringResource(demo.description), style = MaterialTheme.typography.bodyMedium,
@@ -135,20 +140,6 @@ internal fun WelcomeScreen(
                             }
                         }
                     }
-                }
-                item {
-                    OutlinedButton(
-                        onClick = onOpenSettings,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.welcome_settings_action))
-                    }
-                }
-                item {
-                    Text(stringResource(R.string.welcome_footer), style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
