@@ -245,6 +245,26 @@ fun TwoSidedCardCapture(
     classLabels: Map<Int, String>,
     cardClasses: Set<Int>,
     onComplete: (TwoSidedCardCaptureResult) -> Unit,
+    onSideReady: (CardSide, CapturedCardSide) -> Unit,
+    onSideAccepted: (CardSide, CapturedCardSide) -> Unit,
+    onSideInvalidated: (CardSide) -> Unit = {},
+    onImagesReady: ((TwoSidedCardCaptureResult) -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    config: CardCaptureConfig = CardCaptureConfig(),
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
+    detectorPreset: CardDetectorPreset = CardDetectorPreset.HighPerformance,
+    cameraPreset: CameraPreset = CameraPreset.HighResolution,
+    cardFilters: List<CardValidator> = listOf(MarginValidator(), AspectRatioValidator()),
+    onBack: () -> Unit = {},
+) /* expression body omitted */
+
+@Composable
+fun TwoSidedCardCapture(
+    instanceKey: String,
+    modelPath: String,
+    classLabels: Map<Int, String>,
+    cardClasses: Set<Int>,
+    onComplete: (TwoSidedCardCaptureResult) -> Unit,
     onSideChanged: (CardSide, CapturedCardSide?) -> Unit,
     onImagesReady: ((TwoSidedCardCaptureResult) -> Unit)? = null,
     modifier: Modifier = Modifier,

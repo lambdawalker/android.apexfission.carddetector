@@ -187,7 +187,7 @@
   },
   {
     "path": "carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/TwoSidedCardCapture.kt",
-    "sha256": "e7b3246cf6161f4d5f26613da45e293b652abe74b68cfc87314625679a819499",
+    "sha256": "794e427f6c398dc7e179bcf731af6b1f3421f1295a10a71b974826614f2ce7a4",
     "guide": "docs/agents/api/components.md",
     "visibility": "public"
   },

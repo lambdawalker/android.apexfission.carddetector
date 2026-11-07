@@ -77,6 +77,61 @@ fun TwoSidedCardCapture(
 )
 
 /**
+ * [onSideReady] delivers each captured crop immediately, including replacements.
+ * [onSideInvalidated] identifies the side discarded by a retake.
+ * [onSideAccepted] delivers each side of the final confirmed pair, front then back.
+ *
+ * All side callbacks borrow the bitmap on the main thread. Copy it before
+ * returning if background work needs it. Only [onComplete] transfers ownership.
+ */
+@Composable
+fun TwoSidedCardCapture(
+    instanceKey: String,
+    modelPath: String,
+    classLabels: Map<Int, String>,
+    cardClasses: Set<Int>,
+    onComplete: (TwoSidedCardCaptureResult) -> Unit,
+    onSideReady: (CardSide, CapturedCardSide) -> Unit,
+    onSideAccepted: (CardSide, CapturedCardSide) -> Unit,
+    onSideInvalidated: (CardSide) -> Unit = {},
+    onImagesReady: ((TwoSidedCardCaptureResult) -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    config: CardCaptureConfig = CardCaptureConfig(),
+    strings: CardCaptureStrings = defaultCardCaptureStrings(),
+    detectorPreset: CardDetectorPreset = CardDetectorPreset.HighPerformance,
+    cameraPreset: CameraPreset = CameraPreset.HighResolution,
+    cardFilters: List<CardValidator> = listOf(MarginValidator(), AspectRatioValidator()),
+    onBack: () -> Unit = {},
+) = TwoSidedCardCapture(
+    instanceKey = instanceKey,
+    modelPath = modelPath,
+    classLabels = classLabels,
+    cardClasses = cardClasses,
+    onComplete = { result ->
+        try {
+            onSideAccepted(CardSide.Front, result.front)
+            onSideAccepted(CardSide.Back, result.back)
+        } catch (error: Throwable) {
+            result.front.bitmap.recycle()
+            result.back.bitmap.recycle()
+            throw error
+        }
+        onComplete(result)
+    },
+    onSideChanged = { side, image ->
+        if (image == null) onSideInvalidated(side) else onSideReady(side, image)
+    },
+    onImagesReady = onImagesReady,
+    modifier = modifier,
+    config = config,
+    strings = strings,
+    detectorPreset = detectorPreset,
+    cameraPreset = cameraPreset,
+    cardFilters = cardFilters,
+    onBack = onBack,
+)
+
+/**
  * [onSideChanged] reports accepted crops immediately and sends null when a side is retaken.
  * [onImagesReady] reports each complete pair before confirmation, including after a retake.
  * These bitmaps are borrowed for the synchronous callback on the main thread. Copy its pixels
