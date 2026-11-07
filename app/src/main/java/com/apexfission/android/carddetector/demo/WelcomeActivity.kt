@@ -52,6 +52,7 @@ class WelcomeActivity : ComponentActivity() {
             .putExtra(CardDetectionActivity.EXTRA_AUTO_CAPTURE, false)
         DemoDestination.TwoSidesAutomatic -> Intent(this, CardDetectionActivity::class.java)
             .putExtra(CardDetectionActivity.EXTRA_AUTO_CAPTURE, true)
+        DemoDestination.BackendOcr -> Intent(this, BackendOcrActivity::class.java)
         DemoDestination.Video -> Intent(this, CardDetectionSimulationActivity::class.java)
     }
 
@@ -82,6 +83,8 @@ internal enum class DemoDestination(
         R.string.welcome_auto_action, "TwoSidedCardCapture", Icons.Default.AutoAwesome),
     Video(R.string.welcome_video_title, R.string.welcome_video_description,
         R.string.welcome_video_action, "CardTrackingSimulator", Icons.Default.PlayArrow),
+    BackendOcr(R.string.ocr_demo_title, R.string.ocr_demo_description,
+        R.string.ocr_demo_open, "Isolated OCR bench", Icons.Default.AutoAwesome),
 }
 
 /**
