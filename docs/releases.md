@@ -11,7 +11,7 @@ Publishing core does not publish the model. Publishing the model does not publis
 
 ## Artifact rename status
 
-`gradle.properties` selects `card-detector` and `card-detector-model`. Validation accepts these names and the historical `core` / `sentinel-card-model` records. Installation examples use the newest confirmed semantic release of each module across all destinations. A configured rename alone does not change confirmed coordinates; pending names are explicitly labeled.
+`gradle.properties` selects `card-detector` and `card-detector-model`. Validation accepts these names and the historical `core` / `sentinel-card-model` records. Installation examples use the latest confirmed release for each module and destination. A configured rename alone does not change confirmed coordinates; pending names are explicitly labeled.
 
 Module version histories continue across the rename: with confirmed 0.1.0 and no later history, the next version is 0.1.1 even if the new artifact has no Maven history. Leave `version` blank. Existing journal and tag safeguards still apply.
 
@@ -88,9 +88,9 @@ The wizard manages all configured environments. JitPack has no required variable
 2. Open **Actions → Publish card-detector** for the detector or **Actions → Publish card-detector-model** for the bundled model.
 3. Choose **Run workflow** on `main` and select a configured **repository**, `maven-central` or `jitpack`. Each workflow fixes its own module; there is no module selector.
 4. Leave **version** blank for automatic selection. Each module and destination starts at 0.1.0 when it has no release history. Unchanged inputs reuse that destination's latest version and source. Changed inputs advance its patch version.
-5. To choose a version yourself, enter stable **X.Y.Z**. An existing latest version may only identify the same release inputs and original source; an older version or conflicting source is rejected. A new explicit version must be greater than the module's latest version. To recover a destination whose upload may already have started, use Finalize instead of publishing again.
+5. To choose a version yourself, enter stable **X.Y.Z**. An existing latest version may only identify the same release inputs and original source; an older version or conflicting source is rejected. A new explicit version must be greater than the selected destination's latest module version. To recover a destination whose upload may already have started, use Finalize instead of publishing again.
 
-Each module has one shared semantic version/source identity across destinations. Detector and model versions remain independent. The release fingerprint covers the selected module, build inputs and release tooling; sibling module or generated installation metadata changes alone do not create a new release. Existing history, including historical destination-scoped tags, must agree on the source of a given module/version. Conflicting legacy identities fail closed and require maintainer reconciliation.
+Detector and model versions are independent, and each publishing destination maintains its own history. The release fingerprint covers the selected module, build inputs and release tooling. Sibling changes or generated installation metadata alone do not create a new release. Conflicting provenance within one destination requires maintainer reconciliation.
 Both dedicated workflows call `publish-card-detection.yml`, a reusable implementation with no manual entry point. They select the matching GitHub environment and retain the shared release lock and publication safeguards. Only Maven Central uses delayed finalization. The documentation workflow listens for either dedicated publication to finish.
 
 Only the selected module is staged for local publication verification. Maven destinations upload it; JitPack builds it from the immutable module source tag when its artifact is requested. Common tests and the demo still build as integration checks. Attempting a Gradle upload for both modules, for the wrong repository, or without `releaseModule`, fails before upload.
