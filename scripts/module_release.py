@@ -39,7 +39,20 @@ def repository_url():
 
 def scope(): return '' if repository()=='maven-central' else repository()+'/'
 def metadata_path(module): return f'docs/releases/{scope()}{module}.json'
-def tag(module, version): return release_identity.canonical(module,version)
+def tag(module, version): return release_identity.canonical(module,version,repository())
+def legacy_source_tags(module, version):
+    return (release_identity.canonical(module, version), f'{repository()}/{module}/v{version}')
+
+
+def record_source_tag(record):
+    explicit = release_identity.record_tag(record)
+    if explicit:
+        return explicit
+    candidates = legacy_source_tags(record['module'], record['version'])
+    return next((name for name in candidates if remote_ref(name) and
+                 git('rev-parse', f'{name}^{{commit}}') == record['source']), candidates[0])
+
+
 def pending(module, version): return f'release-pending/{scope()}{module}/{version}'
 def uploading(module, version): return f'release-uploading/{scope()}{module}/{version}'
 def artifact_base(group,artifact):
@@ -124,7 +137,7 @@ def ensure_available(module,tags,*,pending_override=None):
             if common.version_key(version) <= common.version_key(old_version):
                 raise ValueError('JitPack override requires a version newer than every pending attempt')
             journal = read_record(module, old_version)
-            canonical = tag(module, old_version)
+            canonical = record_source_tag(journal)
             if not remote_ref(canonical) or git('rev-parse', f'{canonical}^{{commit}}') != journal['source']:
                 raise ValueError('Pending JitPack canonical source does not match its journal')
             git('merge-base', '--is-ancestor', journal['source'], source)
@@ -142,6 +155,8 @@ def validate_record(record,module,check_destination=True):
     if module not in MODULES or record.get('module')!=module or (target!='jitpack' and record.get('artifact') not in ARTIFACTS[module]) or record.get('companions'):
         raise ValueError('Journal must contain exactly the selected module')
     common.version_key(record['version'])
+    if 'source_tag' in record and (record.get('legacy_tag') or record['source_tag'] != release_identity.canonical(module,record['version'],target)):
+        raise ValueError('Invalid destination source tag')
     if not re.fullmatch('[0-9a-f]{40}',record['source']): raise ValueError('Invalid source')
     expected=set(common.SUFFIXES)
     actual=set(record['sha256'])
@@ -199,7 +214,7 @@ def recover_failed_jitpack(module,tags,version,source):
     if common.version_key(version)<=common.version_key(old_version) or source==r['source']:
         raise ValueError('Failed JitPack recovery requires a newer version and corrected source')
     git('merge-base','--is-ancestor',r['source'],source)
-    canonical=tag(module,old_version)
+    canonical=record_source_tag(r)
     if not remote_ref(canonical) or git('rev-parse',f'{canonical}^{{commit}}')!=r['source']:
         raise ValueError('Failed JitPack canonical source does not match its journal')
     current=confirmed_record(module,remote=True)
@@ -241,7 +256,7 @@ def prepare(module,requested='',*,allow_pending_jitpack=False):
     if allow_pending_jitpack and not requested.strip():
         raise ValueError('JitPack override requires an explicit version (X.Y.Z)')
     head = source
-    version,source=release_identity.select(module,source,git,tags,records,requested.strip())
+    version,source=release_identity.select(module,source,git,tags,records,requested.strip(),destination=repository())
     if repository()=='jitpack':
         if allow_pending_jitpack:
             if source != head:
@@ -270,27 +285,42 @@ def prepare_finalization(module,version,source=''):
     refresh()
     if remote_ref(pending(module,version)):
         r=read_record(module,version)
+        stable=record_source_tag(r)
+        if r.get('source_tag') and (not remote_ref(stable) or git('rev-parse',f'{stable}^{{commit}}')!=r['source']):
+            raise ValueError('Pending source tag differs from reservation')
         if source and source!=r['source']: raise ValueError('Conflicting source')
         git('merge-base','--is-ancestor',r['source'],'origin/main')
         current=confirmed_record(module,remote=True)
         if current and common.version_key(current['version'])>=common.version_key(version): raise ValueError('Pending release would overwrite newer documentation')
         return common.outputs(dict(module=module,version=version,source=r['source'],skip='false'))
-    stable=tag(module,version)
-    if not remote_ref(stable):stable=f'{scope()}{module}/v{version}'
-    current=confirmed_record(module,remote=True)
-    # Preserve legacy v0.1.0 provenance without inventing new migration tags.
-    if current and current['version']==version and current.get('legacy_tag'): stable=current['legacy_tag']
-    if not remote_ref(stable) or remote_ref(uploading(module,version)): raise ValueError('No matching pending or completed release')
-    tagged=git('rev-parse',f'{stable}^{{commit}}')
-    if source and tagged!=source: raise ValueError('Conflicting source')
-    if not current:raise ValueError('Stable tag lacks confirmed docs')
-    validate_record(current,module)
-    if current['phase']!='confirmed-public' or common.version_key(current['version'])<common.version_key(version): raise ValueError('Stable tag lacks confirmed docs')
-    current_tag=current.get('legacy_tag') or tag(module,current['version'])
-    if not remote_ref(current_tag):current_tag=f'{scope()}{module}/v{current["version"]}'
-    if not remote_ref(current_tag) or git('rev-parse',f'{current_tag}^{{commit}}')!=current['source']: raise ValueError('Confirmed source differs from stable tag')
-    git('merge-base','--is-ancestor',tagged,current['source']);git('merge-base','--is-ancestor',current['source'],'origin/main')
-    return common.outputs(dict(module=module,version=version,source=tagged,skip='true'))
+    current = confirmed_record(module, remote=True)
+    if remote_ref(uploading(module, version)) or not current:
+        raise ValueError('No matching pending or completed release')
+    validate_record(current, module)
+    if current['phase'] != 'confirmed-public' or common.version_key(current['version']) < common.version_key(version):
+        raise ValueError('Stable tag lacks confirmed docs')
+    record = current
+    if current['version'] != version:
+        record = None
+        for filename in (f'{version}-{repository()}.json', f'{version}.json'):
+            path = documentation_history.HISTORY / module / filename
+            if git('ls-tree', '--name-only', 'origin/main', '--', str(path)):
+                entry = documentation_history.validate(json.loads(git('show', f'origin/main:{path}')))
+                record = entry['destinations'].get(repository())
+                if record:
+                    break
+        if not record or record['version'] != version:
+            raise ValueError('No confirmed record for this destination and version')
+        validate_record(record, module)
+    stable = record_source_tag(record)
+    if not remote_ref(stable) or git('rev-parse', f'{stable}^{{commit}}') != record['source']:
+        raise ValueError('Confirmed source differs from stable tag')
+    if source and source != record['source']:
+        raise ValueError('Conflicting source')
+    git('merge-base', '--is-ancestor', record['source'], current['source'])
+    git('merge-base', '--is-ancestor', current['source'], 'origin/main')
+    return common.outputs(dict(module=module, version=version, source=record['source'], skip='true'))
+
 
 def model_assets():
     return {'assets/'+p.relative_to(ROOT/'tfmodel/src/main/assets').as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in (ROOT/'tfmodel/src/main/assets').rglob('*.tflite')}
@@ -312,9 +342,9 @@ def local_record(module,version,source):
     git('diff','--exit-code',source,'--','.')
     group,artifact=identity(module)
     r=dict(module=module,version=version,source=source,group=group,artifact=artifact,sha256={},phase='reserved-before-upload',workflow_run=os.environ.get('GITHUB_RUN_ID','local'))
-    r.update(repository=repository(),repository_url=repository_url())
+    r.update(repository=repository(),repository_url=repository_url(),source_tag=tag(module,version))
     if repository()=='jitpack':
-        group,artifact,consumer=jitpack_release.coordinates(module,version,artifact)
+        group,artifact,consumer=jitpack_release.coordinates(module,version,artifact,scoped=True)
         r.update(group=group,artifact=artifact,consumer_version=consumer)
     if module=='tfmodel':
         r['core_version']=properties()['modelCoreVersion'];common.version_key(r['core_version'])
@@ -370,9 +400,9 @@ def verify_public(r):
         if hashlib.sha256(data).hexdigest()!=r['sha256'][suffix]: raise ValueError('Public artifact hash mismatch')
         if b'BEGIN PGP SIGNATURE' not in fetch(base+suffix+'.asc'): raise ValueError('Missing signature')
 
-def confirm(module,version,timeout=2400):
+def confirm(module,version,timeout=2400,*,source=None):
     common.version_key(version);r=read_record(module,version)
-    if r['source']!=git('rev-parse','HEAD'): raise ValueError('Confirmation requires immutable source checkout')
+    if r['source']!=(source or git('rev-parse','HEAD')): raise ValueError('Confirmation source differs from reservation')
     deadline=time.monotonic()+timeout
     while True:
         try:
@@ -423,7 +453,7 @@ def finalize(module,version,source):
     refresh();git('merge-base','--is-ancestor',source,'origin/main')
     # Artifact inputs may advance while a verified older release propagates.
     # Only changes to the executing protocol/renderer require reconciliation.
-    git('diff','--exit-code',source,'origin/main','--','scripts',':(exclude)scripts/tests','publishing','docs/templates/MODULE_IMPORT.md.template')
+    git('diff','--exit-code','HEAD','origin/main','--','scripts',':(exclude)scripts/tests','publishing','docs/templates/MODULE_IMPORT.md.template')
     git('switch','-C',f'finalize-{module}','origin/main')
     current=confirmed_record(module)
     if current and common.version_key(current['version'])>=common.version_key(version):raise ValueError('Refusing to replace same/newer module metadata')
@@ -433,7 +463,7 @@ def finalize(module,version,source):
     (ROOT/metadata_path(module)).write_text(json.dumps(r,indent=2,sort_keys=True)+'\n');documentation()
     git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
     git('add',metadata_path(module),'IMPORT.md',str(documentation_history.HISTORY));git('commit','-m',f'docs: confirm {module} {version}')
-    stable=tag(module,version)
+    stable=record_source_tag(journal)
     updates=['HEAD:refs/heads/main',f':refs/tags/{pending(module,version)}']
     if remote_ref(stable):
         if git('rev-parse',f'{stable}^{{commit}}')!=source:raise ValueError('Stable tag source mismatch')
@@ -459,6 +489,6 @@ def main():
     if a.command=='check-local':print(json.dumps(local_record(a.module,a.version,a.source),indent=2))
     elif a.command=='reserve':reserve(a.module,a.version,a.source,allow_pending_jitpack=a.allow_pending_jitpack)
     elif a.command=='guard':guard(a.module,a.version)
-    elif a.command=='confirm':confirm(a.module,a.version,a.timeout)
+    elif a.command=='confirm':confirm(a.module,a.version,a.timeout,source=a.source)
     elif a.command=='finalize':finalize(a.module,a.version,a.source)
 if __name__=='__main__':main()

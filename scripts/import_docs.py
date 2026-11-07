@@ -1,5 +1,6 @@
 """Render installation examples only from the latest confirmed module identities."""
 import re
+import release_identity
 from urllib.parse import urlsplit
 
 CENTRAL = 'https://repo.maven.apache.org/maven2'
@@ -50,7 +51,11 @@ def _validate(target, module, record):
     _safe(record['source'], r'[0-9a-f]{40}', 'source')
     _consumer(record.get('consumer_version', record['version']))
     _url(record.get('repository_url', CENTRAL))
-    if target == 'jitpack' and record.get('consumer_version') != f"{module}~v{record['version']}":
+    scoped = 'source_tag' in record
+    if scoped and (record.get('legacy_tag') or record['source_tag'] != release_identity.canonical(module, record['version'], target)):
+        raise ValueError('Invalid destination source tag')
+    jitpack_version = f"{module}~v{record['version']}" + ('-jitpack' if scoped else '')
+    if target == 'jitpack' and record.get('consumer_version') != jitpack_version:
         raise ValueError('JitPack consumer version must match the module release')
     if module == 'tfmodel':
         _coordinate(record.get('core_group', record['group']), record.get('core_artifact', 'core'))
@@ -157,7 +162,7 @@ Add these repositories and dependency to `pom.xml`:
 def render(records, identities):
     """Return module sections; pending releases cannot displace confirmed releases.
 
-    Equal newest semantic versions must identify the same source across mirrors.
+    Scoped releases can have independent versions and source commits.
     No network or mutable configuration is consulted here.
     """
     selected = {module: [] for module in MODULES}
@@ -181,8 +186,11 @@ def render(records, identities):
             continue
         highest = max(_version(record['version']) for _, record in candidates)
         latest = [(target, record) for target, record in candidates if _version(record['version']) == highest]
-        if len({record['source'] for _, record in latest}) != 1:
+        independent = any('source_tag' in record for _, record in candidates)
+        if not independent and len({record['source'] for _, record in latest}) != 1:
             raise ValueError(f'Conflicting confirmed sources for latest {module} version')
+        if independent:
+            latest = candidates
         latest.sort(key=lambda item: (item[0] != 'maven-central', item[0]))
         first = latest[0][1]
         section = f'''## {module}: {first['artifact']}
@@ -190,8 +198,13 @@ def render(records, identities):
 Confirmed version: **{first['version']}**. Source: [{first['source']}](https://github.com/lambdawalker/android.apexfission.carddetector/commit/{first['source']}).
 
 Choose **one** destination below and **one** dependency syntax. Each destination provides this same release; do not add duplicate dependencies.'''
+        if independent:
+            section = f"## {module}: {configured[1]}\n\nChoose one publishing destination and one dependency syntax."
         for target, record in latest:
             notice = ''
+            if independent:
+                source = record['source']
+                notice = f' Confirmed version **{record["version"]}**. [Source commit](https://github.com/lambdawalker/android.apexfission.carddetector/commit/{source}).'
             if target != 'jitpack' and (record['group'], record['artifact']) != configured:
                 notice += f'\n\nConfigured next publication: `{configured[0]}:{configured[1]}` — not yet confirmed here. The dependency below remains the last confirmed publication.'
             if target == 'jitpack':
