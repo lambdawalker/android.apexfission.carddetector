@@ -52,3 +52,11 @@ The single-side automatic demo uses the same focus/stability gate as the two-sid
 Single-side capture opens the shared review screen with one crop. Retake discards it; confirm delivers it to the host.
 
 ![Single-side review and retake](../screenshots/single-review-en.png)
+
+## Backend OCR
+
+The demo catalog includes **Backend OCR** for the private isolated card-capture
+bench. Start the [desktop bridge](https://github.com/lambdawalker/go.appexfission.aws.card-capture/blob/main/docs/ocr-bench.md#carddetector-android-demo)
+and run `adb reverse tcp:8765 tcp:8765`. Enter its temporary pairing code in the
+demo. Capture and confirm both sides of a synthetic card. The demo sends one
+bounded JPEG and shows the backend timing and any returned OCR fields.
