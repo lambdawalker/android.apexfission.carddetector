@@ -9,11 +9,11 @@ import {readRevision,readTranslationTree,readWorkingDocs,translatedGuide,rewrite
 import {base,repository} from './markdown.mjs';
 
 export async function buildVersioned(root) {
- const catalog=JSON.parse(execFileSync('python3',['scripts/documentation_history.py','export'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024}));
+ const catalog=JSON.parse(execFileSync('python3',['scripts/documentation_history.py','export'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024})).map(entry=>({...entry,version:entry.route_version}));
  const put=async(path,text)=>{await mkdir(dirname(path),{recursive:true});await writeFile(path,text);};
  const snapshots=new Map(),scopes=[];
  const working=readWorkingDocs(root);
- const entries=[...catalog.map(entry=>({...entry,version:entry.route_version})),...['carddetector','tfmodel'].map(module=>({module,version:'development',source:process.env.DOCS_REF,documentation_ref:process.env.DOCS_REF}))];
+ const entries=[...catalog,...['carddetector','tfmodel'].map(module=>({module,version:'development',source:process.env.DOCS_REF,documentation_ref:process.env.DOCS_REF}))];
   for(const entry of entries) {
   const dev=entry.version==='development',ref=entry.documentation_ref;
   if(!dev&&!snapshots.has(ref))snapshots.set(ref,readRevision(root,ref));
