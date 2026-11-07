@@ -24,7 +24,7 @@ class RepositoryTests(unittest.TestCase):
     def test_central_ignores_self_hosted_attempts(self):
         with patch.dict(os.environ, {'RELEASE_REPOSITORY':'maven-central'}):
             m.ensure_available('carddetector', ['release-pending/apexfission-maven/carddetector/0.1.0'])
-            self.assertEqual(m.tag('carddetector','0.1.0'), 'carddetector/v0.1.0')
+            self.assertEqual(m.tag('carddetector','0.1.0'), 'carddetector/v0.1.0-maven-central')
 
     def test_destination_is_pinned_in_journal(self):
         r=dict(module='carddetector',group='org.example',artifact='card-detector',version='0.1.0',source='a'*40,sha256={s:'b'*64 for s in m.common.SUFFIXES},phase='reserved-before-upload',repository='apexfission-maven',repository_url='https://maven.example/releases')

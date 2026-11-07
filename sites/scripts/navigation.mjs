@@ -23,7 +23,7 @@ const legacy=new Map([
  ...definitions.flatMap(g=>g.items).filter(([,slug])=>slug!=='overview').map(([,slug])=>[slug,slug]),
 ]);
 const cmp=(a,b)=>{
- const aa=a.version.split('.').map(Number),bb=b.version.split('.').map(Number);
+ const aa=a.version.split('-')[0].split('.').map(Number),bb=b.version.split('-')[0].split('.').map(Number);
  for(let i=0;i<3;i++)if(aa[i]!==bb[i])return aa[i]-bb[i];
  return 0;
 };

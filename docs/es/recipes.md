@@ -165,3 +165,16 @@ SingleSideCardCapture(
 Ambos flujos completos comparten `CaptureReadiness`: 600 ms de detecciones estables, fijadas y enfocadas, umbral de enfoque predeterminado de 100 e intervalo/antigüedad máximos de 400 ms. Cada evaluación, incluidas las ausencias, pasa por el control antes de que la interfaz pueda descartar resultados. Desactivar la captura automática rechaza los fotogramas preparados que aún estén en cola; activarla reinicia la espera de estabilidad. Un temporizador por sí solo no permite avanzar con un fotograma duplicado, antiguo, desenfocado, en movimiento o ausente. La captura correcta produce confirmación háptica de forma predeterminada (`hapticFeedbackEnabled = true`). Use `hapticFeedbackEnabled = false` para desactivarla. La captura automática sigue siendo opcional.
 
 Las instrucciones distinguen **buscando una tarjeta**, **enfocando**, **mantén firme**, **lista para capturar** y **foto capturada**. El texto de preparación manual nunca implica validación del documento ni éxito de OCR. Personalice `readyToCapture`, `captured`, `singleInstruction` y las cadenas existentes con `defaultCardCaptureStrings().copy(...)`. El estado usa una región activa de accesibilidad no intrusiva. En pantallas estrechas o con letra grande se puede desplazar hasta los controles; en horizontal con ancho suficiente, instrucciones y controles ocupan columnas separadas. Estas comprobaciones verifican la repetibilidad de la misma revisión, no baselines visuales persistentes.
+
+## Iniciar el procesamiento durante la revisión de fotos
+
+Con Card Detector 0.1.8, el anfitrión puede observar `onSideChanged` y
+`onImagesReady` durante la revisión. El callback de lado entrega `null`
+al repetir una foto. El callback del par vuelve a ejecutarse cuando están listas
+las fotos de reemplazo. Los bitmaps pertenecen al detector y se prestan en el
+hilo principal. Haz una copia independiente antes de regresar si una corrutina
+seguirá usándolos. `onComplete` transfiere al anfitrión los dos bitmaps confirmados.
+
+Attestra usa estos callbacks para iniciar OCR. La cancelación de carga, las
+revisiones del backend y la navegación están en la [receta Android](https://raw.githubusercontent.com/lambdawalker/android.attestra.auth/main/docs/agents/recipes.md).
+Consulta el [flujo del sistema](https://raw.githubusercontent.com/lambdawalker/design.attestra/main/docs/agents/journeys.md) para ver cómo se integran captura y OCR.

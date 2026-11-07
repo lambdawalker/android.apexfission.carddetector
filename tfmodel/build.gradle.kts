@@ -63,6 +63,7 @@ dependencies {
 }
 
 
+val jitpackTagSuffix = if (providers.gradleProperty("jitpackScopedTag").orNull == "true") "-jitpack" else ""
 val jitpackBuild = providers.gradleProperty("jitpackBuild").orElse("false").map { it.toBoolean() }
 val artifact = providers.gradleProperty("MODEL_ARTIFACT_ID").get()
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.carddetector"
@@ -70,7 +71,7 @@ mavenPublishing {
     coordinates(
         if (jitpackBuild.get()) "com.github.lambdawalker" else providers.gradleProperty("GROUP").get(),
         if (jitpackBuild.get()) "android.apexfission.carddetector" else artifact,
-        if (jitpackBuild.get()) "${providers.gradleProperty("releaseModule").get()}~v${project.version}" else project.version.toString()
+        if (jitpackBuild.get()) "${providers.gradleProperty("releaseModule").get()}~v${project.version}$jitpackTagSuffix" else project.version.toString()
     )
     configure(AndroidSingleVariantLibrary(variant = "release", javadocJar = JavadocJar.Empty(), sourcesJar = SourcesJar.Sources()))
     if (!jitpackBuild.get()) publishToMavenCentral()

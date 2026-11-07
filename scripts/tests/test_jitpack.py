@@ -41,7 +41,7 @@ class JitpackTests(unittest.TestCase):
     def test_selection(self):
         for separator in ('/', '~'):
             self.assertEqual(build.selection(f'tfmodel{separator}v1.2.3'), ('tfmodel', '1.2.3'))
-        for value in ('master', 'v1.2.3', 'app/v1.2.3', 'tfmodel/v01.2.3', 'tfmodel/v1.2.3-SNAPSHOT', 'tfmodel/v1.2.3/x'):
+        for value in ('master', 'v1.2.3', 'app/v1.2.3', 'tfmodel/v01.2.3', 'tfmodel/v1.2.3-maven-central', 'tfmodel/v1.2.3-SNAPSHOT', 'tfmodel/v1.2.3/x'):
             with self.assertRaises(ValueError):
                 build.selection(value)
         self.assertEqual(build.command('tfmodel', '1.2.3')[2], ':tfmodel:publishToMavenLocal')
@@ -51,6 +51,12 @@ class JitpackTests(unittest.TestCase):
         with patch.dict(build.os.environ, {'VERSION': 'carddetector~v1.2.3', 'GIT_COMMIT': 'a'*40}), patch.object(build, 'run', return_value='a'*40), patch.object(build.subprocess, 'run') as execute:
             build.main()
         execute.assert_called_once_with(build.command('carddetector', '1.2.3'), cwd=str(build.ROOT), check=True)
+
+    def test_scoped_tag_build_uses_exact_tag_and_scoped_coordinate(self):
+        with patch.dict(build.os.environ, {'VERSION': 'carddetector~v1.2.3-jitpack', 'GIT_COMMIT': 'a'*40}), patch.object(build, 'run', return_value='a'*40) as git, patch.object(build.subprocess, 'run') as execute:
+            build.main()
+        git.assert_any_call('git', 'rev-parse', 'refs/tags/carddetector/v1.2.3-jitpack^{commit}')
+        self.assertIn('-PjitpackScopedTag=true', execute.call_args.args[0])
 
     def test_model_entrypoint_scopes_lfs_before_build(self):
         with patch.dict(build.os.environ, {'VERSION': 'tfmodel~v1.2.3', 'GIT_COMMIT': 'a'*40}), patch.object(build, 'run', return_value='a'*40), patch.object(build.subprocess, 'run') as execute, patch.object(build, 'verify_models') as validate:

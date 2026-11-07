@@ -1,6 +1,6 @@
 {
   "artifact": "android.apexfission.carddetector",
-  "consumer_version": "carddetector~v0.1.7",
+  "consumer_version": "carddetector~v0.1.10-jitpack",
   "group": "com.github.lambdawalker",
   "module": "carddetector",
   "phase": "confirmed-public",
@@ -8,12 +8,13 @@
   "repository_url": "https://jitpack.io",
   "sha256": {
     "-javadoc.jar": "ffbe953796bfc182cd5c26ba483977a2a4b768b9a031dfe2ad2bd212cbeb72c1",
-    "-sources.jar": "1e73dfc1d56ff913c91296eafda9ce9c54f4f0375c86e33bdbac0b15c6a2bdd3",
-    ".aar": "40e619ce033fb1d085a8e057a12656e1611f57ba0eae74369443b694c54dfbd3",
-    ".module": "0863543a53180b9ffc33bf39afa5b1958d1533b47ea50bce662585301299a7cd",
-    ".pom": "03c4d04c91c25587c67d84bfa232b600910bd24b3d64b84a27190925100c68a3"
+    "-sources.jar": "aa8be0e71e94a10ee332576d682dfbe4332175a34990cd30804d3a86c3d93646",
+    ".aar": "bac321100eed3cf52570c959a2a608bf8b34d0314dcf9e945a18ddceee7aefc6",
+    ".module": "2ddaf404430c18d79eeb8baa2009e049e9775c618fe09c0c0b3a05d97764fb09",
+    ".pom": "6f1e45a981f59d623d53801e8a37bcb9226dcacbcdbaa319f5afbe534c673745"
   },
-  "source": "bb57e3344564a7b55f3cd516edf9ee7bb7413eff",
-  "version": "0.1.7",
-  "workflow_run": "41861970791"
+  "source": "39e57dcf08453daf350d3f402eeea301f834aced",
+  "source_tag": "carddetector/v0.1.10-jitpack",
+  "version": "0.1.10",
+  "workflow_run": "42356166177"
 }

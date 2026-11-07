@@ -64,7 +64,6 @@ fun shouldRunContinuousAnimations(
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -75,6 +74,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -636,7 +637,6 @@ fun InitialGuideOverlay(modifier: Modifier = Modifier) /* body omitted */
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.components
 
-import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
