@@ -77,6 +77,26 @@ class IndependentGitTests(unittest.TestCase):
             self.assertEqual(self.remote_git('rev-parse','carddetector/v0.1.1^{commit}'),r['source'])
             self.assertEqual((self.repo/'IMPORT.md').read_bytes(),before)
 
+    def test_jitpack_override_reserves_new_version_and_preserves_pending_journal(self):
+        with patch.dict(os.environ, {'RELEASE_REPOSITORY': 'jitpack'}):
+            old, original = self.failed_jitpack_attempt()
+            source = self.git('rev-parse', 'HEAD')
+            status = json.dumps(dict(status='tagNotFound')).encode()
+            with patch.object(m, 'fetch', return_value=status):
+                with self.assertRaisesRegex(ValueError, 'not a proven terminal failure'):
+                    m.prepare('carddetector', '0.1.2')
+            with self.assertRaisesRegex(ValueError, 'explicit version'):
+                m.prepare('carddetector', allow_pending_jitpack=True)
+            result = m.prepare('carddetector', '0.1.2', allow_pending_jitpack=True)
+            self.assertEqual((result['version'], result['source']), ('0.1.2', source))
+            candidate = dict(old, version='0.1.2', source=source, consumer_version='carddetector~v0.1.2')
+            with patch.object(m, 'local_record', return_value=candidate):
+                with self.assertRaisesRegex(ValueError, 'newer'):
+                    m.reserve('carddetector', '0.1.1', source, allow_pending_jitpack=True)
+                m.reserve('carddetector', '0.1.2', source, allow_pending_jitpack=True)
+            self.assertEqual(m.remote_ref(m.pending('carddetector', '0.1.1')), original)
+            self.assertEqual(m.read_record('carddetector', '0.1.2'), candidate)
+
     def test_jitpack_recovery_keeps_pending_for_uncertain_or_public_builds(self):
         with patch.dict(os.environ,{'RELEASE_REPOSITORY':'jitpack'}):
             r,original=self.failed_jitpack_attempt()

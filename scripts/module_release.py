@@ -110,10 +110,26 @@ def next_version(module,tags,published,requested=''):
         raise ValueError('Version must be newer than the latest release; use Finalize for recovery')
     return requested
 
-def ensure_available(module,tags):
+def ensure_available(module,tags,*,pending_override=None):
     legacy=[t for t in tags if re.fullmatch(r'release-(?:pending|uploading)/'+common.SEMVER,t)]
     if legacy and not scope(): raise ValueError('Unresolved legacy paired release; finalize it using the old workflow before independent releases')
     own=[t for t in tags if t.startswith((f'release-pending/{scope()}{module}/',f'release-uploading/{scope()}{module}/'))]
+    if pending_override and repository() == 'jitpack':
+        version, source = pending_override
+        prefix = f'release-pending/jitpack/{module}/'
+        for name in own[:]:
+            if not name.startswith(prefix):
+                continue
+            old_version = name[len(prefix):]
+            if common.version_key(version) <= common.version_key(old_version):
+                raise ValueError('JitPack override requires a version newer than every pending attempt')
+            journal = read_record(module, old_version)
+            canonical = tag(module, old_version)
+            if not remote_ref(canonical) or git('rev-parse', f'{canonical}^{{commit}}') != journal['source']:
+                raise ValueError('Pending JitPack canonical source does not match its journal')
+            git('merge-base', '--is-ancestor', journal['source'], source)
+            print(f'JitPack override: preserving {name} and proceeding with {version}')
+            own.remove(name)
     if own: raise ValueError(f'Unresolved {module} attempt {own}; run finalization, never re-upload')
 
 def validate_record(record,module,check_destination=True):
@@ -215,17 +231,25 @@ def recover_failed_jitpack(module,tags,version,source):
     git('update-ref','-d',f'refs/tags/{name}',original)
     print(f'Archived failed JitPack {module} {old_version}; canonical tag retained; advancing to {version}')
 
-def prepare(module,requested=''):
+def prepare(module,requested='',*,allow_pending_jitpack=False):
     refresh(); tags=remote_tags()
     if repository()!='jitpack':ensure_available(module,tags)
     source=git('rev-parse','HEAD');git('merge-base','--is-ancestor',source,'origin/main')
     records=all_records(remote=True)
     for r in records:
         if r:validate_record(r,r['module'],check_destination=False)
+    if allow_pending_jitpack and not requested.strip():
+        raise ValueError('JitPack override requires an explicit version (X.Y.Z)')
+    head = source
     version,source=release_identity.select(module,source,git,tags,records,requested.strip())
     if repository()=='jitpack':
-        recover_failed_jitpack(module,tags,version,source)
-        ensure_available(module,remote_tags())
+        if allow_pending_jitpack:
+            if source != head:
+                raise ValueError('JitPack override requires a new version from the selected workflow source')
+            ensure_available(module,tags,pending_override=(version,source))
+        else:
+            recover_failed_jitpack(module,tags,version,source)
+            ensure_available(module,remote_tags())
     current=confirmed_record(module,remote=True)
     if current and current['version']==version:
         validate_record(current,module)
@@ -307,12 +331,14 @@ def local_record(module,version,source):
         r['sha256'][suffix]=hashlib.sha256(data).hexdigest()
     validate_record(r,module);return r
 
-def reserve(module,version,source):
+def reserve(module,version,source,*,allow_pending_jitpack=False):
     r=local_record(module,version,source)
     if module=='tfmodel':ensure_core_public(r['core_version'])
     base=f'{artifact_base(r["group"],r["artifact"])}/{version}/{r["artifact"]}-{version}'
     if repository()!='jitpack' and any(fetch(base+s,missing=True) is not None for s in common.SUFFIXES): raise ValueError('Immutable version already has public artifacts')
-    refresh();ensure_available(module,remote_tags());git('merge-base','--is-ancestor',source,'origin/main')
+    refresh()
+    ensure_available(module,remote_tags(),pending_override=(version,source) if allow_pending_jitpack else None)
+    git('merge-base','--is-ancestor',source,'origin/main')
     stable=tag(module,version)
     updates=[]
     if remote_ref(stable):
@@ -421,15 +447,17 @@ def finalize(module,version,source):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['prepare','prepare-finalization','check-local','reserve','guard','confirm','finalize','generate','verify'])
-    p.add_argument('--module',choices=MODULES);p.add_argument('--version');p.add_argument('--source',default='');p.add_argument('--timeout',type=int,default=2400);a=p.parse_args()
+    p.add_argument('--module',choices=MODULES);p.add_argument('--version');p.add_argument('--source',default='');p.add_argument('--timeout',type=int,default=2400);p.add_argument('--allow-pending-jitpack',action='store_true');a=p.parse_args()
     if a.command in ('generate','verify'):return documentation(a.command=='verify')
     if not a.module:p.error('--module is required')
-    if a.command=='prepare':return prepare(a.module,a.version or '')
+    if a.allow_pending_jitpack and (a.command not in ('prepare','reserve') or repository()!='jitpack'):
+        p.error('--allow-pending-jitpack is only valid for JitPack prepare and reserve')
+    if a.command=='prepare':return prepare(a.module,a.version or '',allow_pending_jitpack=a.allow_pending_jitpack)
     if not a.version:p.error('--version is required')
     if a.command=='prepare-finalization':return prepare_finalization(a.module,a.version,a.source)
     if a.command in ('check-local','reserve','finalize') and not a.source:p.error('--source is required')
     if a.command=='check-local':print(json.dumps(local_record(a.module,a.version,a.source),indent=2))
-    elif a.command=='reserve':reserve(a.module,a.version,a.source)
+    elif a.command=='reserve':reserve(a.module,a.version,a.source,allow_pending_jitpack=a.allow_pending_jitpack)
     elif a.command=='guard':guard(a.module,a.version)
     elif a.command=='confirm':confirm(a.module,a.version,a.timeout)
     elif a.command=='finalize':finalize(a.module,a.version,a.source)
