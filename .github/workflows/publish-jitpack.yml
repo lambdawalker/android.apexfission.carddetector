@@ -88,7 +88,7 @@ jobs:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SOURCE_SHA: ${{ steps.release.outputs.source }}
         run: |
-          ./gradlew ":$RELEASE_MODULE:testDebugUnitTest" ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" -PjitpackBuild=true "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon
+          ./gradlew ":$RELEASE_MODULE:testDebugUnitTest" ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" -PjitpackBuild=true -PjitpackScopedTag=true "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon
           python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Reserve destination and canonical source tag atomically
         if: steps.release.outputs.skip != 'true'

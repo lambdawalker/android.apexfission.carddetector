@@ -57,7 +57,7 @@ class IndependentGitTests(unittest.TestCase):
                  consumer_version='carddetector~v0.1.1')
         name=m.pending('carddetector','0.1.1')
         self.git('tag','-a',name,self.source,'-m',json.dumps(r))
-        self.git('tag','-a',m.tag('carddetector','0.1.1'),self.source,'-m','immutable source')
+        self.git('tag','-a','carddetector/v0.1.1',self.source,'-m','immutable source')
         self.git('push','origin','--tags')
         original=self.git('rev-parse',name)
         (self.repo/'carddetector/src/main/source.kt').write_text('fixed build inputs')
@@ -89,7 +89,8 @@ class IndependentGitTests(unittest.TestCase):
                 m.prepare('carddetector', allow_pending_jitpack=True)
             result = m.prepare('carddetector', '0.1.2', allow_pending_jitpack=True)
             self.assertEqual((result['version'], result['source']), ('0.1.2', source))
-            candidate = dict(old, version='0.1.2', source=source, consumer_version='carddetector~v0.1.2')
+            candidate = dict(old, version='0.1.2', source=source, source_tag=m.tag('carddetector','0.1.2'),
+                             consumer_version='carddetector~v0.1.2-jitpack')
             with patch.object(m, 'local_record', return_value=candidate):
                 with self.assertRaisesRegex(ValueError, 'newer'):
                     m.reserve('carddetector', '0.1.1', source, allow_pending_jitpack=True)
@@ -189,7 +190,7 @@ class IndependentGitTests(unittest.TestCase):
         self.assertEqual(history['source'],self.source)
         old=json.loads(self.remote_git('show','main:docs/releases/history/carddetector/0.1.0.json'))
         self.assertEqual(old['source'],self.initial)
-        self.assertEqual(self.remote_git('rev-parse',m.tag('carddetector','0.1.1')+'^{commit}'),self.source)
+        self.assertEqual(self.remote_git('rev-parse','carddetector/v0.1.1^{commit}'),self.source)
         self.assertIsNone(m.remote_ref(m.pending('carddetector','0.1.1')))
         result=m.prepare_finalization('carddetector','0.1.1',self.source)
         self.assertEqual(result['skip'],'true')
@@ -249,7 +250,7 @@ class IndependentGitTests(unittest.TestCase):
         self.journal('carddetector','0.1.1')  # Central remains pending throughout.
         with patch.dict(os.environ,env):
             with patch.object(m,'published_versions',return_value=[]):
-                self.assertEqual(m.prepare('carddetector')['version'],'0.1.1')
+                self.assertEqual(m.prepare('carddetector')['version'],'0.1.0')
             r=self.record('carddetector','0.1.1',self.source)
             r.update(repository='apexfission-maven',repository_url='https://maven.example/releases')
             self.git('tag','-a',m.pending('carddetector','0.1.1'),self.source,'-m',json.dumps(r));self.git('push','origin','--tags')
@@ -269,7 +270,7 @@ class IndependentGitTests(unittest.TestCase):
         entries={'maven-central':{'publisher':'central','environment':'maven-central'},'third-party':{'publisher':'maven','environment':'third-party-production'}}
         with patch.object(m,'load_config',return_value=entries),patch.dict(os.environ,{'RELEASE_REPOSITORY':'third-party','MAVEN_REPOSITORY_URL':'https://third.example/releases'}):
             with patch.object(m,'published_versions',return_value=[]):
-                self.assertEqual(m.prepare('carddetector')['version'],'0.1.1')
+                self.assertEqual(m.prepare('carddetector')['version'],'0.1.0')
             r=self.record('carddetector','0.1.1',self.source)
             r.update(repository='third-party',repository_url='https://third.example/releases')
             self.git('tag','-a',m.pending('carddetector','0.1.1'),self.source,'-m',json.dumps(r));self.git('push','origin','--tags')
@@ -282,27 +283,41 @@ class IndependentGitTests(unittest.TestCase):
         m.documentation(verify=True)
         self.assertIn('https://third.example/releases',(self.repo/'IMPORT.md').read_text())
 
-    def test_catch_up_reuses_global_tag_and_original_source_then_noops(self):
-        # First destination has already confirmed this source at a higher version.
-        r=self.record('carddetector','0.1.5',self.source)
-        r.update(repository='apexfission-maven',repository_url='https://maven.example/releases',phase='confirmed-public')
-        folder=self.repo/'docs/releases/apexfission-maven';folder.mkdir()
-        (folder/'carddetector.json').write_text(json.dumps(r))
-        self.git('tag','-a','carddetector/v0.1.5',self.source,'-m','canonical source')
-        m.documentation();self.git('add','.');self.git('commit','-m','only publication docs');self.git('push','origin','main','--tags')
-        with patch.object(m,'published_versions',return_value=['0.1.0']):
-            result=m.prepare('carddetector')
-        self.assertEqual((result['version'],result['source'],result['skip']),('0.1.5',self.source,'false'))
-        self.git('checkout','--detach',self.source)
-        journal=self.record('carddetector','0.1.5',self.source)
-        with patch.object(m,'local_record',return_value=journal),patch.object(m,'fetch',return_value=None):
-            m.reserve('carddetector','0.1.5',self.source)
-        m.guard('carddetector','0.1.5')
-        self.confirmed(journal);m.finalize('carddetector','0.1.5',self.source)
-        self.assertEqual(self.remote_git('rev-parse','carddetector/v0.1.5^{commit}'),self.source)
-        self.assertIn('apexfission-maven',(self.repo/'IMPORT.md').read_text())
-        with patch.object(m,'published_versions',side_effect=AssertionError('no upload lookup on completed run')):
-            self.assertEqual(m.prepare('carddetector')['skip'],'true')
+    def test_same_version_on_central_and_jitpack_keeps_separate_sources(self):
+        version = '0.1.5'
+        module = 'carddetector'
+        central = dict(self.record(module, version, self.source), repository='maven-central',
+                       source_tag=m.tag(module, version))
+        with patch.object(m, 'local_record', return_value=central), patch.object(m, 'fetch', return_value=None):
+            m.reserve(module, version, self.source)
+        m.guard(module, version)
+        self.confirmed(central)
+        m.finalize(module, version, self.source)
+
+        (self.repo/'carddetector/src/main/source.kt').write_text('new JitPack source')
+        self.git('commit', '-am', 'change detector'); self.git('push', 'origin', 'HEAD:main')
+        source = self.git('rev-parse', 'HEAD')
+        with patch.dict(os.environ, {'RELEASE_REPOSITORY': 'jitpack'}):
+            result = m.prepare(module, version)
+            self.assertEqual((result['version'], result['source']), (version, source))
+            jitpack = dict(self.record(module, version, source), repository='jitpack',
+                           repository_url=m.jitpack_release.REPOSITORY, source_tag=m.tag(module, version),
+                           group=m.jitpack_release.GROUP, artifact=m.jitpack_release.ARTIFACT,
+                           consumer_version='carddetector~v0.1.5-jitpack')
+            with patch.object(m, 'local_record', return_value=jitpack):
+                m.reserve(module, version, source)
+            with patch.object(m, 'verify_public', return_value=jitpack['sha256']):
+                m.confirm(module, version, source=source)
+            m.finalize(module, version, source)
+            self.assertEqual(m.prepare_finalization(module, version)['source'], source)
+
+        self.assertEqual(m.prepare_finalization(module, version)['source'], self.source)
+        self.assertEqual(self.remote_git('rev-parse', central['source_tag']+'^{commit}'), self.source)
+        self.assertEqual(self.remote_git('rev-parse', jitpack['source_tag']+'^{commit}'), source)
+        m.documentation_history.verify(self.repo)
+        docs = (self.repo/'IMPORT.md').read_text()
+        for value in (self.source, source, jitpack['consumer_version']):
+            self.assertIn(value, docs)
 
     def test_tag_only_does_not_change_installation_document(self):
         before=(self.repo/'IMPORT.md').read_bytes()
