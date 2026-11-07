@@ -78,7 +78,8 @@ fun TwoSidedCardCapture(
 
 /**
  * [onSideChanged] reports accepted crops immediately and sends null when a side is retaken.
- * The bitmap is borrowed for the synchronous callback on the main thread. Copy its pixels
+ * [onImagesReady] reports each complete pair before confirmation, including after a retake.
+ * These bitmaps are borrowed for the synchronous callback on the main thread. Copy its pixels
  * before returning if needed later. The session owns it until [onComplete] transfers the pair.
  */
 @Composable
@@ -89,6 +90,7 @@ fun TwoSidedCardCapture(
     cardClasses: Set<Int>,
     onComplete: (TwoSidedCardCaptureResult) -> Unit,
     onSideChanged: (CardSide, CapturedCardSide?) -> Unit,
+    onImagesReady: ((TwoSidedCardCaptureResult) -> Unit)? = null,
     modifier: Modifier = Modifier,
     config: CardCaptureConfig = CardCaptureConfig(),
     strings: CardCaptureStrings = defaultCardCaptureStrings(),
@@ -113,6 +115,7 @@ fun TwoSidedCardCapture(
     val haptics = LocalHapticFeedback.current
 
     val currentOnSideChanged by rememberUpdatedState(onSideChanged)
+    val currentOnImagesReady by rememberUpdatedState(onImagesReady)
 
     fun capture() {
         val image = latest ?: return
@@ -123,7 +126,14 @@ fun TwoSidedCardCapture(
         val accepted = session.accept(token, image)
         if (accepted && config.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.Confirm)
         revision++
-        if (accepted) currentOnSideChanged(side, image)
+        if (accepted) {
+            currentOnSideChanged(side, image)
+            val front = session.front
+            val back = session.back
+            if (front != null && back != null) {
+                currentOnImagesReady?.invoke(TwoSidedCardCaptureResult(front, back))
+            }
+        }
     }
 
     fun retake(side: CardSide) {
