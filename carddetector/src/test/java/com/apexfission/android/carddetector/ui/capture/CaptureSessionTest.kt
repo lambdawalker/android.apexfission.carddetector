@@ -53,4 +53,13 @@ class CaptureSessionTest {
         s.close(); s.close()
         assertEquals(listOf("front"), released)
     }
+    @Test fun frontRetakeBeforeTurnOverReleasesThePreviousCrop() {
+        val released = mutableListOf<String>()
+        val session = CaptureSession<String> { released.add(it) }
+        session.accept(requireNotNull(session.requestCapture()), "front")
+        assertEquals(CaptureStage.TurnOver, session.stage)
+        assertEquals(true, session.retake(CardSide.Front))
+        assertEquals(CaptureStage.Camera, session.stage)
+        assertEquals(listOf("front"), released)
+    }
 }
