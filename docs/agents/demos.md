@@ -55,8 +55,21 @@ Single-side capture opens the shared review screen with one crop. Retake discard
 
 ## Backend OCR
 
-The demo catalog includes **Backend OCR** for the private isolated card-capture
-bench. Start the [desktop bridge](https://github.com/lambdawalker/go.appexfission.aws.card-capture/blob/main/docs/ocr-bench.md#carddetector-android-demo)
-and run `adb reverse tcp:8765 tcp:8765`. Enter its temporary pairing code in the
-demo. Capture and confirm both sides of a synthetic card. The demo sends one
-bounded JPEG and shows the backend timing and any returned OCR fields.
+The demo catalog includes **Backend OCR** connected to
+`https://demo.card-detector.apexfission.com`. An administrator invites testers
+through that site's invitation console. Open Backend OCR and sign in in the
+browser using the invited email and temporary password. Cognito prompts for a
+new password on first use. Capture and confirm both sides of a synthetic card.
+The demo stitches them in color, bounds the image to 1200 × 1200 and 500 KiB,
+uploads to S3, and polls the authenticated job API for timing and extracted JSON.
+
+The backend demo stack must be deployed with its Android client and OCR API.
+See [deployment instructions](https://github.com/lambdawalker/go.appexfission.aws.card-capture/tree/main/infrastructure/demo-invitations).
+The application holds session tokens in memory and refreshes them while open.
+Reopening the activity requires sign-in. The browser can retain its own login
+session. A tester may start one job per minute. Uploads and results expire after
+one day; use synthetic cards only. A request times out after five minutes.
+
+OAuth uses AppAuth authorization code with PKCE and an application callback.
+The session and networking dependency belong to the demo application module.
+The published capture library retains its capture-only API.
