@@ -1,6 +1,5 @@
 package com.apexfission.android.carddetector.ui.overlays.components
 
-import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -24,8 +23,8 @@ fun OverlayTopGradient(modifier: Modifier = Modifier, height: Dp = 180.dp) {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.surface,
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.75f),
+                        Color.Black,
+                        Color.Black.copy(alpha = 0.75f),
                         Color.Transparent
                     )
                 )
@@ -43,8 +42,8 @@ fun OverlayBottomGradient(modifier: Modifier = Modifier, height: Dp = 280.dp) {
                 brush = Brush.verticalGradient(
                     colors = listOf(
                         Color.Transparent,
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.75f),
-                        MaterialTheme.colorScheme.surface
+                        Color.Black.copy(alpha = 0.75f),
+                        Color.Black
                     )
                 )
             )
