@@ -165,3 +165,16 @@ SingleSideCardCapture(
 Both complete capture flows share `CaptureReadiness`: 600 ms of stable, locked, focused detections, a default focus threshold of 100, and a maximum gap/age of 400 ms. Every evaluation, including misses, reaches this gate before UI conflation. Turning automatic capture off rejects queued auto-ready frames; turning it on resets the dwell interval. A duplicate, stale, blurred, moving, or missed frame cannot advance readiness by a timer alone. Successful capture produces haptic confirmation by default (`hapticFeedbackEnabled = true`). Set `hapticFeedbackEnabled = false` to disable it. Automatic capture remains opt-in.
 
 Guidance distinguishes **looking for a card**, **finding focus**, **hold steady**, **ready to capture**, and **photo captured**. Manual readiness text never implies the document was validated or OCR succeeded. `readyToCapture`, `captured`, `singleInstruction`, and the existing strings are customizable through `defaultCardCaptureStrings().copy(...)`. Status text uses a polite live region. Narrow/large-text layouts can scroll to controls; sufficiently wide landscape layouts place instructions and controls in separate columns. These are same-source rendering checks, not persistent visual baselines.
+
+## Start host processing during photo review
+
+With Card Detector 0.1.8, a two-sided host can observe `onSideChanged` and
+`onImagesReady` while the review screen is open. The side callback reports
+`null` for a retake, and the pair callback runs again when the replacement pair
+is ready. These callbacks borrow detector-owned bitmaps on the main thread.
+Make an independent copy before returning if work continues in a coroutine.
+`onComplete` transfers ownership of both confirmed bitmaps to the host.
+
+Attestra uses these callbacks to start OCR and manages upload cancellation,
+backend revisions and review navigation in its [Android host recipe](https://raw.githubusercontent.com/lambdawalker/android.attestra.auth/main/docs/agents/recipes.md).
+See the [system journey](https://raw.githubusercontent.com/lambdawalker/design.attestra/main/docs/agents/journeys.md) for how capture and OCR fit together.
