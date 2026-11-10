@@ -9,24 +9,22 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Flip
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.apexfission.android.carddetector.demo.ui.theme.CardDetectorDemoTheme
+import com.apexfission.android.democommon.CardTitle
+import com.apexfission.android.democommon.DemoCard
+import com.apexfission.android.democommon.DemoScreen
 
 /** Launcher catalog. Camera permissions are requested only by the selected camera demo. */
 class WelcomeActivity : ComponentActivity() {
@@ -52,6 +50,7 @@ class WelcomeActivity : ComponentActivity() {
             .putExtra(CardDetectionActivity.EXTRA_AUTO_CAPTURE, false)
         DemoDestination.TwoSidesAutomatic -> Intent(this, CardDetectionActivity::class.java)
             .putExtra(CardDetectionActivity.EXTRA_AUTO_CAPTURE, true)
+        DemoDestination.BackendOcr -> Intent(this, BackendOcrActivity::class.java)
         DemoDestination.Video -> Intent(this, CardDetectionSimulationActivity::class.java)
     }
 
@@ -82,6 +81,8 @@ internal enum class DemoDestination(
         R.string.welcome_auto_action, "TwoSidedCardCapture", Icons.Default.AutoAwesome),
     Video(R.string.welcome_video_title, R.string.welcome_video_description,
         R.string.welcome_video_action, "CardTrackingSimulator", Icons.Default.PlayArrow),
+    BackendOcr(R.string.ocr_demo_title, R.string.ocr_demo_description,
+        R.string.ocr_demo_open, "Isolated OCR bench", Icons.Default.AutoAwesome),
 }
 
 /**
@@ -92,61 +93,45 @@ internal fun WelcomeScreen(
     onOpenDemo: (DemoDestination) -> Unit,
     onOpenSettings: () -> Unit,
 ) {
-    Scaffold { insets ->
-        Box(Modifier.fillMaxSize().padding(insets), contentAlignment = Alignment.TopCenter) {
-            LazyColumn(
-                modifier = Modifier.widthIn(max = 640.dp).fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                item {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(stringResource(R.string.welcome_eyebrow),
-                            style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
-                        Text(stringResource(R.string.welcome_title),
-                            style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
-                        Text(stringResource(R.string.welcome_note), style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        OutlinedButton(
-                            onClick = onOpenSettings,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text(stringResource(R.string.welcome_settings_action))
-                        }
-                    }
-                }
-                items(DemoDestination.entries, key = { it.name }) { demo ->
-                    ElevatedCard(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Surface(shape = MaterialTheme.shapes.medium,
-                                    color = MaterialTheme.colorScheme.primaryContainer) {
-                                    Icon(demo.icon, contentDescription = null,
-                                        modifier = Modifier.padding(8.dp).size(18.dp),
-                                        tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                                }
-                                Column(Modifier.weight(1f)) {
-                                    Text(stringResource(demo.title), style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.SemiBold)
-                                }
-                            }
-                            Text(stringResource(demo.description), style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            FilledTonalButton(onClick = { onOpenDemo(demo) }, modifier = Modifier.fillMaxWidth()) {
-                                Text(stringResource(demo.action))
-                            }
-                        }
-                    }
+    DemoScreen(
+        title = stringResource(R.string.welcome_title),
+        welcomeNote = stringResource(R.string.welcome_description),
+        eyebrow = stringResource(R.string.welcome_eyebrow),
+        onOpenSettings = onOpenSettings,
+    ) {
+        items(DemoDestination.entries, key = { it.name }) { demo ->
+            DemoCard {
+                CardTitle(title = stringResource(demo.title), icon = demo.icon)
+                Text(
+                    demo.component,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    stringResource(demo.description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                FilledTonalButton(
+                    onClick = { onOpenDemo(demo) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(demo.action))
                 }
             }
+        }
+        item(key = "catalog_footer") {
+            Text(
+                stringResource(R.string.welcome_footer),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Light", showBackground = true)
+@Preview(name = "Dark", showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun WelcomeScreenPreview() {
     CardDetectorDemoTheme {

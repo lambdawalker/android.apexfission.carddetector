@@ -20,4 +20,17 @@
     <string name="welcome_single_auto_title">Une face · automatique</string>
     <string name="welcome_single_auto_description">Capturez une face lorsque la carte est nette et stable. Vous pouvez passer à la capture manuelle à tout moment.</string>
     <string name="welcome_single_auto_action">Essayer la capture automatique d’une face</string>
+    <string name="ocr_demo_title">OCR côté serveur</string>
+    <string name="ocr_demo_description">Capturez une carte synthétique et lisez-la avec le banc de test OCR isolé.</string>
+    <string name="ocr_demo_instructions">Utilisez uniquement des cartes synthétiques. Connectez-vous avec le compte e-mail de votre invitation, puis scannez les deux faces. Les photos sont combinées en couleur et envoyées directement au serveur de démonstration.</string>
+    <string name="ocr_demo_sign_in">Se connecter / changer de compte</string>
+    <string name="ocr_demo_signed_in">Connexion établie. Prêt à scanner.</string>
+    <string name="ocr_demo_sign_in_help">Utilisez l’adresse e-mail et le mot de passe temporaire de votre invitation. Vous pouvez définir un nouveau mot de passe lors de la connexion.</string>
+    <string name="ocr_demo_open">Scanner pour l’OCR côté serveur</string>
+    <string name="ocr_demo_camera">Caméra</string>
+    <string name="ocr_demo_running">Lecture de la carte…</string>
+    <string name="ocr_demo_error">Impossible de terminer la requête. Vérifiez votre connexion et reconnectez-vous.</string>
+    <string name="ocr_demo_failed">Échec de la requête OCR : %1$s</string>
+    <string name="ocr_demo_timings">Serveur : %1$d ms · Inférence OCR : %2$d ms</string>
+    <string name="ocr_demo_no_fields">L’OCR a réussi. Ce déploiement n’a renvoyé aucun champ extrait.</string>
 </resources>
