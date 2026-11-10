@@ -38,6 +38,7 @@ permission = "permission~v0.2.6"
 screenshotValidation = "0.0.1-alpha16"
 
 [libraries]
+apexfission-demo-common = { module = "com.apexfission.android:demo-common", version = "0.1.2" }
 screenshot-validation-api = { module = "com.android.tools.screenshot:screenshot-validation-api", version.ref = "screenshotValidation" }
 apexfission-yolo = { module = "com.apexfission.android:yolo", version.ref = "apexfissionYolo" }
 apexfission-coordinates = { module = "com.apexfission.android.math:coordinates", version.ref = "apexfissionCoordinates" }

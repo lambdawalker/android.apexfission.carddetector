@@ -17,3 +17,12 @@ fun WelcomeScreenshot() {
         WelcomeScreen(onOpenDemo = {}, onOpenSettings = {})
     }
 }
+
+@PreviewTest
+@Preview(name = "welcome-dark-en", widthDp = 393, heightDp = 852, locale = "en")
+@Composable
+fun WelcomeDarkScreenshot() {
+    CardDetectorDemoTheme(darkTheme = true, dynamicColor = false) {
+        WelcomeScreen(onOpenDemo = {}, onOpenSettings = {})
+    }
+}
