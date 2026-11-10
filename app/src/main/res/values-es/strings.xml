@@ -21,4 +21,17 @@
     <string name="welcome_single_auto_title">Un lado · automático</string>
     <string name="welcome_single_auto_description">Captura un lado cuando la tarjeta esté enfocada y estable. Puedes cambiar a captura manual en cualquier momento.</string>
     <string name="welcome_single_auto_action">Probar captura automática de un lado</string>
+    <string name="ocr_demo_title">OCR en el backend</string>
+    <string name="ocr_demo_description">Captura una tarjeta sintética y léela con el entorno aislado de pruebas de OCR.</string>
+    <string name="ocr_demo_instructions">Usa solo tarjetas sintéticas. Inicia sesión con la cuenta de correo de tu invitación y escanea ambos lados. Las fotos se combinan en color y se envían directamente al backend de demostración.</string>
+    <string name="ocr_demo_sign_in">Iniciar sesión / cambiar de cuenta</string>
+    <string name="ocr_demo_signed_in">Sesión iniciada. Todo listo para escanear.</string>
+    <string name="ocr_demo_sign_in_help">Usa el correo y la contraseña temporal de tu invitación. Puedes establecer una nueva contraseña al iniciar sesión.</string>
+    <string name="ocr_demo_open">Escanear para OCR en el backend</string>
+    <string name="ocr_demo_camera">Cámara</string>
+    <string name="ocr_demo_running">Leyendo la tarjeta…</string>
+    <string name="ocr_demo_error">No se pudo completar la solicitud. Revisa tu conexión y vuelve a iniciar sesión.</string>
+    <string name="ocr_demo_failed">La solicitud de OCR falló: %1$s</string>
+    <string name="ocr_demo_timings">Backend: %1$d ms · Inferencia OCR: %2$d ms</string>
+    <string name="ocr_demo_no_fields">El OCR se completó correctamente. Este despliegue no devolvió campos extraídos.</string>
 </resources>

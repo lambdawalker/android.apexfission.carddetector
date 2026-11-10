@@ -21,4 +21,17 @@
     <string name="welcome_single_auto_title">Eine Seite · automatisch</string>
     <string name="welcome_single_auto_description">Eine Seite aufnehmen, sobald die Karte scharf und ruhig ist. Ein Wechsel zur manuellen Aufnahme ist jederzeit möglich.</string>
     <string name="welcome_single_auto_action">Automatische einseitige Aufnahme testen</string>
+    <string name="ocr_demo_title">Backend-OCR</string>
+    <string name="ocr_demo_description">Erfasse eine synthetische Karte und lies sie mit der isolierten OCR-Testumgebung aus.</string>
+    <string name="ocr_demo_instructions">Verwende nur synthetische Karten. Melde dich mit dem E-Mail-Konto aus deiner Einladung an und scanne dann beide Seiten. Die Fotos werden in Farbe zusammengefügt und direkt an das Demo-Backend gesendet.</string>
+    <string name="ocr_demo_sign_in">Anmelden / Konto wechseln</string>
+    <string name="ocr_demo_signed_in">Angemeldet. Bereit zum Scannen.</string>
+    <string name="ocr_demo_sign_in_help">Verwende die E-Mail-Adresse und das temporäre Passwort aus deiner Einladung. Bei der Anmeldung kannst du ein neues Passwort festlegen.</string>
+    <string name="ocr_demo_open">Für Backend-OCR scannen</string>
+    <string name="ocr_demo_camera">Kamera</string>
+    <string name="ocr_demo_running">Karte wird gelesen…</string>
+    <string name="ocr_demo_error">Die Anfrage konnte nicht abgeschlossen werden. Prüfe deine Verbindung und melde dich erneut an.</string>
+    <string name="ocr_demo_failed">OCR-Anfrage fehlgeschlagen: %1$s</string>
+    <string name="ocr_demo_timings">Backend: %1$d ms · OCR-Inferenz: %2$d ms</string>
+    <string name="ocr_demo_no_fields">OCR erfolgreich. Diese Bereitstellung hat keine extrahierten Felder zurückgegeben.</string>
 </resources>
