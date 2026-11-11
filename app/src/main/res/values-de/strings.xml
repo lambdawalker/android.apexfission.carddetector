@@ -15,7 +15,7 @@
     <string name="welcome_video_title">Videoverfolgung</string>
     <string name="welcome_video_description">Verfolge eine Karte im mitgelieferten Beispielvideo. Keine Kameraberechtigung erforderlich.</string>
     <string name="welcome_video_action">Videodemo abspielen</string>
-    <string name="welcome_note">Diese Demos verarbeiten Bilder auf dem Gerät und laden sie nicht hoch. Kamerademos fragen beim Öffnen nach der Berechtigung.</string>
+    <string name="welcome_note">Kamerademos fragen beim Öffnen nach der Berechtigung. Aufnahme und Verfolgung erfolgen auf dem Gerät. Backend-OCR lädt Bilder synthetischer Karten auf den Demo-Server hoch.</string>
     <string name="welcome_settings_action">App-Einstellungen öffnen</string>
     <string name="welcome_single_auto_title">Eine Seite · automatisch</string>
     <string name="welcome_single_auto_description">Eine Seite aufnehmen, sobald die Karte scharf und ruhig ist. Ein Wechsel zur manuellen Aufnahme ist jederzeit möglich.</string>

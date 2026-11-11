@@ -68,21 +68,20 @@ internal enum class DemoDestination(
     @param:StringRes val title: Int,
     @param:StringRes val description: Int,
     @param:StringRes val action: Int,
-    val component: String,
     val icon: ImageVector,
 ) {
     SingleSide(R.string.welcome_single_title, R.string.welcome_single_description,
-        R.string.welcome_single_action, "CardDetectorLite", Icons.Default.PhotoCamera),
+        R.string.welcome_single_action, Icons.Default.PhotoCamera),
     SingleSideAutomatic(R.string.welcome_single_auto_title, R.string.welcome_single_auto_description,
-        R.string.welcome_single_auto_action, "SingleSideCardCapture", Icons.Default.AutoAwesome),
+        R.string.welcome_single_auto_action, Icons.Default.AutoAwesome),
     TwoSidesManual(R.string.welcome_manual_title, R.string.welcome_manual_description,
-        R.string.welcome_manual_action, "TwoSidedCardCapture", Icons.Default.Flip),
+        R.string.welcome_manual_action, Icons.Default.Flip),
     TwoSidesAutomatic(R.string.welcome_auto_title, R.string.welcome_auto_description,
-        R.string.welcome_auto_action, "TwoSidedCardCapture", Icons.Default.AutoAwesome),
+        R.string.welcome_auto_action, Icons.Default.AutoAwesome),
     Video(R.string.welcome_video_title, R.string.welcome_video_description,
-        R.string.welcome_video_action, "CardTrackingSimulator", Icons.Default.PlayArrow),
+        R.string.welcome_video_action, Icons.Default.PlayArrow),
     BackendOcr(R.string.ocr_demo_title, R.string.ocr_demo_description,
-        R.string.ocr_demo_open, "Isolated OCR bench", Icons.Default.AutoAwesome),
+        R.string.ocr_demo_open, Icons.Default.AutoAwesome),
 }
 
 /**
@@ -95,18 +94,13 @@ internal fun WelcomeScreen(
 ) {
     DemoScreen(
         title = stringResource(R.string.welcome_title),
-        welcomeNote = stringResource(R.string.welcome_description),
+        welcomeNote = stringResource(R.string.welcome_note),
         eyebrow = stringResource(R.string.welcome_eyebrow),
         onOpenSettings = onOpenSettings,
     ) {
         items(DemoDestination.entries, key = { it.name }) { demo ->
             DemoCard {
                 CardTitle(title = stringResource(demo.title), icon = demo.icon)
-                Text(
-                    demo.component,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
                 Text(
                     stringResource(demo.description),
                     style = MaterialTheme.typography.bodyMedium,
@@ -119,13 +113,6 @@ internal fun WelcomeScreen(
                     Text(stringResource(demo.action))
                 }
             }
-        }
-        item(key = "catalog_footer") {
-            Text(
-                stringResource(R.string.welcome_footer),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }
