@@ -16,4 +16,4 @@ This file guides contributors. The consumer API manual starts at [docs/agents/in
 - Spanish consumer guides live in `docs/es/` with English SHA-256 entries in `translations.json`. Translate prose, preserve code, and only refresh hashes after review. Missing/stale translations intentionally fall back to that revision's English.
 - Run `android-repo-setup documentation_history verify` and the full-history site build for documentation changes. Historical Markdown is data; never execute build scripts from archived releases. See `docs/maintenance.md` for correction and translation-tree provenance.
 
-- Use the pinned CLI and Gradle plugin v0.1.12 for current publishing. Legacy Python coordinators are available only in Git history for recovery at the original source revision; see `docs/releases.md`.
+- Use the pinned CLI and Gradle plugin v0.1.14 for current publishing. Legacy Python coordinators are available only in Git history for recovery at the original source revision; see `docs/releases.md`.

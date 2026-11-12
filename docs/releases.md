@@ -1,13 +1,13 @@
 # Publishing and release recovery
 
-This project uses **android-repo-setup v0.1.12** and the matching Gradle plugins. Both libraries publish independently. Runtime APIs, confirmed records, archive entries and existing tags are preserved.
+This project uses **android-repo-setup v0.1.14** and the matching Gradle plugins. Both libraries publish independently. Runtime APIs, confirmed records, archive entries and existing tags are preserved.
 
 ## Install and configure
 
 Install the matching prebuilt CLI from the tooling repository, or use Rust:
 
 ```sh
-cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.12 android-repo-setup
+cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.14 android-repo-setup
 android-repo-setup --version
 android-repo-setup
 ```
@@ -46,7 +46,7 @@ The plugin handles publication configuration and guards; the CLI owns reservatio
 
 The model retains `modelCoreArtifact=core` and `modelCoreVersion=0.1.0`. When publishing `tfmodel`, Gradle compiles against that published dependency. Development builds may use the sibling project. Change the pin only after the desired detector release is confirmed. Its verification contract checks the exact exported API dependency and every committed `.tflite` asset; the detector contract prohibits bundled `.tflite` assets.
 
-JitPack keeps `scripts/jitpack_build.py` as a small tag/asset-checking entry point and calls the plugin's guarded `publishJitPack` task. It does not use the legacy Python release coordinator. Choose either detector or model JitPack coordinates: their versioned module tags share a single repository artifact ID.
+JitPack installs the pinned CLI from source and runs `./setup.sh jitpack_build`. The CLI validates the canonical `<module>/vX.Y.Z-jitpack` tag and prepares that module's assets before invoking Gradle. The model contract enables scoped LFS hydration, committed hash/size checks, and TFL3 header identification; local and public AAR verification enforce the same contract. Generated release workflows also prepare assets before building. The Python JitPack helper is no longer needed. Choose either detector or model JitPack coordinates: their versioned module tags share a single repository artifact ID.
 
 ## Recovery and legacy attempts
 

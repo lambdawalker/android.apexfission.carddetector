@@ -1,6 +1,6 @@
 repository: lambdawalker/android.apexfission.carddetector
 title: Card Detector
-tooling_ref: v0.1.12
+tooling_ref: 'v0.1.14'
 modules:
   carddetector: Card Detector
   tfmodel: Sentinel Card Model
@@ -54,9 +54,12 @@ module_verification:
     - group_property: GROUP
       artifact_property: modelCoreArtifact
       version_property: modelCoreVersion
-    required_assets:
-      directory: tfmodel/src/main/assets
-      suffix: .tflite
+    assets:
+    - directory: tfmodel/src/main/assets
+      include: ['**/*.tflite']
+      source: git
+      hydrate_lfs: true
+      validator: tflite
 fingerprint_excluded_properties:
   carddetector:
   - modelCoreVersion

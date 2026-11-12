@@ -52,7 +52,7 @@ Use **Publish carddetector** or **Publish tfmodel**, then select the destination
 
 ## Repository setup
 
-Publishing and setup use `android-repo-setup v0.1.12` with matching Gradle plugins for both libraries. See [setup, environments and release recovery](docs/releases.md). The CLI restores the selected libraries/apps and generates their independent workflows.
+Publishing and setup use `android-repo-setup v0.1.14` with matching Gradle plugins for both libraries. See [setup, environments and release recovery](docs/releases.md). The CLI restores the selected libraries/apps and generates their independent workflows.
 
 Launch setup from any working directory:
 
