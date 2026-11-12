@@ -10,43 +10,6 @@ concurrency:
   group: screenshots-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 jobs:
-  render:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix:
-        module: [carddetector, app]
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          lfs: true
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: |
-            17
-            21
-      - uses: gradle/actions/setup-gradle@v5
-      - name: Render and compare deterministic previews
-        env:
-          MODULE: ${{ matrix.module }}
-        run: ./gradlew ":$MODULE:updateDebugScreenshotTest" ":$MODULE:validateDebugScreenshotTest" --no-daemon
-      - name: Record render provenance and require images
-        env:
-          MODULE: ${{ matrix.module }}
-        run: python3 scripts/screenshot_manifest.py --module "$MODULE"
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: compose-previews-${{ matrix.module }}
-          path: |
-            ${{ matrix.module }}/src/screenshotTestDebug/reference/
-            ${{ matrix.module }}/build/reports/screenshotTest/
-            ${{ matrix.module }}/build/outputs/screenshotTest-results/
-          if-no-files-found: error
-
   guide-transitions:
     name: Capture guide and layout tests
     runs-on: ubuntu-24.04

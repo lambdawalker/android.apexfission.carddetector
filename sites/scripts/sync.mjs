@@ -7,7 +7,8 @@ import {rewriteMarkdown,humanPages,base,repository} from './markdown.mjs';
 const root=resolve('..');
 process.env.DOCS_REF ||= execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 if(!/^[a-f0-9]{40}$/.test(process.env.DOCS_REF))throw new Error('DOCS_REF must be an immutable full commit SHA');
-for(const script of ['module_release','docs','media'])execFileSync('python3',[`scripts/${script}.py`,'verify'],{cwd:root,stdio:'inherit'});
+execFileSync('android-repo-setup',['module_release','verify'],{cwd:root,stdio:'inherit'});
+for(const script of ['docs','media'])execFileSync('python3',[`scripts/${script}.py`,'verify'],{cwd:root,stdio:'inherit'});
 const read=p=>readFile(resolve(root,p),'utf8');
 async function put(p,s){await mkdir(dirname(p),{recursive:true});await writeFile(p,s);}
 async function walk(dir){let out=[];for(const e of await readdir(dir,{withFileTypes:true})){const p=resolve(dir,e.name);out.push(...e.isDirectory()?await walk(p):[p]);}return out;}

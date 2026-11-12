@@ -11,6 +11,8 @@ is available from multiple destinations, choose one destination; the examples in
 all repositories needed by that artifact and its pinned dependencies. Unconfirmed
 uploads and older destination releases are never installation recommendations.
 
+Choose either the detector or the model when using JitPack: their module tags share one artifact ID, so adding both creates a version conflict. The model exports a pinned, independently versioned detector dependency; its version does not imply the detector version. Check the selected model release's installation page for its confirmed detector pin.
+
 ## carddetector: card-detector
 
 Choose one publishing destination and one dependency syntax.
@@ -106,8 +108,6 @@ Add these repositories and dependency to `pom.xml`:
 ### jitpack
 
 Repository: **jitpack**. Confirmed version **0.1.10**. [Source commit](https://github.com/lambdawalker/android.apexfission.carddetector/commit/39e57dcf08453daf350d3f402eeea301f834aced).
-
-Choose either the detector or the model dependency. Their module tags share one JitPack artifact ID; adding both creates a version conflict. The model already includes its pinned detector dependency.
 
 #### Gradle Kotlin DSL
 
@@ -208,10 +208,6 @@ Choose **one** destination below and **one** dependency syntax. Each destination
 ### jitpack
 
 Repository: **jitpack**.
-
-Choose either the detector or the model dependency. Their module tags share one JitPack artifact ID; adding both creates a version conflict. The model already includes its pinned detector dependency.
-
-Exports `com.apexfission.android.carddetector:core:0.1.0`; the model version is independent. The repository examples include its pinned detector repository.
 
 #### Gradle Kotlin DSL
 

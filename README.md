@@ -49,3 +49,7 @@ The existing unversioned guides describe **main development source**. The versio
 ## Independent releases
 
 Use **Publish card-detector** or **Publish card-detector-model**, then select the destination repository. Each module/destination has its own version and release history; model releases pin a compatible published core. Configure destinations in `publishing/repositories.yml` and use the [Textual environment setup wizard](docs/releases.md#interactive-environment-setup) to create or update their GitHub settings. See [the release runbook](docs/releases.md).
+
+## Repository setup
+
+Publishing and setup use `android-repo-setup v0.1.12` with matching Gradle plugins for both libraries. See [setup, environments and release recovery](docs/releases.md). The CLI restores the selected libraries/apps and generates their independent workflows.

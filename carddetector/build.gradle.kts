@@ -1,7 +1,3 @@
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.SourcesJar
-import org.gradle.api.publish.PublishingExtension
 
 import com.android.build.gradle.BaseExtension
 
@@ -10,7 +6,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
 
-    id("com.vanniktech.maven.publish")
+    id("com.apexfission.android-repo-setup")
 }
 
 android {
@@ -163,19 +159,8 @@ tasks.register<Copy>("runTestsAndExtractImages") {
 
 
 
-val jitpackTagSuffix = if (providers.gradleProperty("jitpackScopedTag").orNull == "true") "-jitpack" else ""
-val jitpackBuild = providers.gradleProperty("jitpackBuild").orElse("false").map { it.toBoolean() }
-val artifact = providers.gradleProperty("POM_ARTIFACT_ID").get()
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.carddetector"
-mavenPublishing {
-    coordinates(
-        if (jitpackBuild.get()) "com.github.lambdawalker" else providers.gradleProperty("GROUP").get(),
-        if (jitpackBuild.get()) "android.apexfission.carddetector" else artifact,
-        if (jitpackBuild.get()) "${providers.gradleProperty("releaseModule").get()}~v${project.version}$jitpackTagSuffix" else project.version.toString()
-    )
-    configure(AndroidSingleVariantLibrary(variant = "release", javadocJar = JavadocJar.Empty(), sourcesJar = SourcesJar.Sources()))
-    if (!jitpackBuild.get()) publishToMavenCentral()
-    if (!jitpackBuild.get() && providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
+extensions.configure<com.vanniktech.maven.publish.MavenPublishBaseExtension> {
     pom {
         name.set("Card Detector")
         description.set("Compose and CameraX card detection, tracking, overlays, and image extraction.")
@@ -196,39 +181,5 @@ mavenPublishing {
             connection.set("scm:git:$projectUrl.git")
             developerConnection.set("scm:git:ssh://git@github.com/lambdawalker/android.apexfission.carddetector.git")
         }
-    }
-}
-tasks.withType<com.vanniktech.maven.publish.tasks.JavadocJar>().configureEach {
-    from("README.md")
-    // Publish text documentation only; demonstrations remain on the website.
-    from("docs") {
-        include("**/*.md")
-        into("docs")
-    }
-    from(rootProject.file("LICENSE"))
-}
-tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
-}
-extensions.configure<PublishingExtension> {
-    providers.environmentVariable("MAVEN_REPOSITORY_URL").orNull?.takeIf { it.isNotBlank() }?.let { endpoint ->
-        repositories.maven {
-            name = "selectedMaven"
-            url = uri(endpoint)
-            credentials {
-                username = providers.environmentVariable("MAVEN_REPOSITORY_USERNAME").orNull
-                password = providers.environmentVariable("MAVEN_REPOSITORY_PASSWORD").orNull
-            }
-        }
-    }
-    repositories.maven {
-        name = "verification"
-        url = rootProject.layout.buildDirectory.dir("verification-repository").get().asFile.toURI()
-    }
-}
-tasks.configureEach {
-    if (name.contains("MavenCentral", ignoreCase = true) || name.endsWith("ToSelectedMavenRepository")) {
-        dependsOn(rootProject.tasks.named("verifyPublicationReservation"))
     }
 }

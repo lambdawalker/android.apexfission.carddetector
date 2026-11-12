@@ -1,0 +1,66 @@
+repository: lambdawalker/android.apexfission.carddetector
+title: Card Detector
+tooling_ref: v0.1.12
+modules:
+  carddetector: Card Detector
+  tfmodel: Sentinel Card Model
+key_alias: carddetector
+android_modules:
+  carddetector:
+    path: :carddetector
+    directory: carddetector
+    kind: library
+    selected: true
+    screenshots: true
+    namespace: com.apexfission.android.carddetector
+  tfmodel:
+    path: :tfmodel
+    directory: tfmodel
+    kind: library
+    selected: true
+    screenshots: false
+    namespace: com.apexfission.android.carddetector.tfmodel
+  app:
+    path: :app
+    directory: app
+    kind: application
+    selected: true
+    screenshots: true
+    application_ids:
+    - com.apexfission.android.carddetector.demo
+workflows:
+  title: Card Detector
+  java_version: 21
+  documentation_command: git lfs pull --include="docs/**" --exclude="" && python3
+    -m pip install -r scripts/requirements-publishing.txt && cd sites && npm ci &&
+    ASTRO_TELEMETRY_DISABLED=1 npm run check
+  screenshot_check_command: python3 scripts/docs.py verify && python3 scripts/media.py
+    verify && android-repo-setup documentation_history verify
+  release_validation_command: git lfs pull --include="docs/**" --exclude="" && python3
+    -m pip install -r scripts/requirements-publishing.txt && cd sites && npm ci &&
+    ASTRO_TELEMETRY_DISABLED=1 npm run check
+module_verification:
+  carddetector:
+    class_prefix: com/apexfission/android/carddetector/
+    required_api_artifacts:
+    - coordinates
+    - yolo
+    forbidden_asset_suffixes:
+    - .tflite
+  tfmodel:
+    class_prefix: com/apexfission/android/carddetector/tfmodel/
+    required_api_artifacts: []
+    required_api_dependencies:
+    - group_property: GROUP
+      artifact_property: modelCoreArtifact
+      version_property: modelCoreVersion
+    required_assets:
+      directory: tfmodel/src/main/assets
+      suffix: .tflite
+fingerprint_excluded_properties:
+  carddetector:
+  - modelCoreVersion
+  - modelCoreArtifact
+  - modelVersion
+  - MODEL_ARTIFACT_ID
+  - POM_ARTIFACT_ID.tfmodel

@@ -1,0 +1,17 @@
+{
+  "build-signed-app-apk.yml": "d60ebc4447b49bbda23ddb2a134648f3f849a4f417b99b0ecb8fd386a4244ae2",
+  "documentation.yml": "594a42deea5c803a916ff951aaf0994a10d4b90920171cb5a2f8c9891842ba42",
+  "finalize-release.yml": "ad0f6dc983468ce4dbd2abb78f7faab170192257c050579ea8277e5ca5b7e76f",
+  "publish-carddetector.yml": "8c61097b8285e2b20ee6a49604a0ab8d96b2da743a4a5f86ce116eb85f6746e1",
+  "publish-jitpack.yml": "8d2f94162a655a998f3203bb4d6fb1df7e15f96cae0b3a9620fad5a1a6fe5f5f",
+  "publish-library.yml": "6f76c7e2a6d514a235d0b67c70ffd27acb10a763b471c8784a9680189636d675",
+  "publish-tfmodel.yml": "49f0c30e01a9d71ced78095e75d42de3df8b63227545a292ef4a6827aa333c7d",
+  "reconcile-failed-jitpack-carddetector.yml": "6a1d37f26ede8fed5410c17825016c0c50bf9d3f642bd9f5536c392c1c9b6ecb",
+  "reconcile-failed-jitpack-tfmodel.yml": "ae2934a0369d8b56df5550a05e96b0f4307f38a19c3866c1b7203294913214c7",
+  "screenshots-app.yml": "23568700c96435d7b6a211a5c73c9fd0d89479d99cc2fc155eae3579fa0bb46d",
+  "screenshots-carddetector.yml": "436e3aaa46f9c8264c718a0ecded059b6ceb8d91dd6dc83a4e5b90d94bcc5106",
+  "unit-tests.yml": "2915aebcae37d5f4329169de1eccc038734357491ffb854b3fc10d56654409f0",
+  "update-workflows.yml": "b416032571e23caee4f01f212c7f8f27ca6d1f3d0f4629178e0815821fa8ea01",
+  "verify-release-tooling-carddetector.yml": "2514e1f3861bbdabd92466bffd6a533356b28993386d001b7740db813e4a27e8",
+  "verify-release-tooling-tfmodel.yml": "bdd3562ca2650995c913e6ab626809d5083d5110a504027c7bb9a48f38e8cdc9"
+}

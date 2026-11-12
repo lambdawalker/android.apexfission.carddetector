@@ -1,3 +1,4 @@
+import {modelPinNotice} from './model-pin.mjs';
 import {execFileSync} from 'node:child_process';
 import {writeFile,mkdir,readFile} from 'node:fs/promises';
 import {dirname} from 'node:path';
@@ -9,7 +10,7 @@ import {readRevision,readTranslationTree,readWorkingDocs,translatedGuide,rewrite
 import {base,repository} from './markdown.mjs';
 
 export async function buildVersioned(root) {
- const catalog=JSON.parse(execFileSync('python3',['scripts/documentation_history.py','export'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024})).map(entry=>({...entry,version:entry.route_version}));
+ const catalog=JSON.parse(execFileSync('android-repo-setup',['documentation_history','export'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024})).map(entry=>({...entry,version:entry.route_version}));
  const put=async(path,text)=>{await mkdir(dirname(path),{recursive:true});await writeFile(path,text);};
  const snapshots=new Map(),scopes=[];
  const working=readWorkingDocs(root);
@@ -57,6 +58,7 @@ export async function buildVersioned(root) {
     await page(guide,markdown,fallback);
    }
    let install=entry.installation?.[language];
+   if(!dev) install += modelPinNotice(entry,language);
    if(dev) {
     const latest=catalog.filter(e=>e.module===entry.module).at(-1);
     install=es?`# Instalación\n\nEl código de desarrollo puede contener API aún no publicada.\n\n${latest?`[Instalar la última versión confirmada: ${latest.version}](${base}/es/${entry.module}/${latest.version}/installation/)`:'No hay ninguna versión confirmada.'}\n`
