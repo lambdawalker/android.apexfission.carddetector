@@ -41,8 +41,8 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
-      - run: "git lfs pull --include=\"docs/**\" --exclude=\"\" && python3 -m pip install -r scripts/requirements-publishing.txt && cd sites && npm ci && ASTRO_TELEMETRY_DISABLED=1 npm run check"
-      - run: "python3 scripts/docs.py verify && python3 scripts/media.py verify && android-repo-setup documentation_history verify"
+      - run: "git lfs pull --include=\"docs/**\" --exclude=\"\" && python3 -m pip install -r scripts/setup/requirements.txt && cd sites && npm ci && ASTRO_TELEMETRY_DISABLED=1 npm run check"
+      - run: "python3 scripts/documentation/docs.py verify && python3 scripts/documentation/media.py verify && android-repo-setup documentation_history verify"
       - uses: actions/upload-pages-artifact@v5
         with:
           path: sites/dist

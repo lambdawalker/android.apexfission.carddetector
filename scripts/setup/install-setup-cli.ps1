@@ -5,7 +5,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$bin = Join-Path (Split-Path -Parent $PSScriptRoot) 'bin'
+$bin = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'bin'
 $destination = Join-Path $bin $Version
 $executable = Join-Path $destination 'android-repo-setup.exe'
 $archive = 'android-repo-setup-x86_64-pc-windows-msvc.zip'

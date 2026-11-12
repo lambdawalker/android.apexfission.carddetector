@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-$project = Split-Path -Parent $PSScriptRoot
+$project = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $config = Get-Content -LiteralPath (Join-Path $project '.project/setup/config.yaml') -Raw
 $match = [regex]::Match($config, '(?m)^tooling_ref: [''" ]*(v\d+\.\d+\.\d+|[0-9a-f]{40})[''" ]*\r?$')
 if (-not $match.Success) { throw 'Invalid tooling_ref in .project/setup/config.yaml' }

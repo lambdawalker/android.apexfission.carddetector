@@ -7,7 +7,7 @@ import subprocess
 import tomllib
 from pathlib import Path
 
-REPOSITORY = Path(__file__).resolve().parents[1]
+REPOSITORY = Path(__file__).resolve().parents[2]
 
 
 def collect_images(root, expected):
@@ -36,7 +36,7 @@ def collect_images(root, expected):
 
 
 def main():
-    inventory = json.loads((REPOSITORY / 'scripts/screenshot-scenarios.json').read_text())
+    inventory = json.loads((REPOSITORY / 'scripts/screenshots/screenshot-scenarios.json').read_text())
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--module', required=True, choices=inventory)
     args = parser.parse_args()

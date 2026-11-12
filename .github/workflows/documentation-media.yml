@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: sudo apt-get update && sudo apt-get install -y ffmpeg
-      - run: python3 scripts/media.py render
+      - run: python3 scripts/documentation/media.py render
       - uses: actions/upload-artifact@v7
         with:
           name: documentation-media-candidates

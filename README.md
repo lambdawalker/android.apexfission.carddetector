@@ -38,7 +38,7 @@ YOLO and coordinates come from Maven Central; the demo permissions dependency co
 
 ```bash
 ./gradlew :carddetector:testDebugUnitTest :app:assembleDebug
-python3 -m pip install -r scripts/requirements-publishing.txt
+python3 -m pip install -r scripts/setup/requirements.txt
 cd sites
 npm ci
 npm run check

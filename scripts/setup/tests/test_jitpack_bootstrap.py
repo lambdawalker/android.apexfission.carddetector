@@ -7,7 +7,7 @@ import tempfile
 import textwrap
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 
 @unittest.skipIf(os.name == 'nt', 'JitPack runs on Linux')
 class JitpackBootstrapTests(unittest.TestCase):
