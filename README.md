@@ -38,7 +38,6 @@ YOLO and coordinates come from Maven Central; the demo permissions dependency co
 
 ```bash
 ./gradlew :carddetector:testDebugUnitTest :app:assembleDebug
-python3 -m pip install -r scripts/setup/requirements.txt
 cd sites
 npm ci
 npm run check
@@ -52,7 +51,7 @@ Use **Publish carddetector** or **Publish tfmodel**, then select the destination
 
 ## Repository setup
 
-Publishing and setup use `android-repo-setup v0.1.14` with matching Gradle plugins for both libraries. See [setup, environments and release recovery](docs/releases.md). The CLI restores the selected libraries/apps and generates their independent workflows.
+Publishing and setup use the configured shared CLI source pin with Gradle plugins v0.1.14 for both libraries. See [setup, environments and release recovery](docs/releases.md). The CLI restores the selected libraries/apps and generates their independent workflows.
 
 Launch setup from any working directory:
 
@@ -66,4 +65,4 @@ setup.bat workflows --check
 ./setup.sh workflows --check
 ```
 
-Both launchers read `tooling_ref` from `.project/setup/config.yaml` and forward arguments and exit codes. Windows downloads and SHA-256 verifies the pinned release into ignored `bin/`; Linux/macOS require that exact CLI version on `PATH`. Commit-SHA pins use a cached Cargo installation. The Windows launcher uses the small PowerShell helpers in `scripts/`; no root `setup.ps1` is needed.
+Run `setup.bat` on Windows or `sh ./setup.sh` on Linux/macOS. These shared CLI-generated launchers install and verify the configured CLI, cache it under `.project/setup/cache/`, and forward arguments. Release pins use verified binaries; full commit pins require Cargo and build the exact source. Run `setup check` to validate generated files and evaluated module configuration.

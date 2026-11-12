@@ -1,6 +1,6 @@
 repository: lambdawalker/android.apexfission.carddetector
 title: Card Detector
-tooling_ref: 'v0.1.14'
+tooling_ref: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
 modules:
   carddetector: Card Detector
   tfmodel: Sentinel Card Model
@@ -23,6 +23,7 @@ android_modules:
   app:
     path: :app
     directory: app
+    namespace: com.apexfission.android.carddetector.demo
     kind: application
     selected: true
     screenshots: true
@@ -31,13 +32,11 @@ android_modules:
 workflows:
   title: Card Detector
   java_version: 21
-  documentation_command: git lfs pull --include="docs/**" --exclude="" && python3
-    -m pip install -r scripts/setup/requirements.txt && cd sites && npm ci &&
+  documentation_command: git lfs pull --include="docs/**" --exclude="" && cd sites && npm ci &&
     ASTRO_TELEMETRY_DISABLED=1 npm run check
-  screenshot_check_command: python3 scripts/documentation/docs.py verify && python3 scripts/documentation/media.py
+  screenshot_check_command: python3 scripts/docs.py verify && python3 scripts/media.py
     verify && android-repo-setup documentation_history verify
-  release_validation_command: git lfs pull --include="docs/**" --exclude="" && python3
-    -m pip install -r scripts/setup/requirements.txt && cd sites && npm ci &&
+  release_validation_command: git lfs pull --include="docs/**" --exclude="" && cd sites && npm ci &&
     ASTRO_TELEMETRY_DISABLED=1 npm run check
 module_verification:
   carddetector:
@@ -67,3 +66,6 @@ fingerprint_excluded_properties:
   - modelVersion
   - MODEL_ARTIFACT_ID
   - POM_ARTIFACT_ID.tfmodel
+
+bootstrap:
+  jitpack: true

@@ -1,20 +1,8 @@
-# Gradle/AGP run on 21; library bytecode and Kotlin toolchains remain Java 17.
 jdk:
-  - openjdk17
-  - openjdk21
+- openjdk17
+- openjdk21
 env:
-  GIT_LFS_SKIP_SMUDGE: "1"
+  GIT_LFS_SKIP_SMUDGE: '1'
 install:
-  # Build the pinned CLI from source to support the JitPack image's libc.
-  - |
-    set -eu
-    if ! command -v cargo >/dev/null 2>&1; then
-      curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs -o /tmp/install-rust.sh
-      sh /tmp/install-rust.sh -y --profile minimal
-      . "$HOME/.cargo/env"
-    fi
-    reference=$(sed -n "s/^tooling_ref: ['\"]*\([^'\"]*\)['\"]*$/\1/p" .project/setup/config.yaml)
-    test -n "$reference"
-    cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag "$reference" android-repo-setup
-    export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$PATH"
-    ./setup.sh jitpack_build
+- if ! command -v cargo >/dev/null 2>&1; then curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal; fi
+- if [ -f "$HOME/.cargo/env" ]; then . "$HOME/.cargo/env"; fi; ANDROID_REPO_SETUP_SOURCE=1 sh ./setup.sh jitpack-build

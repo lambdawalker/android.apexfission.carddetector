@@ -9,11 +9,11 @@ The primary showcase is the repository's supplied `../demo.mp4`. It is approxima
 Run from the repository root with Python 3 and FFmpeg (the accepting tool version is recorded in the manifest):
 
 ```bash
-python3 scripts/documentation/media.py render   # Candidate under build/docs-media; never overwrites accepted media
+python3 scripts/media.py render   # Candidate under build/docs-media; never overwrites accepted media
 # Open and inspect build/docs-media/tracking.png before accepting.
-python3 scripts/documentation/media.py compare # Re-extract and compare to the accepted file; fails on differences
-python3 scripts/documentation/media.py accept  # Intentionally accept the reviewed candidate + provenance
-python3 scripts/documentation/media.py verify  # Integrity/required-scenario check; no rendering or acceptance
+python3 scripts/media.py compare # Re-extract and compare to the accepted file; fails on differences
+python3 scripts/media.py accept  # Intentionally accept the reviewed candidate + provenance
+python3 scripts/media.py verify  # Integrity/required-scenario check; no rendering or acceptance
 ```
 
 Keep accepted originals here. Small curated stills use ordinary Git storage; the original recording remains in Git LFS. Site copies are generated and ignored. CI verifies input/output hashes and required scenarios; the manual media workflow only renders/uploads candidates. A decoder/toolchain change may alter pixels or PNG encoding: investigate and intentionally review it, never silently accept differences. Use the recorded FFmpeg version for exact reproduction.
@@ -30,7 +30,7 @@ A release that changes UI or camera behavior needs current device verification; 
 
 The website overview groups the reviewed previews into two-sided capture, single-side capture and overlays, and the demo catalog. `ui-manifest.json` records the 23 curated images and their hashes, dimensions, render commits, and workflow runs. Per-image provenance overrides the top-level render when a later run supplied the image. English and Spanish overviews select the matching capture and welcome screens; overlay examples are shared. These development previews are illustrative on every version's overview; they do not assert that an archived release provides the displayed UI.
 
-The **Render documentation screens** workflow renders Compose previews for `:carddetector` and `:app`, then compares a second render with those generated images. It runs for PRs and pushes to main/previews and can be dispatched manually. Download `compose-previews-carddetector` and `compose-previews-app` from the run. Each archive includes PNGs, reports, and `render-manifest.json` with the exact source SHA and image hashes. Missing, duplicate or unexpected scenarios fail the job; `scripts/screenshots/screenshot-scenarios.json` lists the required scenario names, rather than only an image count. Run `python3 scripts/screenshots/screenshot_manifest.py --module carddetector` (or `--module app`) after rendering to validate them locally and write the candidate manifest.
+The **Render documentation screens** workflow renders Compose previews for `:carddetector` and `:app`, then compares a second render with those generated images. It runs for PRs and pushes to main/previews and can be dispatched manually. Download `compose-previews-carddetector` and `compose-previews-app` from the run. Each archive includes PNGs, reports, and `render-manifest.json` with the exact source SHA and image hashes. Missing, duplicate or unexpected scenarios fail the job; `.project/verification/checks.json` lists the required scenario names, rather than only an image count. Run `android-repo-setup project-checks screenshots --module carddetector` (or `--module app`) after rendering to validate them locally and write the candidate manifest.
 
 ```bash
 ./gradlew :carddetector:updateDebugScreenshotTest :carddetector:validateDebugScreenshotTest

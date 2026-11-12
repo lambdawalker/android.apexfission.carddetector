@@ -1,18 +1,19 @@
 # Publishing and release recovery
 
-This project uses **android-repo-setup v0.1.14** and the matching Gradle plugins. Both libraries publish independently. Runtime APIs, confirmed records, archive entries and existing tags are preserved.
+This project uses the exact shared CLI source pin in `.project/setup/config.yaml` and released Gradle plugins v0.1.14. Both libraries publish independently. Runtime APIs, confirmed records, archive entries and existing tags are preserved.
 
 ## Install and configure
 
-Install the matching prebuilt CLI from the tooling repository, or use Rust:
+Use the repository launcher to install and run the configured CLI:
 
 ```sh
-cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.14 android-repo-setup
-android-repo-setup --version
-android-repo-setup
+sh ./setup.sh --version
+sh ./setup.sh
 ```
 
-Run `setup.bat` on Windows or `./setup.sh` on Linux/macOS. Both resolve the project directory automatically and forward CLI arguments. Windows installs the checksum-verified pinned release into `bin/`; Linux/macOS validate the installed CLI version. The first menu discovers evaluated Gradle libraries/apps and restores saved selections. `carddetector`, `tfmodel`, and `app` are selected in `.project/setup/config.yaml`. Discovery requires the normal JDK 21/Android SDK 37 build environment and resolvable dependencies. JDK 17 is also needed for library toolchains.
+Run `setup.bat` on Windows or `sh ./setup.sh` on Linux/macOS. These shared CLI-generated launchers install and verify the configured CLI, cache it under `.project/setup/cache/`, and forward arguments. Release pins use verified binaries; full commit pins require Cargo and build the exact source. Run `setup check` to validate generated files and evaluated module configuration.
+
+The first menu discovers evaluated Gradle libraries/apps and restores saved selections. `carddetector`, `tfmodel`, and `app` are selected in `.project/setup/config.yaml`. Discovery requires the normal JDK 21/Android SDK 37 build environment and resolvable dependencies. JDK 17 is also needed for library toolchains. When using the cached CLI locally, replace `android-repo-setup` in commands below with `sh ./setup.sh` or `setup.bat`.
 
 ```sh
 android-repo-setup discover
@@ -62,8 +63,8 @@ The Astro site remains in place. It uses `android-repo-setup documentation_histo
 android-repo-setup module_release generate
 android-repo-setup module_release verify
 android-repo-setup documentation_history verify
-python3 scripts/documentation/docs.py verify
-python3 scripts/documentation/media.py verify
+python3 scripts/docs.py verify
+python3 scripts/media.py verify
 cd sites
 npm ci
 npm run check
