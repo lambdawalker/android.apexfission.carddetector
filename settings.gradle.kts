@@ -1,4 +1,13 @@
 pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id.startsWith("com.apexfission.android-repo-setup")) {
+                requested.version?.let { version ->
+                    useModule("com.github.lambdawalker:gradle.android-repo-setup:$version")
+                }
+            }
+        }
+    }
     repositories {
         google {
             content {
@@ -9,6 +18,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven("https://jitpack.io")
     }
 }
 

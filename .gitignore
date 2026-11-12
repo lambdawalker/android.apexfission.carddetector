@@ -92,3 +92,6 @@ sites/src/versions.json
 
 # Ephemeral Compose screenshot candidates; approved docs images live in docs/screenshots.
 **/src/screenshotTestDebug/reference/
+
+# Local workflow generator lock
+.project/setup/workflow-generation.lock

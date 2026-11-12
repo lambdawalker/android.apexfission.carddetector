@@ -12,7 +12,7 @@
 ## Local checks
 
 ```bash
-python3 scripts/module_release.py verify
+android-repo-setup module_release verify
 python3 scripts/docs.py verify
 python3 scripts/media.py verify
 python3 -m unittest discover -s scripts/tests -v
@@ -81,11 +81,11 @@ The English consumer source remains `docs/agents/`, shared by humans and agents.
 
 The version catalog is `docs/releases/history/<module>/<version>.json`. Each entry records the immutable code `source`, `documentation_ref`, and complete confirmed metadata for each destination. Finalization preserves previous pointer values before replacing them and adds its new confirmation to this archive in the same atomic Git push. Publishing the same module/version to another destination extends installation availability without changing its code identity. `IMPORT.md` continues to show the latest confirmed version of each module.
 
-The initial catalog contains only the four module releases represented by confirmed records at adoption: `carddetector` and `tfmodel`, each at `0.1.1` and `0.1.2`. This is not a complete history of older releases. Do not infer confirmation from a tag or invent older installation facts. To import independently verified older metadata, use `archive_record` from `scripts/documentation_history.py`, then review the JSON diff.
+The initial catalog contains only the four module releases represented by confirmed records at adoption: `carddetector` and `tfmodel`, each at `0.1.1` and `0.1.2`. This is not a complete history of older releases. Do not infer confirmation from a tag or invent older installation facts. To import independently verified older metadata, use the shared CLI history tooling, then review the JSON diff.
 
 ```bash
-python3 scripts/documentation_history.py seed    # Archive current confirmed pointers; retains older entries
-python3 scripts/documentation_history.py verify  # Read-only consistency check
+android-repo-setup documentation_history seed    # Archive current confirmed pointers; retains older entries
+android-repo-setup documentation_history verify  # Read-only consistency check
 ```
 
 Every site build reads the archived guides from Git and regenerates **all** cataloged versions, plus English/Spanish development guides and raw Markdown. Routes are `/en/<module>/<version>/` and `/es/<module>/<version>/`; each scope has `installation/` and `raw/`. `/en/` and `/es/` list available versions. Existing development and raw-agent URLs remain valid. The model scope shows its own model contract/catalog declarations and its exact detector dependency pin; it does not substitute the newest detector API. A module switch selects that module's latest confirmed release; version and language switches preserve the current page when it exists.

@@ -44,7 +44,7 @@ class JitpackTests(unittest.TestCase):
         for value in ('master', 'v1.2.3', 'app/v1.2.3', 'tfmodel/v01.2.3', 'tfmodel/v1.2.3-maven-central', 'tfmodel/v1.2.3-SNAPSHOT', 'tfmodel/v1.2.3/x'):
             with self.assertRaises(ValueError):
                 build.selection(value)
-        self.assertEqual(build.command('tfmodel', '1.2.3')[2], ':tfmodel:publishToMavenLocal')
+        self.assertEqual(build.command('tfmodel', '1.2.3')[2], ':tfmodel:publishJitPack')
         self.assertNotIn(':carddetector:', ' '.join(build.command('tfmodel', '1.2.3')))
 
     def test_core_entrypoint_never_pulls_lfs_or_builds_sibling(self):

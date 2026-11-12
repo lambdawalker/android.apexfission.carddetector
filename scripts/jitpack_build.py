@@ -46,7 +46,7 @@ def verify_models():
 
 def command(module, version, scoped=False):
     selection('{}/v{}'.format(module, version))
-    return ['./gradlew', '--no-daemon', ':{}:publishToMavenLocal'.format(module),
+    return ['./gradlew', '--no-daemon', ':{}:publishJitPack'.format(module),
             '-PjitpackBuild=true', '-PreleaseModule={}'.format(module), '-PreleaseVersion={}'.format(version),
             '-PjitpackScopedTag={}'.format(str(scoped).lower())]
 
