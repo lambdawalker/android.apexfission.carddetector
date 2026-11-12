@@ -1,5 +1,7 @@
 # Legacy paired-release procedure: Publishing Card Detector
 
+> Historical instructions only. The Python release scripts are no longer in current source. Use a separate checkout at the affected release’s original source commit before following these commands. Do not restore them into the current CLI-based build.
+
 ## Publications
 
 The `carddetector` and `tfmodel` modules publish together at one stable X.Y.Z:

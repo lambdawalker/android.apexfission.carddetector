@@ -25,9 +25,6 @@ test('the release exporter renders both providers at the same version', async ()
         mkdirSync(join(root, 'sites'));
         mkdirSync(join(root, 'scripts'));
         cpSync(join(repository, '.project'), join(root, '.project'), {recursive: true});
-        for (const file of ['documentation_history.py', 'import_docs.py', 'release_identity.py']) {
-            cpSync(join(repository, 'scripts', file), join(root, 'scripts', file));
-        }
         git('init', '-q');
         git('config', 'user.name', 'Test');
         git('config', 'user.email', 'test@example.invalid');

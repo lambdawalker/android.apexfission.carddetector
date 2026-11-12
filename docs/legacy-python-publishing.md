@@ -1,5 +1,7 @@
 # Legacy Python publishing and recovery
 
+> Historical instructions only. The Python release scripts are no longer in current source. Use a separate checkout at the affected release’s original source commit before following these commands. Do not restore them into the current CLI-based build.
+
 Archived instructions for pre-CLI releases only. Use [current publishing](releases.md) for new releases. Recover an old in-flight release from its original source/tooling revision; do not run these commands against the migrated build.
 
 # Publish libraries independently
@@ -25,7 +27,7 @@ The model currently pins `modelCoreArtifact=core` and `modelCoreVersion=0.1.0`, 
 
 Only Maven Central and JitPack are enabled. The retired `apexfission-maven` service is no longer offered in publish or finalization dropdowns; historical metadata remains intact.
 
-[`publishing/repositories.yml`](../publishing/repositories.yml) is the source of truth for available destinations. Each entry has a stable repository ID, a GitHub environment name, and a publishing protocol:
+[`publishing/repositories.yml`](https://github.com/lambdawalker/android.apexfission.carddetector/blob/56585c3d4e00c1fe1bb94e791387679140d2d752/publishing/repositories.yml) is the source of truth for available destinations. Each entry has a stable repository ID, a GitHub environment name, and a publishing protocol:
 
 ```yaml
 repositories:

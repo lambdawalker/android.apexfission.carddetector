@@ -23,10 +23,10 @@ jobs:
             17
             21
       - uses: gradle/actions/setup-gradle@v5
-      - name: Install pinned CLI and legacy recovery test dependencies
+      - name: Install pinned CLI and configuration-check dependency
         run: |
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.12 android-repo-setup
-          python3 -m pip install -r scripts/requirements-setup.txt
+          python3 -m pip install -r scripts/requirements-publishing.txt
       - name: Check generated setup and confirmed metadata
         run: |
           android-repo-setup workflows --check
@@ -48,5 +48,18 @@ jobs:
               if configured['kind'] == 'application':
                   assert set(actual[module]['application_ids']) == set(configured['application_ids'])
           PY
-      - name: Preserve legacy recovery coverage
+      - name: Test project-specific helpers
         run: python3 -m unittest discover -s scripts/tests -v
+
+  windows-launcher:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v7
+      - name: Download and run the pinned Windows CLI
+        shell: cmd
+        run: call setup.bat --version
+      - name: Reuse the cached executable from another directory
+        shell: cmd
+        run: |
+          cd /d "%RUNNER_TEMP%"
+          call "%GITHUB_WORKSPACE%\setup.bat" --version

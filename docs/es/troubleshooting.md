@@ -16,6 +16,6 @@
 | Tipo de preprocesamiento incorrecto | Use `com.apexfission.android.yolo.image.PreProcessingImageTransformation`, no el tipo antiguo de carddetector con el mismo nombre. |
 | Simulador en blanco | Use una URI legible `android.resource://<applicationId>/raw/x` u otra URI admitida; confirme que el vídeo contiene datos LFS reales. |
 | El sitio web contiene texto de punteros LFS | Descargue los recursos (`git lfs pull`) y ejecute la verificación multimedia. El material multimedia generado del sitio debe contener bytes reales. |
-| Falla la verificación de IMPORT | Ejecute `python3 scripts/module_release.py generate` solo a partir de metadatos confirmados e inspeccione las diferencias; no anuncie una versión no confirmada. |
+| Falla la verificación de IMPORT | Ejecute `android-repo-setup module_release generate` solo a partir de metadatos confirmados e inspeccione las diferencias; no anuncie una versión no confirmada. |
 
 Para problemas nativos o de inferencia, proporcione dispositivo/API, contrato del modelo, elección CPU/GPU, preajuste y una reproducción sintética. Los métodos OCR de la demostración son ejemplos provisionales: no se espera que produzcan texto ni resultados de red.
