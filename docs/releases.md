@@ -12,7 +12,7 @@ android-repo-setup --version
 android-repo-setup
 ```
 
-Run from the repository root. The first menu discovers evaluated Gradle libraries/apps and restores saved selections. `carddetector`, `tfmodel`, and `app` are selected in `.project/setup/config.yaml`. Discovery requires the normal JDK 21/Android SDK 37 build environment and resolvable dependencies. JDK 17 is also needed for library toolchains.
+Run `setup.bat` on Windows or `./setup.sh` on Linux/macOS. Both resolve the project directory automatically and forward CLI arguments. Windows installs the checksum-verified pinned release into `bin/`; Linux/macOS validate the installed CLI version. The first menu discovers evaluated Gradle libraries/apps and restores saved selections. `carddetector`, `tfmodel`, and `app` are selected in `.project/setup/config.yaml`. Discovery requires the normal JDK 21/Android SDK 37 build environment and resolvable dependencies. JDK 17 is also needed for library toolchains.
 
 ```sh
 android-repo-setup discover
@@ -52,7 +52,7 @@ JitPack keeps `scripts/jitpack_build.py` as a small tag/asset-checking entry poi
 
 Source tags and release histories are immutable. Keep all pending/upload-started markers until the destination outcome is known. The migration observed old `release-pending/carddetector/0.1.10`, `release-uploading/carddetector/0.1.10`, and `release-pending/jitpack/carddetector/0.1.9` refs; it does not delete, confirm or retry them. Check their current remote status before the next release.
 
-An in-flight Python publication must be reconciled using its original source and tooling. The CLI is absent from historical immutable source revisions, and its new verification records differ from legacy model records. See [archived Python instructions](legacy-python-publishing.md). Legacy scripts and their tests remain for provenance/recovery, but the old duplicate publishing workflows have been removed. New releases use the CLI.
+An in-flight Python publication must be reconciled using its original source and tooling. The CLI is absent from historical immutable source revisions, and its new verification records differ from legacy model records. See [archived Python instructions](legacy-python-publishing.md). Legacy scripts and their tests were removed from current source; retrieve them in a separate checkout at the original release source SHA. Do not delete or rewrite old release markers. New releases use the CLI.
 
 ## Documentation and verification
 

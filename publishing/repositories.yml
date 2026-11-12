@@ -1,8 +1,0 @@
-# Stable IDs identify release histories. URLs and credentials live in GitHub environments.
-repositories:
-  maven-central:
-    environment: maven-central
-    publisher: central
-  jitpack:
-    environment: jitpack
-    publisher: jitpack

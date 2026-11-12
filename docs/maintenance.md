@@ -53,7 +53,7 @@ Both matrix jobs build the core instrumentation APK, so one compilation error th
 
 Unit tests and compilation do not establish camera/video correctness. Run the catalog's live permission/denial/capture and simulator flows on a compatible device. The app's OCR methods are placeholders. Historical media is never substituted for current-device release evidence.
 
-Install Python tooling before running documentation checks: `python3 -m pip install -r scripts/requirements-publishing.txt`. For the complete release/setup test suite, use `scripts/requirements-setup.txt`.
+Install Python tooling before running documentation checks: `python3 -m pip install -r scripts/requirements-publishing.txt`. The retained Python tests cover project-specific docs, screenshots, capture UI and JitPack model checks; shared publishing and setup tests belong to the CLI repository.
 
 ## GitHub Pages
 

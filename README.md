@@ -38,7 +38,7 @@ YOLO and coordinates come from Maven Central; the demo permissions dependency co
 
 ```bash
 ./gradlew :carddetector:testDebugUnitTest :app:assembleDebug
-python3 -m pip install -r scripts/requirements-setup.txt
+python3 -m pip install -r scripts/requirements-publishing.txt
 cd sites
 npm ci
 npm run check
@@ -48,8 +48,22 @@ The existing unversioned guides describe **main development source**. The versio
 
 ## Independent releases
 
-Use **Publish card-detector** or **Publish card-detector-model**, then select the destination repository. Each module/destination has its own version and release history; model releases pin a compatible published core. Configure destinations in `publishing/repositories.yml` and use the [Textual environment setup wizard](docs/releases.md#interactive-environment-setup) to create or update their GitHub settings. See [the release runbook](docs/releases.md).
+Use **Publish carddetector** or **Publish tfmodel**, then select the destination repository. Configure destinations in `.project/setup/repositories.yml`; run `setup.bat` (Windows) or `./setup.sh` (Linux/macOS) to select modules and configure environments. See [the release runbook](docs/releases.md).
 
 ## Repository setup
 
 Publishing and setup use `android-repo-setup v0.1.12` with matching Gradle plugins for both libraries. See [setup, environments and release recovery](docs/releases.md). The CLI restores the selected libraries/apps and generates their independent workflows.
+
+Launch setup from any working directory:
+
+```bat
+setup.bat
+setup.bat workflows --check
+```
+
+```sh
+./setup.sh
+./setup.sh workflows --check
+```
+
+Both launchers read `tooling_ref` from `.project/setup/config.yaml` and forward arguments and exit codes. Windows downloads and SHA-256 verifies the pinned release into ignored `bin/`; Linux/macOS require that exact CLI version on `PATH`. Commit-SHA pins use a cached Cargo installation. The Windows launcher uses the small PowerShell helpers in `scripts/`; no root `setup.ps1` is needed.

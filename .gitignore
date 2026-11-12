@@ -95,3 +95,6 @@ sites/src/versions.json
 
 # Local workflow generator lock
 .project/setup/workflow-generation.lock
+
+# Downloaded setup CLI releases and source-pin builds
+/bin/
