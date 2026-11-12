@@ -10,7 +10,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / 'docs/api-inputs.json'
 DECL = re.compile(r'(?m)^[ \t]*(?:(?:companion|public|private|internal|protected|override|open|abstract|inline|suspend|data|sealed|enum|fun|const|lateinit|final|tailrec|operator|infix)\s+)*(?:class|interface|object|fun|val|var|typealias|constructor)\b')
 
@@ -183,7 +183,7 @@ def main():
     for path,text in outputs.items():
         if args.action=='update': path.parent.mkdir(parents=True,exist_ok=True);path.write_text(text)
         elif not path.exists() or path.read_text()!=text: failed.append(str(path.relative_to(ROOT)))
-    if failed: raise SystemExit('Review source/docs and run python3 scripts/docs.py update: '+', '.join(failed))
+    if failed: raise SystemExit('Review source/docs and run python3 scripts/documentation/docs.py update: '+', '.join(failed))
     print(f'{args.action}: {len(records)} Kotlin inputs classified; public excerpts and runnable snippets synchronized.')
 
 if __name__=='__main__': main()

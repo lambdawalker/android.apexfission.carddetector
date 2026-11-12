@@ -1,27 +1,31 @@
 # Project-specific helpers
 
-Shared release coordination, artifact verification, installation documentation,
-release-history export and GitHub environment setup live in `android-repo-setup`.
-Run `setup.bat` or `./setup.sh` at the repository root.
+Run `setup.bat` or `./setup.sh` at the repository root for the shared CLI.
+Project-specific helpers are grouped by feature, with tests in each feature's
+`tests/` directory.
 
-Retained Python helpers:
+| Folder | Responsibility |
+| --- | --- |
+| `documentation/` | `docs.py` checks Kotlin declarations and runnable snippets; `media.py` manages historical recording/frame provenance and integrity. |
+| `screenshots/` | `screenshot_manifest.py` checks the scenarios in `screenshot-scenarios.json`; `verify_capture_ui_tests.py` checks required emulator test results. |
+| `setup/` | PowerShell installers and launchers used by `setup.bat`, setup/JitPack bootstrap tests, and `requirements.txt` for the CI configuration comparison (PyYAML). |
 
-- `docs.py`: Kotlin declaration inventory and runnable documentation snippets.
-- `media.py`: provenance and integrity checks for the historical recording and frames.
-- `screenshot_manifest.py`: project-specific preview scenarios and image manifests.
-- `verify_capture_ui_tests.py`: required capture-guide emulator test inventory.
+The Python helpers and tests otherwise use the standard library. Run all tests
+from the repository root:
 
-`install-setup-cli.ps1` and `run-setup-cli.ps1` support `setup.bat` (Windows
-PowerShell 5.1). They read the project pin, verify downloaded release checksums,
-cache the CLI under ignored `bin/`, and forward arguments and exit status.
+```sh
+python3 -m unittest discover -s scripts -p "test_*.py" -v
+```
 
-`requirements-publishing.txt` contains only PyYAML, used by the CI inventory
-comparison. Its existing filename is retained for generated workflow compatibility.
-The retained Python helpers and their tests otherwise use the standard library.
+To run one feature's tests, use its directory, for example
+`python3 -m unittest discover -s scripts/screenshots/tests -v`.
 
-Run `python3 -m unittest discover -s scripts/tests -v`. Old Python release
-coordinators and their tests remain available in Git history; recover an old
-attempt in a separate checkout of its original source, never against today's build.
+The Windows helpers support PowerShell 5.1. They read the project pin, verify
+release checksums, cache the CLI under ignored `bin/`, and forward arguments and
+exit status. JitPack installs the pinned CLI through `jitpack.yml` and invokes
+`./setup.sh jitpack_build`.
 
-JitPack tag selection and model asset preparation now use the pinned CLI through
-`./setup.sh jitpack_build`; the bootstrap is in `jitpack.yml`.
+Shared publishing, asset verification, installation documentation, release-history
+export, and GitHub environment setup live in `android-repo-setup`. Historical
+Python coordinators remain in Git history; recover an old attempt in a separate
+checkout of its original source.

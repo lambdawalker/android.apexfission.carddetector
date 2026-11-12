@@ -62,8 +62,8 @@ The Astro site remains in place. It uses `android-repo-setup documentation_histo
 android-repo-setup module_release generate
 android-repo-setup module_release verify
 android-repo-setup documentation_history verify
-python3 scripts/docs.py verify
-python3 scripts/media.py verify
+python3 scripts/documentation/docs.py verify
+python3 scripts/documentation/media.py verify
 cd sites
 npm ci
 npm run check

@@ -32,12 +32,12 @@ workflows:
   title: Card Detector
   java_version: 21
   documentation_command: git lfs pull --include="docs/**" --exclude="" && python3
-    -m pip install -r scripts/requirements-publishing.txt && cd sites && npm ci &&
+    -m pip install -r scripts/setup/requirements.txt && cd sites && npm ci &&
     ASTRO_TELEMETRY_DISABLED=1 npm run check
-  screenshot_check_command: python3 scripts/docs.py verify && python3 scripts/media.py
+  screenshot_check_command: python3 scripts/documentation/docs.py verify && python3 scripts/documentation/media.py
     verify && android-repo-setup documentation_history verify
   release_validation_command: git lfs pull --include="docs/**" --exclude="" && python3
-    -m pip install -r scripts/requirements-publishing.txt && cd sites && npm ci &&
+    -m pip install -r scripts/setup/requirements.txt && cd sites && npm ci &&
     ASTRO_TELEMETRY_DISABLED=1 npm run check
 module_verification:
   carddetector:
