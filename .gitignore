@@ -98,3 +98,4 @@ sites/src/versions.json
 
 # Downloaded setup CLI releases and source-pin builds
 /bin/
+/.project/setup/cache/

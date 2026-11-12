@@ -6,7 +6,7 @@ import json
 import shutil
 import subprocess
 from pathlib import Path
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 VIDEO = ROOT/'docs/demo.mp4'
 ACCEPTED = ROOT/'docs/screenshots/tracking.png'
 CANDIDATE = ROOT/'build/docs-media/tracking.png'

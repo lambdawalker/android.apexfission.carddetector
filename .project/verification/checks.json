@@ -1,0 +1,149 @@
+{
+  "screenshots": {
+    "carddetector": {
+      "directory": "carddetector/src/screenshotTestDebug/reference",
+      "scenarios": [
+        "single-side-idle-en",
+        "single-side-idle-es",
+        "single-side-detected-en",
+        "single-side-detected-es",
+        "capture-front-en",
+        "capture-front-es",
+        "capture-back-en",
+        "capture-back-es",
+        "capture-turn-over-en",
+        "capture-turn-over-es",
+        "capture-review-en",
+        "capture-review-es",
+        "debug-overlay",
+        "detection-overlay",
+        "lock-on-overlay",
+        "capture-front-ready-en",
+        "capture-front-ready-es",
+        "capture-back-ready-en",
+        "capture-back-ready-es",
+        "capture-front-focusing-en",
+        "capture-front-manual-en",
+        "capture-turn-over-dark-en",
+        "capture-turn-over-dark-es",
+        "capture-review-dark-en",
+        "capture-review-dark-es",
+        "capture-review-large-font-en",
+        "shutter-enabled",
+        "shutter-disabled",
+        "single-side-auto-en",
+        "single-side-auto-es",
+        "single-side-after-miss-en",
+        "capture-front-after-miss-en",
+        "capture-back-after-miss-en",
+        "single-side-no-flash-en",
+        "single-auto-narrow-es",
+        "single-auto-landscape-en",
+        "single-auto-large-font-es",
+        "single-auto-long-spanish",
+        "two-side-narrow-es",
+        "two-side-landscape-en",
+        "two-side-large-font-es",
+        "two-side-long-spanish",
+        "review-landscape-es",
+        "single-auto-ready-en",
+        "single-auto-complete-en",
+        "single-review-en",
+        "single-review-es",
+        "single-review-narrow-es",
+        "single-review-landscape-en",
+        "single-review-large-font-es",
+        "single-review-dark-en",
+        "turn-over-narrow-es",
+        "turn-over-landscape-en",
+        "turn-over-large-font-es",
+        "single-auto-de",
+        "single-auto-ja",
+        "single-auto-uk",
+        "single-auto-zh",
+        "single-review-de",
+        "single-review-ja",
+        "single-review-zh",
+        "single-review-custom-copy"
+      ],
+      "metadata": {
+        "renderer": "Compose Preview Screenshot Testing 0.0.1-alpha16",
+        "kind": "host-rendered synthetic UI; no camera or model execution",
+        "status": "candidates; second-render comparison verifies repeatability, not approved regression baselines",
+        "camera_background": "production checkerboardBackground modifier in camera overlay fixtures"
+      }
+    },
+    "app": {
+      "directory": "app/src/screenshotTestDebug/reference",
+      "scenarios": [
+        "welcome-en",
+        "welcome-es",
+        "welcome-narrow-es",
+        "welcome-landscape-en",
+        "welcome-large-font-es",
+        "welcome-dark-en"
+      ],
+      "metadata": {
+        "renderer": "Compose Preview Screenshot Testing 0.0.1-alpha16",
+        "kind": "host-rendered synthetic UI; no camera or model execution",
+        "status": "candidates; second-render comparison verifies repeatability, not approved regression baselines",
+        "camera_background": "production checkerboardBackground modifier in camera overlay fixtures"
+      }
+    }
+  },
+  "junit": {
+    "capture-ui": {
+      "directory": "carddetector/build/outputs/androidTest-results/connected/debug",
+      "required": [
+        [
+          "CaptureLayoutTest",
+          "landscapeKeepsSingleSideShutterVisible"
+        ],
+        [
+          "CaptureLayoutTest",
+          "landscapeTurnOverCanScrollToFullImageAndKeepActionsVisible"
+        ],
+        [
+          "CaptureLayoutTest",
+          "largeFontTwoSideCaptureCanScrollToShutter"
+        ],
+        [
+          "CaptureLayoutTest",
+          "narrowLongTextKeepsSingleSideToggleAndShutterReachable"
+        ],
+        [
+          "CaptureOverlayTest",
+          "backGuideFadesAndResetsForANewAttempt"
+        ],
+        [
+          "CaptureOverlayTest",
+          "frontGuideFadesAndResetsForANewAttempt"
+        ],
+        [
+          "CaptureOverlayTest",
+          "singleSideGuideFadesAndDoesNotReturnOnMiss"
+        ],
+        [
+          "CaptureReviewTest",
+          "largeFontSingleReviewKeepsRetakeReadable"
+        ],
+        [
+          "CaptureReviewTest",
+          "reviewDisplaysHostPrivacyNotice"
+        ],
+        [
+          "CaptureReviewTest",
+          "reviewExposesSeparateRetakesAndConfirmation"
+        ],
+        [
+          "CaptureReviewTest",
+          "singleReviewExposesOnlyFrontRetakeAndConfirmation"
+        ],
+        [
+          "CaptureReviewTest",
+          "turnOverWaitsForExplicitContinue"
+        ]
+      ]
+    }
+  }
+}

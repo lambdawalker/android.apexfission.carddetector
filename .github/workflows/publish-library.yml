@@ -41,7 +41,7 @@ jobs:
           ref: ${{ github.sha }}
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'v0.1.14'
+          TOOLING_REF: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
@@ -85,7 +85,7 @@ jobs:
           fetch-depth: 0
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'v0.1.14'
+          TOOLING_REF: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
@@ -143,7 +143,7 @@ jobs:
         if: steps.release.outputs.skip != 'true'
         env:
           SOURCE_SHA: ${{ steps.release.outputs.source }}
-        run: "git lfs pull --include=\"docs/**\" --exclude=\"\" && python3 -m pip install -r scripts/setup/requirements.txt && cd sites && npm ci && ASTRO_TELEMETRY_DISABLED=1 npm run check"
+        run: "git lfs pull --include=\"docs/**\" --exclude=\"\" && cd sites && npm ci && ASTRO_TELEMETRY_DISABLED=1 npm run check"
       - name: Test and validate complete unsigned publication locally
         if: steps.release.outputs.skip != 'true'
         env:

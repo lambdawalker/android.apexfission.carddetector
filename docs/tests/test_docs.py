@@ -1,7 +1,7 @@
 import importlib.util
 import unittest
 from pathlib import Path
-spec=importlib.util.spec_from_file_location('docs',Path(__file__).parents[1]/'docs.py')
+spec=importlib.util.spec_from_file_location('docs',Path(__file__).parents[2]/'scripts/docs.py')
 docs=importlib.util.module_from_spec(spec);spec.loader.exec_module(docs)
 
 class DeclarationTests(unittest.TestCase):
