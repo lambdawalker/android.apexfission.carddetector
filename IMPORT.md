@@ -107,7 +107,7 @@ Add these repositories and dependency to `pom.xml`:
 
 ### jitpack
 
-Repository: **jitpack**. Confirmed version **0.1.10**. [Source commit](https://github.com/lambdawalker/android.apexfission.carddetector/commit/39e57dcf08453daf350d3f402eeea301f834aced).
+Repository: **jitpack**. Confirmed version **0.1.17**. [Source commit](https://github.com/lambdawalker/android.apexfission.carddetector/commit/f0fb2f6c9bda4748ff634d0276ebe8eeeb109342).
 
 #### Gradle Kotlin DSL
 
@@ -127,7 +127,7 @@ In the app's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.10-jitpack")
+    implementation("com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.17-jitpack")
 }
 ```
 
@@ -149,7 +149,7 @@ In the app's `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.10-jitpack'
+    implementation 'com.github.lambdawalker:android.apexfission.carddetector:carddetector~v0.1.17-jitpack'
 }
 ```
 
@@ -159,7 +159,7 @@ Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
 
 ```toml
 [libraries]
-carddetector = { module = "com.github.lambdawalker:android.apexfission.carddetector", version = "carddetector~v0.1.10-jitpack" }
+carddetector = { module = "com.github.lambdawalker:android.apexfission.carddetector", version = "carddetector~v0.1.17-jitpack" }
 ```
 
 Then use this instead of the direct dependency in the app's `build.gradle.kts`:
@@ -193,7 +193,7 @@ Add these repositories and dependency to `pom.xml`:
   <dependency>
     <groupId>com.github.lambdawalker</groupId>
     <artifactId>android.apexfission.carddetector</artifactId>
-    <version>carddetector~v0.1.10-jitpack</version>
+    <version>carddetector~v0.1.17-jitpack</version>
     <type>aar</type>
   </dependency>
 </dependencies>

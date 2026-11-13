@@ -1,20 +1,44 @@
 {
   "artifact": "android.apexfission.carddetector",
-  "consumer_version": "carddetector~v0.1.10-jitpack",
+  "consumer_version": "carddetector~v0.1.17-jitpack",
   "group": "com.github.lambdawalker",
   "module": "carddetector",
   "phase": "confirmed-public",
+  "release_identity": {
+    "fingerprint": "0d8df3074e28ec75ad3310035eb4ee584a79b5ac9db27d16cab74dd956c9d112",
+    "module": "carddetector",
+    "schema": 1,
+    "source": "f0fb2f6c9bda4748ff634d0276ebe8eeeb109342",
+    "version": "0.1.17"
+  },
   "repository": "jitpack",
   "repository_url": "https://jitpack.io",
   "sha256": {
-    "-javadoc.jar": "ffbe953796bfc182cd5c26ba483977a2a4b768b9a031dfe2ad2bd212cbeb72c1",
+    "-javadoc.jar": "e0e2db50cee4ab89120e0d4583b19f535d69d0969c8542a3f09618a97cf38b7f",
     "-sources.jar": "aa8be0e71e94a10ee332576d682dfbe4332175a34990cd30804d3a86c3d93646",
     ".aar": "bac321100eed3cf52570c959a2a608bf8b34d0314dcf9e945a18ddceee7aefc6",
-    ".module": "2ddaf404430c18d79eeb8baa2009e049e9775c618fe09c0c0b3a05d97764fb09",
-    ".pom": "6f1e45a981f59d623d53801e8a37bcb9226dcacbcdbaa319f5afbe534c673745"
+    ".module": "296194e743c88d8a741d15c11f9b72077a3c6e31b675b42cbd518027abf94540",
+    ".pom": "44463c9624dbdc1d3f647f69cba8ecb52a121128964dfaa4df1067268e6367af"
   },
-  "source": "39e57dcf08453daf350d3f402eeea301f834aced",
-  "source_tag": "carddetector/v0.1.10-jitpack",
-  "version": "0.1.10",
-  "workflow_run": "42356166177"
+  "source": "f0fb2f6c9bda4748ff634d0276ebe8eeeb109342",
+  "source_tag": "carddetector/v0.1.17-jitpack",
+  "verification": {
+    "asset_rules": {},
+    "asset_sha256": {},
+    "asset_sizes": {},
+    "assets": [],
+    "bytecode_major": 61,
+    "class_prefix": "com/apexfission/android/carddetector/",
+    "forbidden_asset_suffixes": [
+      ".tflite"
+    ],
+    "required_api_artifacts": [
+      "coordinates",
+      "yolo"
+    ],
+    "required_api_dependencies": [],
+    "required_assets": null
+  },
+  "version": "0.1.17",
+  "workflow_run": "43428834318"
 }
