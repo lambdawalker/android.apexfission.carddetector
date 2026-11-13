@@ -9,11 +9,11 @@ The primary showcase is the repository's supplied `../demo.mp4`. It is approxima
 Run from the repository root with Python 3 and FFmpeg (the accepting tool version is recorded in the manifest):
 
 ```bash
-python3 scripts/media.py render   # Candidate under build/docs-media; never overwrites accepted media
+sh ./docs.sh media render   # Candidate under build/docs-media; never overwrites accepted media
 # Open and inspect build/docs-media/tracking.png before accepting.
-python3 scripts/media.py compare # Re-extract and compare to the accepted file; fails on differences
-python3 scripts/media.py accept  # Intentionally accept the reviewed candidate + provenance
-python3 scripts/media.py verify  # Integrity/required-scenario check; no rendering or acceptance
+sh ./docs.sh media compare # Re-extract and compare to the accepted file; fails on differences
+sh ./docs.sh media accept  # Intentionally accept the reviewed candidate + provenance
+sh ./docs.sh media verify  # Integrity/required-scenario check; no rendering or acceptance
 ```
 
 Keep accepted originals here. Small curated stills use ordinary Git storage; the original recording remains in Git LFS. Site copies are generated and ignored. CI verifies input/output hashes and required scenarios; the manual media workflow only renders/uploads candidates. A decoder/toolchain change may alter pixels or PNG encoding: investigate and intentionally review it, never silently accept differences. Use the recorded FFmpeg version for exact reproduction.

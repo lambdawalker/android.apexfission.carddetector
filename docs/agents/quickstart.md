@@ -21,7 +21,6 @@ Declare the permission and Activity in your host manifest (adjust the Activity p
 This exact file is part of `:app` and is compiled by existing Android CI. It requests permission, observes permission changes after Settings, renders the scanner, and explicitly recycles both kinds of delivered bitmap. It does not display or retain capture results. It intentionally does not perform OCR or retain images.
 
 <!-- example: quickstart -->
-
 ```kotlin
 package com.apexfission.android.carddetector.demo
 
@@ -120,7 +119,6 @@ class DocumentationQuickstartActivity : ComponentActivity() {
     }
 }
 ```
-
 <!-- end-example: quickstart -->
 
 ## Try it

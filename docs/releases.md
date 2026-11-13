@@ -1,6 +1,6 @@
 # Publishing and release recovery
 
-This project uses the exact shared CLI source pin in `.project/setup/config.yaml` and released Gradle plugins v0.1.14. Both libraries publish independently. Runtime APIs, confirmed records, archive entries and existing tags are preserved.
+This project uses the shared CLI pin in `.project/setup/config.yaml` and released Gradle plugins v0.1.14. Both libraries publish independently. Runtime APIs, confirmed records, archive entries and existing tags are preserved.
 
 ## Install and configure
 
@@ -57,14 +57,14 @@ An in-flight Python publication must be reconciled using its original source and
 
 ## Documentation and verification
 
-The Astro site remains in place. It uses `android-repo-setup documentation_history export` and renders both legacy `core_version` model pins and new resolved verification pins. Historical Markdown is read as data; archived build scripts are never executed. The CLI generates `IMPORT.md` from confirmed records only.
+The Astro site remains in place. It uses `android-repo-docs history export` and renders both legacy `core_version` model pins and new resolved verification pins. Historical Markdown is read as data; archived build scripts are never executed. The CLI generates `IMPORT.md` from confirmed records only.
 
 ```sh
 android-repo-setup module_release generate
 android-repo-setup module_release verify
-android-repo-setup documentation_history verify
-python3 scripts/docs.py verify
-python3 scripts/media.py verify
+android-repo-docs history verify
+sh ./docs.sh sources check
+sh ./docs.sh media verify
 cd sites
 npm ci
 npm run check

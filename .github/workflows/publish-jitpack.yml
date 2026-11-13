@@ -42,10 +42,11 @@ jobs:
           fetch-depth: 0
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
+          TOOLING_REF: '263b1ddfbe0596b6e1655293fac6ff26a547b890'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
+          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.16 android-repo-docs
       - name: Configure release identity
         run: |
           git config user.name 'github-actions[bot]'
@@ -93,7 +94,7 @@ jobs:
         if: steps.release.outputs.skip != 'true'
         env:
           SOURCE_SHA: ${{ steps.release.outputs.source }}
-        run: "git lfs pull --include=\"docs/**\" --exclude=\"\" && cd sites && npm ci && ASTRO_TELEMETRY_DISABLED=1 npm run check"
+        run: "git lfs pull --include=\"docs/**\" --exclude=\"\" && cd sites && npm ci && cd .. && android-repo-docs build --check"
       - name: Verify unsigned candidate
         if: steps.release.outputs.skip != 'true'
         env:

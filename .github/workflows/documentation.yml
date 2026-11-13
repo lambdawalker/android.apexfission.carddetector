@@ -27,22 +27,18 @@ jobs:
         with:
           ref: ${{ github.event_name == 'pull_request' && github.ref || 'main' }}
           fetch-depth: 0
+          lfs: true
       - id: source
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-      - name: Install pinned Rust tooling
-        env:
-          TOOLING_REF: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
-        run: |
-          if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
-          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
-      - run: android-repo-setup publishing_config check
-      - run: android-repo-setup module_release verify
+      - name: Install pinned documentation tooling
+        run: cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.16 android-repo-docs
+      - run: android-repo-docs check
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
           package-manager-cache: false
-      - run: "git lfs pull --include=\"docs/**\" --exclude=\"\" && cd sites && npm ci && ASTRO_TELEMETRY_DISABLED=1 npm run check"
-      - run: "python3 scripts/docs.py verify && python3 scripts/media.py verify && android-repo-setup documentation_history verify"
+      - run: "cd sites && npm ci && cd .. && android-repo-docs build --check"
+      - run: "android-repo-docs check"
       - uses: actions/upload-pages-artifact@v5
         with:
           path: sites/dist

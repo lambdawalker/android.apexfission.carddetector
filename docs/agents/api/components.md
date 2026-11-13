@@ -10,20 +10,16 @@ Call composables from a lifecycle-aware Compose host. Obtain camera permission f
 
 Scope `detectionState`/`cardDetection` describe the current evaluation, `detectionSequence` changes on misses too, and `latestBestDetection`/`captureEnabled` refer to retained capture. `capture()` copies retained data, `goBack()` invokes the host action, and `toggleFlashlight()` requests torch state where available. `imageSpaceChain` can be null before preview measurement.
 
-## Declarations
-
-Exact source excerpts; implementation bodies are omitted. Imports below provide type resolution, including some implementation-only imports.
-
-### CameraPreset (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/CameraPreset.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/CameraPreset.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.camerapreview
-
 import android.util.Size
 import androidx.compose.runtime.Immutable
 
+@Immutable
 data class CameraPreset(
     val analysisTargetResolution: Size = Size(2048, 1080),
     val tapToFocusEnabled: Boolean = true,
@@ -33,21 +29,18 @@ data class CameraPreset(
         analysisTargetResolution: Size = this.analysisTargetResolution,
         tapToFocusEnabled: Boolean = this.tapToFocusEnabled,
         focusOnCardEnabled: Boolean = this.focusOnCardEnabled
-    ): CameraPreset /* expression body omitted */
-
+    ): CameraPreset
     companion object {
         val Default = CameraPreset(
             analysisTargetResolution = Size(2048, 1080),
             tapToFocusEnabled = true,
             focusOnCardEnabled = true
         )
-
         val HighResolution = CameraPreset(
             analysisTargetResolution = Size(3840, 2160),
             tapToFocusEnabled = true,
             focusOnCardEnabled = true
         )
-
         val FixedFocus = CameraPreset(
             analysisTargetResolution = Size(2048, 1080),
             tapToFocusEnabled = false,
@@ -57,26 +50,25 @@ data class CameraPreset(
 }
 ```
 
-### CaptureSession (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CaptureSession.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CaptureSession.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.capture
 
-
-
-enum class CardSide { Front, Back }
+enum class CardSide {
+    Front,
+    Back,
+}
 ```
 
-### CardCaptureConfig (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CardCaptureConfig.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CardCaptureConfig.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.capture
-
-
 
 data class CardCaptureConfig(
     val autoCaptureEnabled: Boolean = false,
@@ -85,17 +77,15 @@ data class CardCaptureConfig(
     val maxDetectionGapMs: Long = 400L,
     val hapticFeedbackEnabled: Boolean = true,
 ) {
-
 }
 ```
 
-### CardCaptureStrings (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CardCaptureStrings.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/CardCaptureStrings.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.capture
-
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.apexfission.android.carddetector.R
@@ -132,18 +122,16 @@ data class CardCaptureStrings(
     val singleInstruction: String = "Place your card inside the guide",
     val privacyTerms: String = "By continuing, you agree to the Attestra Privacy Terms.",
 )
-
 @Composable
-fun defaultCardCaptureStrings() /* expression body omitted */
+fun defaultCardCaptureStrings()
 ```
 
-### SingleSideCardCapture (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/SingleSideCardCapture.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/SingleSideCardCapture.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.capture
-
 import android.graphics.Bitmap
 import android.os.SystemClock
 import androidx.compose.foundation.layout.*
@@ -182,16 +170,15 @@ fun SingleSideCardCapture(
     cameraPreset: CameraPreset = CameraPreset.HighResolution,
     cardFilters: List<CardValidator> = listOf(MarginValidator(), AspectRatioValidator()),
     onBack: () -> Unit = {},
-) /* expression body omitted */
+)
 ```
 
-### TwoSidedCardCapture (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/TwoSidedCardCapture.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/capture/TwoSidedCardCapture.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.capture
-
 import android.graphics.Bitmap
 import android.os.SystemClock
 import androidx.compose.foundation.background
@@ -219,9 +206,7 @@ import com.apexfission.android.carddetector.ui.capture.components.CaptureTurnOve
 import kotlinx.coroutines.channels.Channel
 
 data class CapturedCardSide(val detection: CardDetection, val bitmap: Bitmap)
-
 data class TwoSidedCardCaptureResult(val front: CapturedCardSide, val back: CapturedCardSide)
-
 @Composable
 fun TwoSidedCardCapture(
     instanceKey: String,
@@ -236,8 +221,7 @@ fun TwoSidedCardCapture(
     cameraPreset: CameraPreset = CameraPreset.HighResolution,
     cardFilters: List<CardValidator> = listOf(MarginValidator(), AspectRatioValidator()),
     onBack: () -> Unit = {},
-) /* expression body omitted */
-
+)
 @Composable
 fun TwoSidedCardCapture(
     instanceKey: String,
@@ -256,8 +240,7 @@ fun TwoSidedCardCapture(
     cameraPreset: CameraPreset = CameraPreset.HighResolution,
     cardFilters: List<CardValidator> = listOf(MarginValidator(), AspectRatioValidator()),
     onBack: () -> Unit = {},
-) /* expression body omitted */
-
+)
 @Composable
 fun TwoSidedCardCapture(
     instanceKey: String,
@@ -274,16 +257,15 @@ fun TwoSidedCardCapture(
     cameraPreset: CameraPreset = CameraPreset.HighResolution,
     cardFilters: List<CardValidator> = listOf(MarginValidator(), AspectRatioValidator()),
     onBack: () -> Unit = {},
-) /* expression body omitted */
+)
 ```
 
-### CardDetectorLite (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLite.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLite.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.detector
-
 import android.app.Application
 import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Box
@@ -328,63 +310,52 @@ fun CardDetectorLite(
     onBack: () -> Unit = {},
     onCapture: (CardDetection, Bitmap) -> Unit = { _, _ -> },
     controlOverlay: @Composable CardDetectorOverlayScope.() -> Unit = {}
-) /* body omitted */
+)
 ```
 
-### CardDetectorOverlayScope (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorOverlayScope.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorOverlayScope.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.detector
-
 import androidx.compose.runtime.Stable
 import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import com.apexfission.android.carddetector.ui.camerapreview.CameraPreset
 
+@Stable
 interface CardDetectorOverlayScope {
     val detectionState: CardDetection?
-
-    val detectionSequence: Long get() = 0L
-
-    val cardDetection: CardDetection? get() = detectionState
-
+    val detectionSequence: Long
+        get()
+    val cardDetection: CardDetection?
+        get()
     val latestBestDetection: CardDetection?
-
     val imageSpaceChain: ImageSpaceChain?
-
     val captureEnabled: Boolean
-
     val flashlightAvailable: Boolean
-
     val flashlightEnabled: Boolean
-
     val detectorPreset: CardDetectorPreset
-
     val cameraPreset: CameraPreset
-
     val classLabels: Map<Int, String>
-
     fun capture()
-
     fun goBack()
-
     fun toggleFlashlight()
 }
 ```
 
-### CardDetectorPreset (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorPreset.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorPreset.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.detector
-
 import androidx.compose.runtime.Immutable
 import com.apexfission.android.yolo.image.PreProcessingImageTransformation
 import com.apexfission.android.yolo.engine.NumThreads
 
+@Immutable
 data class CardDetectorPreset(
     val scoreThreshold: Float,
     val iouThreshold: Float = 0.45f,
@@ -412,8 +383,7 @@ data class CardDetectorPreset(
         useGpu: Boolean = this.useGpu,
         imageMode: PreProcessingImageTransformation = this.preProcessingImageTransformation,
         numThreads: NumThreads = this.numThreads
-    ): CardDetectorPreset /* expression body omitted */
-
+    ): CardDetectorPreset
     companion object {
         val HighAccuracy = CardDetectorPreset(
             scoreThreshold = 0.80f,
@@ -425,7 +395,6 @@ data class CardDetectorPreset(
             preProcessingImageTransformation = PreProcessingImageTransformation.FullImage,
             numThreads = NumThreads.Default
         )
-
         val HighPerformance = CardDetectorPreset(
             scoreThreshold = 0.50f,
             iouThreshold = 0.45f,
@@ -436,7 +405,6 @@ data class CardDetectorPreset(
             preProcessingImageTransformation = PreProcessingImageTransformation.SquareCrop(),
             numThreads = NumThreads.Default
         )
-
         val BatterySaver = CardDetectorPreset(
             scoreThreshold = 0.50f,
             iouThreshold = 0.45f,
@@ -451,13 +419,12 @@ data class CardDetectorPreset(
 }
 ```
 
-### CardTrackingSimulator (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/CardTrackingSimulator.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/CardTrackingSimulator.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.simulation
-
 import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
@@ -508,5 +475,5 @@ fun CardTrackingSimulator(
     onBackRequested: () -> Unit = {},
 
     controlOverlay: @Composable CardDetectorOverlayScope.() -> Unit = {}
-) /* body omitted */
+)
 ```

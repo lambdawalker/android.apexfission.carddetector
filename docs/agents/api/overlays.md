@@ -6,32 +6,25 @@ Use scoped composables inside `controlOverlay`. `IdCaptureOverlay` combines indi
 
 `AnimatedDetectionCanvas` provides a draw scope plus animated bounds. Pure path/segment builders construct rounded geometry; DrawScope helpers paint it without owning image resources. Call drawing functions only during drawing and state helpers only in composition. `shouldRunContinuousAnimations` is a policy helper, not a detector. `InternalGuideState` is publicly declared despite its name; most hosts should use the high-level overlays. Keep animation dimensions/timings finite and nonnegative; no universal validation is promised.
 
-## Declarations
-
-Exact source excerpts; implementation bodies are omitted. Imports below provide type resolution, including some implementation-only imports.
-
-### AnimatedDetectionBounds (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/AnimatedDetectionBounds.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/AnimatedDetectionBounds.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
-
 import com.apexfission.android.carddetector.ui.overlays.animation.AnimatedDetectionBounds as AnimationAnimatedDetectionBounds
 import com.apexfission.android.carddetector.ui.overlays.animation.DetectionAnimationConfig as AnimationDetectionAnimationConfig
 
 typealias AnimatedDetectionBounds = AnimationAnimatedDetectionBounds
-
 typealias DetectionAnimationConfig = AnimationDetectionAnimationConfig
 ```
 
-### AnimatedDetectionCanvas (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/AnimatedDetectionCanvas.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/AnimatedDetectionCanvas.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -41,29 +34,26 @@ import com.apexfission.android.carddetector.ui.overlays.animation.AnimatedDetect
 import com.apexfission.android.carddetector.ui.overlays.animation.state.shouldRunContinuousAnimations as animationShouldRunContinuousAnimations
 
 typealias AnimatedDetectionScope = AnimationAnimatedDetectionScope
-
 @Composable
 fun CardDetectorOverlayScope.AnimatedDetectionCanvas(
     modifier: Modifier = Modifier,
     config: DetectionAnimationConfig = DetectionAnimationConfig(),
     onDraw: AnimatedDetectionScope.() -> Unit
-) /* body omitted */
-
+)
 fun shouldRunContinuousAnimations(
     isTracking: Boolean,
     opacity: Float,
     motionEnabled: Boolean,
     hasVisibleBounds: Boolean
-): Boolean /* expression body omitted */
+): Boolean
 ```
 
-### CaptureShutterButton (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/CaptureShutterButton.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/CaptureShutterButton.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
-
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -92,16 +82,15 @@ fun CaptureShutterButton(
     isCaptureEnabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
-) /* body omitted */
+)
 ```
 
-### CardLockOnOverlay (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/CardLockOnOverlay.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/CardLockOnOverlay.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
-
 import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
@@ -136,16 +125,15 @@ fun CardDetectorOverlayScope.CardLockOnOverlay(
         resetPositionOnMissing = false,
         fadeAnimationDurationMs = 300
     )
-) /* body omitted */
+)
 ```
 
-### DebugOverlay (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/DebugOverlay.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/DebugOverlay.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
-
 import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -180,8 +168,7 @@ fun CardDetectorOverlayScope.DebugOverlay(
     isDetectionEnabled: Boolean = true,
     showBoundingBoxes: Boolean = false,
     showLockOnProgress: Boolean = true
-) /* body omitted */
-
+)
 @Composable
 fun DebugOverlay(
     isDetectionEnabled: Boolean,
@@ -200,16 +187,15 @@ fun DebugOverlay(
     validateClassIdInLockOnProcess: Boolean = true,
     differenceHashDistanceLimit: Int = 25,
     allowTemporalDrift: Boolean = true,
-) /* body omitted */
+)
 ```
 
-### DetectionOverlay (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/DetectionOverlay.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/DetectionOverlay.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
-
 import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import android.util.Log
@@ -242,21 +228,19 @@ import com.apexfission.android.yolo.engine.Feature
 fun CardDetectorOverlayScope.DetectionOverlay(
     showClassNames: Boolean = false,
     classLabels: Map<Int, String> = this.classLabels
-) /* body omitted */
-
+)
 @Composable
 fun DetectionOverlay(
     cardDetection: CardDetection?, imageSpaceChain: ImageSpaceChain, showClassNames: Boolean, classLabels: Map<Int, String>
-) /* body omitted */
+)
 ```
 
-### IdCaptureOverlay (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/IdCaptureOverlay.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/IdCaptureOverlay.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
-
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -290,8 +274,7 @@ import com.apexfission.android.yolo.engine.Feature
 @Composable
 fun CardDetectorOverlayScope.IdCaptureIndicatorOverlay(
     config: IdCaptureOverlayConfig = defaultIdCaptureOverlayConfig()
-) /* body omitted */
-
+)
 @Composable
 fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
     config: IdCaptureOverlayConfig = defaultIdCaptureOverlayConfig(),
@@ -303,8 +286,7 @@ fun CardDetectorOverlayScope.IdCaptureControlsOverlay(
     canCapture: Boolean = !config.requiresCardDetectionForCapture || captureEnabled,
     onCapture: () -> Unit = { capture() },
     strings: CardCaptureStrings = defaultCardCaptureStrings(),
-) /* expression body omitted */
-
+)
 @Composable
 fun CardDetectorOverlayScope.IdCaptureOverlay(
     config: IdCaptureOverlayConfig = defaultIdCaptureOverlayConfig(),
@@ -317,22 +299,22 @@ fun CardDetectorOverlayScope.IdCaptureOverlay(
     canCapture: Boolean = !config.requiresCardDetectionForCapture || captureEnabled,
     onCapture: () -> Unit = { capture() },
     strings: CardCaptureStrings = defaultCardCaptureStrings(),
-) /* expression body omitted */
+)
 ```
 
-### IdCaptureOverlayConfig (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/IdCaptureOverlayConfig.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/IdCaptureOverlayConfig.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.res.stringResource
 import com.apexfission.android.carddetector.R
 import androidx.compose.ui.graphics.Color
 
+@Immutable
 data class IdCaptureOverlayConfig(
     val idleOpacity: Float = 0.35f,
     val detectedOpacity: Float = 0.85f,
@@ -349,18 +331,16 @@ data class IdCaptureOverlayConfig(
     val guideColor: Color = Color.Unspecified,
     val enableContinuousAnimations: Boolean = false,
 )
-
 @Composable
-fun defaultIdCaptureOverlayConfig() /* expression body omitted */
+fun defaultIdCaptureOverlayConfig()
 ```
 
-### AnimatedDetectionBounds (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/AnimatedDetectionBounds.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/AnimatedDetectionBounds.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.animation
-
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -368,25 +348,25 @@ import com.apexfission.android.math.models.ImageBox
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 
 typealias BoundingBoxCoordinates = ImageBox
-
-val ImageBox.center: Offset get() = Offset(left + intWidth / 2f, top + intHeight / 2f)
-
-val ImageBox.topLeft: Offset get() = Offset(left.toFloat(), top.toFloat())
-
-val ImageBox.size: Size get() = Size(intWidth.toFloat(), intHeight.toFloat())
-
+val ImageBox.center: Offset
+    get()
+val ImageBox.topLeft: Offset
+    get()
+val ImageBox.size: Size
+    get()
+@Immutable
 data class LockOnProgressState(
     val lockOnProgress: Float = 0f, val smoothProgress: Float = lockOnProgress
 )
-
+@Immutable
 data class AnimationEffectsState(
     val breathe: Float = 1f, val sweepPhase: Float = 0f, val opacity: Float = 1f
 )
-
+@Immutable
 data class TrackingMetadata(
     val isTracking: Boolean = false, val activeDetection: CardDetection? = null
 )
-
+@Immutable
 data class AnimatedDetectionBounds(
     val coordinates: BoundingBoxCoordinates,
     val progress: LockOnProgressState = LockOnProgressState(),
@@ -411,40 +391,40 @@ data class AnimatedDetectionBounds(
         effects = AnimationEffectsState(breathe, sweepPhase, opacity),
         tracking = TrackingMetadata(isTracking, activeDetection)
     )
-
-    val left: Float get() = coordinates.left.toFloat()
-
-    val top: Float get() = coordinates.top.toFloat()
-
-    val right: Float get() = coordinates.right.toFloat()
-
-    val bottom: Float get() = coordinates.bottom.toFloat()
-
-    val lockOnProgress: Float get() = progress.lockOnProgress
-
-    val smoothProgress: Float get() = progress.smoothProgress
-
-    val breathe: Float get() = effects.breathe
-
-    val sweepPhase: Float get() = effects.sweepPhase
-
-    val opacity: Float get() = effects.opacity
-
-    val isTracking: Boolean get() = tracking.isTracking
-
-    val activeDetection: CardDetection? get() = tracking.activeDetection
-
-    val width: Float get() = coordinates.width.toFloat()
-
-    val height: Float get() = coordinates.height.toFloat()
-
-    val center: Offset get() = coordinates.center
-
-    val topLeft: Offset get() = coordinates.topLeft
-
-    val size: Size get() = coordinates.size
+    val left: Float
+        get()
+    val top: Float
+        get()
+    val right: Float
+        get()
+    val bottom: Float
+        get()
+    val lockOnProgress: Float
+        get()
+    val smoothProgress: Float
+        get()
+    val breathe: Float
+        get()
+    val sweepPhase: Float
+        get()
+    val opacity: Float
+        get()
+    val isTracking: Boolean
+        get()
+    val activeDetection: CardDetection?
+        get()
+    val width: Float
+        get()
+    val height: Float
+        get()
+    val center: Offset
+        get()
+    val topLeft: Offset
+        get()
+    val size: Size
+        get()
 }
-
+@Immutable
 data class DetectionAnimationConfig(
     val idleOpacity: Float = 0.35f,
     val detectedOpacity: Float = 0.85f,
@@ -458,13 +438,12 @@ data class DetectionAnimationConfig(
 )
 ```
 
-### AnimatedDetectionCanvas (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/AnimatedDetectionCanvas.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/AnimatedDetectionCanvas.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.animation
-
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -480,36 +459,34 @@ class AnimatedDetectionScope(
     private val drawScope: DrawScope,
     val bounds: AnimatedDetectionBounds
 ) : DrawScope by drawScope
-
 @Composable
 fun CardDetectorOverlayScope.AnimatedDetectionCanvas(
     modifier: Modifier = Modifier.fillMaxSize(),
     config: DetectionAnimationConfig = DetectionAnimationConfig(),
     onDraw: AnimatedDetectionScope.() -> Unit
-) /* body omitted */
+)
 ```
 
-### InternalGuideState (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/InternalGuideState.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/InternalGuideState.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.animation.state
 
-
-
 enum class InternalGuideState {
-    IDLE, LOCKING, LOCKED
+    IDLE,
+    LOCKING,
+    LOCKED,
 }
 ```
 
-### RememberAnimatedDetectionBounds (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/RememberAnimatedDetectionBounds.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/RememberAnimatedDetectionBounds.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.animation.state
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.apexfission.android.math.models.ImageBox
@@ -524,16 +501,15 @@ import com.apexfission.android.carddetector.ui.overlays.animation.TrackingMetada
 fun CardDetectorOverlayScope.rememberAnimatedDetectionBounds(
     defaultBox: ImageBox? = null,
     config: DetectionAnimationConfig = DetectionAnimationConfig()
-): AnimatedDetectionBounds /* body omitted */
+): AnimatedDetectionBounds
 ```
 
-### rememberAnimatedOpacity (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/rememberAnimatedOpacity.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/animation/state/rememberAnimatedOpacity.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.animation.state
-
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -545,16 +521,15 @@ import com.apexfission.android.carddetector.ui.overlays.animation.DetectionAnima
 fun rememberAnimatedOpacity(
     internalGuideState: InternalGuideState,
     config: DetectionAnimationConfig
-): Float /* body omitted */
+): Float
 ```
 
-### CaptureControlsRow (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/CaptureControlsRow.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/CaptureControlsRow.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.components
-
 import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -594,16 +569,15 @@ fun CaptureControlsRow(
     shutterContentDescription: String,
     modifier: Modifier = Modifier,
     showAutoCaptureToggle: Boolean = true,
-) /* body omitted */
+)
 ```
 
-### InitialGuideOverlay (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/InitialGuideOverlay.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/InitialGuideOverlay.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.components
-
 import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
@@ -627,16 +601,15 @@ import androidx.compose.ui.unit.dp
 import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
 
 @Composable
-fun InitialGuideOverlay(modifier: Modifier = Modifier) /* body omitted */
+fun InitialGuideOverlay(modifier: Modifier = Modifier)
 ```
 
-### OverlayGradients (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/OverlayGradients.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/OverlayGradients.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.components
-
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -652,19 +625,17 @@ import androidx.compose.ui.unit.dp
 import com.apexfission.android.carddetector.ui.overlays.checkerboardBackground
 
 @Composable
-fun OverlayTopGradient(modifier: Modifier = Modifier, height: Dp = 180.dp) /* body omitted */
-
+fun OverlayTopGradient(modifier: Modifier = Modifier, height: Dp = 180.dp)
 @Composable
-fun OverlayBottomGradient(modifier: Modifier = Modifier, height: Dp = 280.dp) /* body omitted */
+fun OverlayBottomGradient(modifier: Modifier = Modifier, height: Dp = 280.dp)
 ```
 
-### OverlayHeader (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/OverlayHeader.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/components/OverlayHeader.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.components
-
 import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -700,26 +671,23 @@ fun OverlayHeader(
     exitContentDescription: String = androidx.compose.ui.res.stringResource(com.apexfission.android.carddetector.R.string.card_capture_exit),
     modifier: Modifier = Modifier,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
-) /* body omitted */
-
+)
 @Composable
-fun OverlayTitle(title: String, modifier: Modifier = Modifier, contentColor: Color = MaterialTheme.colorScheme.primary) /* body omitted */
-
+fun OverlayTitle(title: String, modifier: Modifier = Modifier, contentColor: Color = MaterialTheme.colorScheme.primary)
 @Composable
 fun OverlayInstructions(
     title: String,
     subtitle: String,
     modifier: Modifier = Modifier
-) /* body omitted */
+)
 ```
 
-### PathUtils (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/draw/PathUtils.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/draw/PathUtils.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.draw
-
 import android.graphics.BlurMaskFilter
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -741,8 +709,7 @@ fun DrawScope.drawBlurredPath(
     blurStyle: BlurMaskFilter.Blur = BlurMaskFilter.Blur.NORMAL,
     rounded: Boolean = false,
     cornerRadius: Float = 0f
-) /* body omitted */
-
+)
 fun DrawScope.drawGlowPath(
     points: List<Pair<Float, Float>>,
     blurRadius: Float,
@@ -750,24 +717,20 @@ fun DrawScope.drawGlowPath(
     strokeWidth: Float,
     rounded: Boolean = false,
     cornerRadius: Float = 0f,
-) /* body omitted */
-
+)
 fun buildRoundedPolylinePath(
     points: List<Pair<Float, Float>>,
     radius: Float
-): Path /* body omitted */
-
-fun lerpF(start: Float, stop: Float, fraction: Float): Float /* body omitted */
+): Path
+fun lerpF(start: Float, stop: Float, fraction: Float): Float
 ```
 
-### RoundedSegment (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/draw/RoundedSegment.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/draw/RoundedSegment.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.draw
-
-
 
 data class RoundedSegment(
     val points: List<Pair<Float, Float>>,
@@ -776,13 +739,12 @@ data class RoundedSegment(
 )
 ```
 
-### SegmentBuilders (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/draw/SegmentBuilders.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/overlays/draw/SegmentBuilders.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.overlays.draw
-
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -792,8 +754,7 @@ fun buildCorner(
     cornerLength: Float,
     cornerRadius: Float,
     cornerId: Int
-): RoundedSegment /* body omitted */
-
+): RoundedSegment
 fun buildCorners(
     left: Float,
     top: Float,
@@ -801,16 +762,14 @@ fun buildCorners(
     bottom: Float,
     cornerLength: Float,
     cornerRadius: Float
-): List<RoundedSegment> /* body omitted */
-
+): List<RoundedSegment>
 fun buildConnector(
     startCorner: Pair<Float, Float>,
     endCorner: Pair<Float, Float>,
     cornerLength: Float,
     gap: Float,
     sideId: Int
-): List<RoundedSegment> /* body omitted */
-
+): List<RoundedSegment>
 fun buildConnectors(
     left: Float,
     top: Float,
@@ -818,5 +777,5 @@ fun buildConnectors(
     bottom: Float,
     cornerLength: Float,
     gap: Float
-): List<RoundedSegment> /* body omitted */
+): List<RoundedSegment>
 ```

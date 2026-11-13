@@ -29,7 +29,6 @@ Detection callbacks can skip `NewCard`. In your serial callback, accept a non-nu
 For coroutine handoff, this helper covers cancellation before the coroutine body starts as well as after it starts. Call it with the single host-owned bitmap; `process` must not retain or recycle it. Imports are shown; this helper is included in the app source and checked against the rendered snippet.
 
 <!-- example: ownership -->
-
 ```kotlin
 package com.apexfission.android.carddetector.demo
 
@@ -59,7 +58,6 @@ fun CoroutineScope.consumeOwnedBitmap(
     }
 }
 ```
-
 <!-- end-example: ownership -->
 
 The host still chooses dispatcher, task admission, and deduplication. Do not use this as an unbounded queue per camera frame.

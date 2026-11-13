@@ -1,6 +1,6 @@
 repository: lambdawalker/android.apexfission.carddetector
 title: Card Detector
-tooling_ref: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
+tooling_ref: '263b1ddfbe0596b6e1655293fac6ff26a547b890'
 modules:
   carddetector: Card Detector
   tfmodel: Sentinel Card Model
@@ -32,12 +32,10 @@ android_modules:
 workflows:
   title: Card Detector
   java_version: 21
-  documentation_command: git lfs pull --include="docs/**" --exclude="" && cd sites && npm ci &&
-    ASTRO_TELEMETRY_DISABLED=1 npm run check
-  screenshot_check_command: python3 scripts/docs.py verify && python3 scripts/media.py
-    verify && android-repo-setup documentation_history verify
-  release_validation_command: git lfs pull --include="docs/**" --exclude="" && cd sites && npm ci &&
-    ASTRO_TELEMETRY_DISABLED=1 npm run check
+  documentation_command: cd sites && npm ci && cd .. && android-repo-docs build --check
+  screenshot_check_command: android-repo-docs check
+  release_validation_command: git lfs pull --include="docs/**" --exclude="" && cd
+    sites && npm ci && cd .. && android-repo-docs build --check
 module_verification:
   carddetector:
     class_prefix: com/apexfission/android/carddetector/
@@ -55,7 +53,8 @@ module_verification:
       version_property: modelCoreVersion
     assets:
     - directory: tfmodel/src/main/assets
-      include: ['**/*.tflite']
+      include:
+      - '**/*.tflite'
       source: git
       hydrate_lfs: true
       validator: tflite
@@ -66,6 +65,5 @@ fingerprint_excluded_properties:
   - modelVersion
   - MODEL_ARTIFACT_ID
   - POM_ARTIFACT_ID.tfmodel
-
 bootstrap:
   jitpack: true

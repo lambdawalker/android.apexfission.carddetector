@@ -48,7 +48,7 @@ test('the release exporter renders both providers at the same version', async ()
         for (const [file, release] of [[`${moduleName}.json`, central], [`jitpack/${moduleName}.json`, jitpack]]) {
             writeFileSync(join(root, 'docs/releases', file), JSON.stringify(release));
         }
-        execFileSync('android-repo-setup', ['documentation_history', 'seed'], {cwd: root});
+        execFileSync('android-repo-docs', ['history', 'seed'], {cwd: root});
         process.chdir(join(root, 'sites'));
         process.env.DOCS_REF = jitpack.source;
         await buildVersioned(root);
