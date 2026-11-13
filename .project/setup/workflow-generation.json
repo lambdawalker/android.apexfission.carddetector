@@ -1,18 +1,18 @@
 {
   "build-signed-app-apk.yml": "d60ebc4447b49bbda23ddb2a134648f3f849a4f417b99b0ecb8fd386a4244ae2",
   "documentation.yml": "f45cdcdef137a1e0fbda618124212a811761b36fbd7a71ba556ca12523d17c7d",
-  "finalize-release.yml": "3a44214a7703f5f4a10313a9754926faa3225e72cc189c416fc4ce82f053137b",
+  "finalize-release.yml": "35a481824f230caf2dfc9c8192c973c4cdd8d91a78de9e2d92014cb97634d258",
   "publish-carddetector.yml": "8c61097b8285e2b20ee6a49604a0ab8d96b2da743a4a5f86ce116eb85f6746e1",
-  "publish-jitpack.yml": "848ed69968292499f99a592187e5febb29054975eed97e15a3b5677ffac734e4",
-  "publish-library.yml": "53b88d9bc5bcb5238071653b24f1e87730b2b3ffc0b21bf2854c51643f7f13af",
+  "publish-jitpack.yml": "c9dbbed1c42f2c4cbed8a94f5a9920d2851563295073ca55caec9769c3565856",
+  "publish-library.yml": "ff78dee75d3ca847f74094826d4d58753282ca5728a21609434f80c85a15d7ce",
   "publish-tfmodel.yml": "49f0c30e01a9d71ced78095e75d42de3df8b63227545a292ef4a6827aa333c7d",
-  "reconcile-failed-jitpack-carddetector.yml": "a5a3de72b57f615f12aab51c3a44dce3db1df41648c54a9f0275a4361e2de1b7",
-  "reconcile-failed-jitpack-tfmodel.yml": "168eabc5201999e8a9c51268e85f00504a468741d740ffc871f278873806ef32",
+  "reconcile-failed-jitpack-carddetector.yml": "b631931a7845046390bc4643fe9ada748ea05240e14330d0e788280390048fea",
+  "reconcile-failed-jitpack-tfmodel.yml": "85670632f5f1acd9f07f673a2ab940c8d46df383bab8921c52d38542b77852c0",
   "screenshots-app.yml": "23568700c96435d7b6a211a5c73c9fd0d89479d99cc2fc155eae3579fa0bb46d",
   "screenshots-carddetector.yml": "436e3aaa46f9c8264c718a0ecded059b6ceb8d91dd6dc83a4e5b90d94bcc5106",
   "unit-tests.yml": "2915aebcae37d5f4329169de1eccc038734357491ffb854b3fc10d56654409f0",
-  "update-workflows.yml": "202177ac9b272a2b706a838dd73989bff9fa1270b6daeec3c72e54c91abea0f9",
-  "verify-localization.yml": "cfe61c4c149073d35fb2098e00549df7bcf48ec7b77208d1c62ee747f65ab19b",
-  "verify-release-tooling-carddetector.yml": "befcaaa671e453d52a32a70fcd1a2754863d21f749110092af9bb246af28bd98",
-  "verify-release-tooling-tfmodel.yml": "3d03d86b1d83bb2322aef7b513ab2736277bcb1855c40749473022eaa9a849ed"
+  "update-workflows.yml": "5b96652525eaf90d76d7542f37a4d1034403bdb7784ddcd794604c5dd28dcb23",
+  "verify-localization.yml": "4a6b48ecd45d6ca2d211eb823473be1b9020f8482a4fcf2a100656fc4606c86f",
+  "verify-release-tooling-carddetector.yml": "df1a0c09671a35fb412a2a43e09c5c597f8b4aa8e0c185585559b5ce7e1f087b",
+  "verify-release-tooling-tfmodel.yml": "40fdfa96f33dee3af3178ae011f6c82b14b8cb40968b07b6a0a5e841452bbb40"
 }
