@@ -1,6 +1,6 @@
 # Publishing and release recovery
 
-This project uses the shared CLI release pin in `.project/setup/config.yaml` and released Gradle plugins v0.1.14. Both libraries publish independently. Runtime APIs, confirmed records, archive entries and existing tags are preserved.
+This project uses the shared CLI pin in `.project/setup/config.yaml` and released Gradle plugins v0.1.14. Both libraries publish independently. Runtime APIs, confirmed records, archive entries and existing tags are preserved.
 
 ## Install and configure
 

@@ -1,6 +1,6 @@
 repository: lambdawalker/android.apexfission.carddetector
 title: Card Detector
-tooling_ref: 'v0.1.16'
+tooling_ref: '263b1ddfbe0596b6e1655293fac6ff26a547b890'
 modules:
   carddetector: Card Detector
   tfmodel: Sentinel Card Model
