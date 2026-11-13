@@ -100,3 +100,10 @@ sites/src/versions.json
 /bin/
 /.project/setup/cache/
 /.project/docs/cache/
+
+# Shared documentation transactional staging
+sites/.astro-app-*/
+sites/.astro-dist-*/
+sites/.astro-build-*/
+/sites/.astro-app-*/
+/sites/.astro-build-*/

@@ -1,6 +1,6 @@
 repository: lambdawalker/android.apexfission.carddetector
 title: Card Detector
-tooling_ref: 'v0.1.20'
+tooling_ref: '1da53392b262c7c3129d2bd645dfd7b34ead81e1'
 modules:
   carddetector: Card Detector
   tfmodel: Sentinel Card Model
@@ -32,10 +32,10 @@ android_modules:
 workflows:
   title: Card Detector
   java_version: 21
-  documentation_command: cd sites && npm ci && cd .. && android-repo-docs build --check
+  documentation_command: cd sites && npm ci && npm test && cd .. && android-repo-docs build --check && node sites/scripts/tests/output.mjs
   screenshot_check_command: android-repo-docs check
   release_validation_command: git lfs pull --include="docs/**" --exclude="" && cd
-    sites && npm ci && cd .. && android-repo-docs build --check
+    sites && npm ci && npm test && cd .. && android-repo-docs build --check && node sites/scripts/tests/output.mjs
 module_verification:
   carddetector:
     class_prefix: com/apexfission/android/carddetector/

@@ -4,7 +4,7 @@ title: Card Detector
 modules:
   carddetector: Card Detector
   tfmodel: Sentinel Card Model
-tooling_ref: 'v0.1.20'
+tooling_ref: '1da53392b262c7c3129d2bd645dfd7b34ead81e1'
 sources:
   roots:
   - carddetector/src/main/java
@@ -48,18 +48,16 @@ sources:
     start: '<!-- example: ownership -->'
     end: '<!-- end-example: ownership -->'
 site:
-  build:
-  - npm
-  - --prefix
-  - sites
-  - run
-  - check
-  serve:
-  - npm
-  - --prefix
-  - sites
-  - run
-  - dev
+  backend: astro
+  base_url: https://lambdawalker.github.io/android.apexfission.carddetector/
+  prepare:
+  - node
+  - sites/prepare.mjs
+  current_pages:
+    docs/maintenance.md: project/development
+    docs/coverage.md: project/coverage
+    docs/releases.md: project/releases
+    docs/screenshots/README.md: project/media
 media:
   manifest: docs/screenshots/manifest.json
   base: docs/screenshots
