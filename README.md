@@ -66,3 +66,20 @@ setup.bat workflows --check
 ```
 
 Run `setup.bat` on Windows or `sh ./setup.sh` on Linux/macOS. These shared CLI-generated launchers install and verify the configured CLI, cache it under `.project/setup/cache/`, and forward arguments. Release pins use verified binaries; full commit pins require Cargo and build the exact source. Run `setup check` to validate generated files and evaluated module configuration.
+
+
+## Documentation tooling
+
+Documentation is maintained by the independently pinned `android-repo-docs` executable.
+Use `sh ./docs.sh check` on Linux/macOS or `docs.bat check` on Windows.
+The launcher installs the configured release or immutable source revision on first use;
+source pins require Rust and Git. No setup credentials are needed.
+
+- `sh ./docs.sh sources check` verifies reviewed Kotlin inputs and examples.
+- `sh ./docs.sh sources update` intentionally refreshes generated references and examples; review the diff.
+- `sh ./docs.sh build --check` builds the existing documentation site locally.
+- `sh ./docs.sh bootstrap check` verifies the launcher files against their independent pin.
+
+Configuration and project-specific introductory Markdown live in `.project/docs/`.
+Confirmed release records and archived source identities remain authoritative.
+Documentation checks do not accept images, publish artifacts, or deploy the site.

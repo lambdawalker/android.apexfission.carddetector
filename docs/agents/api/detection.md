@@ -8,33 +8,25 @@ Validators receive borrowed frames and return Boolean. Margin defaults to 20 pix
 
 The `ModelCatalog` marker belongs to core; tfmodel extension properties require the optional model artifact and explicit imports. The legacy carddetector `PreProcessingImageTransformation` remains exported, but presets require the distinct YOLO type. Do not interchange them.
 
-## Declarations
-
-Exact source excerpts; implementation bodies are omitted. Imports below provide type resolution, including some implementation-only imports.
-
-### ModelCatalog (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/ModelCatalog.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/ModelCatalog.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain
 
-
-
 class ModelCatalog {
     class TfLite {
-        companion object
     }
 }
 ```
 
-### CardDetector (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/CardDetector.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/CardDetector.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain.tflite.detector.card.engine
-
 import android.graphics.Bitmap
 import androidx.camera.core.ImageProxy
 import com.apexfission.android.yolo.engine.YoloDetector
@@ -43,20 +35,17 @@ import java.io.Closeable
 
 interface CardDetector : Closeable {
     var enabled: Boolean
-
     fun track(imageProxy: ImageProxy): CardDetection?
-
     fun track(bitmap: Bitmap): CardDetection?
 }
 ```
 
-### ThreadConfinedCardDetector (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/ThreadConfinedCardDetector.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/ThreadConfinedCardDetector.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain.tflite.detector.card.engine
-
 import android.graphics.Bitmap
 import androidx.camera.core.ImageProxy
 import com.apexfission.android.yolo.tflite.engine.EngineThreadDispatcher
@@ -70,24 +59,21 @@ class ThreadConfinedCardDetector private constructor(
         sharedDispatcher: EngineThreadDispatcher? = null,
         detectorFactory: () -> CardDetector,
     ) : this(ThreadConfinedResource(sharedDispatcher, detectorFactory))
-
-    override fun track(bitmap: Bitmap): CardDetection? /* expression body omitted */
-
-    override fun track(imageProxy: ImageProxy): CardDetection? /* expression body omitted */
-
+    override fun track(bitmap: Bitmap): CardDetection?
+    override fun track(imageProxy: ImageProxy): CardDetection?
     override var enabled: Boolean
-
-    override fun close() /* body omitted */
+        get()
+        set(value)
+    override fun close()
 }
 ```
 
-### build (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/build.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/engine/build.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain.tflite.detector.card.engine
-
 import com.apexfission.android.yolo.tflite.engine.EngineThreadDispatcher
 import com.apexfission.android.yolo.engine.Detector
 import com.apexfission.android.carddetector.domain.tflite.filters.AspectRatioValidator
@@ -109,8 +95,7 @@ fun buildCardDetector(
     allowTemporalDrift: Boolean = true,
     hashBasedSearchFrameLimit: Int = 3,
     sharedDispatcher: EngineThreadDispatcher? = null
-): CardDetector /* expression body omitted */
-
+): CardDetector
 fun buildThreadConfinedCardDetector(
     yoloDetector: Detector,
     cardValidators: List<CardValidator> = listOf(
@@ -126,44 +111,37 @@ fun buildThreadConfinedCardDetector(
     allowTemporalDrift: Boolean = true,
     hashBasedSearchFrameLimit: Int = 3,
     sharedDispatcher: EngineThreadDispatcher? = null
-): CardDetector /* body omitted */
+): CardDetector
 ```
 
-### PreProcessingImageTransformation (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/transformation/PreProcessingImageTransformation.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/detector/card/transformation/PreProcessingImageTransformation.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain.tflite.detector.card.transformation
-
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+@Immutable
 sealed class PreProcessingImageTransformation {
     data object FullImage : PreProcessingImageTransformation()
-
     data object CenterSquareCrop : PreProcessingImageTransformation()
-
     data class SquareCrop(val top: Dp = 0.dp) : PreProcessingImageTransformation()
-
     data object CenterVisibleImage : PreProcessingImageTransformation()
-
     data class VisibleImage(val top: Dp = 0.dp) : PreProcessingImageTransformation()
-
     data object CenterVisibleImageSquareCrop : PreProcessingImageTransformation()
-
     data class VisibleImageSquareCrop(val top: Dp = 0.dp) : PreProcessingImageTransformation()
 }
 ```
 
-### AspectRatioValidator (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/filters/AspectRatioValidator.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/filters/AspectRatioValidator.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain.tflite.filters
-
 import android.graphics.Bitmap
 import com.apexfission.android.yolo.engine.Detection
 import kotlin.math.max
@@ -173,62 +151,58 @@ class AspectRatioValidator(
     private val minAspectRatio: Float = 1.28f,
     private val maxAspectRatio: Float = 1.7f
 ) : CardValidator {
-    override val configurationKey: String =
-        "aspect-ratio:${minAspectRatio.toRawBits()}:${maxAspectRatio.toRawBits()}"
-
+    override val configurationKey: String
     override fun isValid(
         detection: Detection, previousCardDetection: Detection?, bitmap: Bitmap
-    ): Boolean /* body omitted */
+    ): Boolean
 }
 ```
 
-### CardValidator (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/filters/CardValidator.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/filters/CardValidator.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain.tflite.filters
-
 import android.graphics.Bitmap
 import com.apexfission.android.yolo.engine.Detection
 
 fun interface CardValidator {
     val configurationKey: String
-
+        get()
     fun isValid(detection: Detection, previousCardDetection: Detection?, bitmap: Bitmap): Boolean
 }
 ```
 
-### MarginValidator (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/filters/MarginValidator.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/filters/MarginValidator.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain.tflite.filters
-
 import android.graphics.Bitmap
 import com.apexfission.android.yolo.engine.Detection
 
 class MarginValidator(private val margin: UInt = 20u) : CardValidator {
-    override val configurationKey: String = "margin:$margin"
-
+    override val configurationKey: String
     override fun isValid(
         detection: Detection, previousCardDetection: Detection?, bitmap: Bitmap
-    ): Boolean /* body omitted */
+    ): Boolean
 }
 ```
 
-### CardDetection (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/model/CardDetection.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/model/CardDetection.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain.tflite.model
-
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import com.apexfission.android.yolo.engine.Feature
 
+@Immutable
+@Stable
 data class CardDetection(
     val lockOnProgress: Float,
     val id: Long?,
@@ -242,55 +216,50 @@ data class CardDetection(
     /** Monotonic evaluation time; zero for externally constructed/unmeasured detections. */
     val observedAtElapsedRealtimeMs: Long = 0L,
 ) {
-    val focusState: FocusState get() = when {
-        focusScore == null || !focusScore.isFinite() || focusScore < 0f -> FocusState.Unknown
-        focusScore >= DEFAULT_FOCUS_THRESHOLD -> FocusState.Focused
-        else -> FocusState.Unfocused
-    }
-
-    val isFocused: Boolean get() = focusState == FocusState.Focused
-
+    val focusState: FocusState
+        get()
+    val isFocused: Boolean
+        get()
     companion object {
         const val DEFAULT_FOCUS_THRESHOLD = 100f
     }
 }
-
-enum class FocusState { Unknown, Focused, Unfocused }
-
-enum class DetectionSource {
-    /** The card was detected via YOLO object detector inference. */
-    Yolo,
-
-    /** The card was tracked via difference hash (dHash) visual similarity matching. */
-    Hash
+enum class FocusState {
+    Unknown,
+    Focused,
+    Unfocused,
 }
-
+@Immutable
+@Stable
+enum class DetectionSource {
+    Yolo,
+    Hash,
+}
+@Immutable
+@Stable
 enum class LockingStatus {
-    /** The detector is evaluating a candidate card over consecutive frames to confirm stability. */
     LockingCard,
-
-    /** The card has achieved temporal lock-on for the first time; a new card ID has been assigned. */
     NewCard,
-
-    /** The card remains locked on across subsequent frames under the same assigned card ID. */
-    CardLocked
+    CardLocked,
 }
 ```
 
-### add (tfmodel)
+## `tfmodel/src/main/java/com/apexfission/android/carddetector/tfmodel/add.kt`
 
 [Source](../../../tfmodel/src/main/java/com/apexfission/android/carddetector/tfmodel/add.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.tfmodel
-
 import com.apexfission.android.carddetector.domain.ModelCatalog
 
 val ModelCatalog.TfLite.Companion.modelPath: String
-
+//    get() = "cdl/tflite/Y11-640E124F16.tflite"
+    get()
 val ModelCatalog.TfLite.Companion.modelName: String
-
+//    get() = "Y11-640E124F16.tflite"
+    get()
 val ModelCatalog.TfLite.Companion.classes: Map<Int, String>
-
+    get()
 val ModelCatalog.TfLite.Companion.cardClasses: Set<Int>
+    get()
 ```

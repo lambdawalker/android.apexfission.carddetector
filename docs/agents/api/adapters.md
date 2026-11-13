@@ -8,17 +8,12 @@ These public declarations expose lower-level integration points. Prefer `CardDet
 
 ViewModel process methods admit work with a single-flight gate; rejected frames are released. `captureLatest` delivers an independent owned copy on a worker. `setDetectionEnabled` controls processing; it does not cancel already-delivered host tasks. Native resources and retained/callback buffers are released by ViewModel clearing. Factories are intended for the Android ViewModel system, not repeated manual construction. All callbacks and retained-image caveats in [concepts](../concepts.md) apply.
 
-## Declarations
-
-Exact source excerpts; implementation bodies are omitted. Imports below provide type resolution, including some implementation-only imports.
-
-### AutoFocusPolicy (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/AutoFocusPolicy.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/AutoFocusPolicy.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.camerapreview
-
 import androidx.compose.runtime.Immutable
 import com.apexfission.android.math.models.ImagePoint
 import com.apexfission.android.math.models.ImageSpaceChain
@@ -26,16 +21,15 @@ import com.apexfission.android.math.transformations.toChildSpace
 import com.apexfission.android.carddetector.domain.tflite.model.CardDetection
 import kotlin.math.abs
 
+@Immutable
 data class FocusPoint(
     val x: Float,
     val y: Float
 )
-
 data class AutoFocusResult(
     val shouldFocus: Boolean,
     val focusPoint: FocusPoint? = null
 )
-
 class AutoFocusPolicy(
     private val cooldownMs: Long = 500L,
     private val positionThresholdPx: Float = 50f,
@@ -44,19 +38,17 @@ class AutoFocusPolicy(
     fun shouldTriggerFocus(
         detection: CardDetection?,
         currentTimeMs: Long = System.currentTimeMillis()
-    ): AutoFocusResult /* body omitted */
-
-    fun reset() /* body omitted */
+    ): AutoFocusResult
+    fun reset()
 }
 ```
 
-### CameraPreview (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/CameraPreview.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/CameraPreview.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.camerapreview
-
 import android.util.Log
 import android.util.Size
 import android.view.MotionEvent
@@ -116,16 +108,15 @@ fun CameraPreview(
     tapToFocusEnabled: Boolean = true,
     focusOnCardEnabled: Boolean = true,
     showFocusIndicator: Boolean = true,
-) /* body omitted */
+)
 ```
 
-### utils (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/utils.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/camerapreview/utils.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.camerapreview
-
 import com.apexfission.android.math.models.ImageSpace
 import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.math.models.SpaceRelationship
@@ -138,16 +129,15 @@ fun createPreviewImageSpaceChain(
     videoHeight: Int,
     viewWidth: Int,
     viewHeight: Int
-): ImageSpaceChain /* body omitted */
+): ImageSpaceChain
 ```
 
-### CardDetectorLiteViewModel (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLiteViewModel.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLiteViewModel.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.detector
-
 import android.app.Application
 import android.graphics.Bitmap
 import android.os.SystemClock
@@ -196,42 +186,32 @@ class CardDetectorLiteViewModel(
     private val preProcessingImageTransformation: PreProcessingImageTransformation,
     numThreads: NumThreads,
 ) : AndroidViewModel(application) {
-    val latestBestDetection: StateFlow<CardDetection?> = _latestBestDetection.asStateFlow()
-
-    val flashlightEnabled: StateFlow<Boolean> = _flashlightEnabled.asStateFlow()
-
-    val flashlightAvailable: StateFlow<Boolean> = _flashlightAvailable.asStateFlow()
-
-    fun setDetectionEnabled(enabled: Boolean) /* body omitted */
-
-    fun setFlashlightAvailable(available: Boolean) /* body omitted */
-
-    fun toggleFlashlight() /* body omitted */
-
-    fun onFocusEvent(cameraControl: CameraControl, meteringPoint: MeteringPoint) /* body omitted */
-
+    val latestBestDetection: StateFlow<CardDetection?>
+    val flashlightEnabled: StateFlow<Boolean>
+    val flashlightAvailable: StateFlow<Boolean>
+    fun setDetectionEnabled(enabled: Boolean)
+    fun setFlashlightAvailable(available: Boolean)
+    fun toggleFlashlight()
+    fun onFocusEvent(cameraControl: CameraControl, meteringPoint: MeteringPoint)
     fun processImage(
         imageProxy: ImageProxy,
         canvasSize: IntSize = IntSize.Zero,
         onDetection: (CardDetection, Bitmap) -> Unit,
         onEvaluation: ((CardDetection?, Bitmap?) -> Unit)? = null,
-    ) /* body omitted */
-
+    )
     suspend fun captureLatest(
         onCapture: (CardDetection, Bitmap) -> Unit,
-    ): Boolean /* expression body omitted */
-
-    override fun onCleared() /* body omitted */
+    ): Boolean
+    override fun onCleared()
 }
 ```
 
-### CardDetectorLiteViewModelFactory (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLiteViewModelFactory.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/detector/CardDetectorLiteViewModelFactory.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.detector
-
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -258,17 +238,16 @@ class CardDetectorLiteViewModelFactory(
     private val preProcessingImageTransformation: PreProcessingImageTransformation,
     private val numThreads: NumThreads,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T /* body omitted */
+    override fun <T : ViewModel> create(modelClass: Class<T>): T
 }
 ```
 
-### BitmapFrameProcessor (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/BitmapFrameProcessor.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/BitmapFrameProcessor.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.simulation
-
 import android.graphics.Bitmap
 import androidx.media3.common.GlTextureInfo
 import androidx.media3.common.util.GlRect
@@ -279,38 +258,34 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.Executor
 
+@UnstableApi
 class BitmapFrameProcessor(
     captureIntervalMs: Long,
     private val callbackExecutor: Executor,
     private val onConfigured: (width: Int, height: Int) -> Unit,
     private val onBitmap: (bitmap: Bitmap, presentationTimeUs: Long) -> Unit,
 ) : ByteBufferGlEffect.Processor<Unit> {
-    override fun configure(inputWidth: Int, inputHeight: Int): Size /* body omitted */
-
-    override fun getScaledRegion(presentationTimeUs: Long): GlRect /* expression body omitted */
-
+    override fun configure(inputWidth: Int, inputHeight: Int): Size
+    override fun getScaledRegion(presentationTimeUs: Long): GlRect
     override fun processImage(
         image: ByteBufferGlEffect.Image,
         presentationTimeUs: Long
-    ): ListenableFuture<Unit> /* body omitted */
-
+    ): ListenableFuture<Unit>
     override fun finishProcessingAndBlend(
         outputFrame: GlTextureInfo,
         presentationTimeUs: Long,
         result: Unit
-    ) /* expression body omitted */
-
-    override fun release() /* expression body omitted */
+    )
+    override fun release()
 }
 ```
 
-### CardTrackingSimulatorViewModel (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/CardTrackingSimulatorViewModel.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/CardTrackingSimulatorViewModel.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.simulation
-
 import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
@@ -358,30 +333,25 @@ class CardTrackingSimulatorViewModel(
     numThreads: NumThreads,
 ) : AndroidViewModel(application) {
     val latestBestDetection = _latestBestDetection.asStateFlow()
-
-    fun setDetectionEnabled(enabled: Boolean) /* body omitted */
-
+    fun setDetectionEnabled(enabled: Boolean)
     fun processBitmap(
         bitmap: Bitmap,
         canvasSize: IntSize = IntSize.Zero,
         onDetection: (CardDetection, Bitmap) -> Unit,
-    ) /* body omitted */
-
+    )
     suspend fun captureLatest(
         onCapture: (CardDetection, Bitmap) -> Unit,
-    ): Boolean /* expression body omitted */
-
-    override fun onCleared() /* body omitted */
+    ): Boolean
+    override fun onCleared()
 }
 ```
 
-### CardTrackingSimulatorViewModelFactory (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/CardTrackingSimulatorViewModelFactory.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/CardTrackingSimulatorViewModelFactory.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.simulation
-
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -408,17 +378,16 @@ class CardTrackingSimulatorViewModelFactory(
     private val preProcessingImageTransformation: PreProcessingImageTransformation,
     private val numThreads: NumThreads,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T /* body omitted */
+    override fun <T : ViewModel> create(modelClass: Class<T>): T
 }
 ```
 
-### VideoPreviewWithFullFrameCapture (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/VideoPreviewWithFullFrameCapture.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/ui/simulation/VideoPreviewWithFullFrameCapture.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.ui.simulation
-
 import android.graphics.Bitmap
 import android.net.Uri
 import android.view.TextureView
@@ -447,8 +416,9 @@ import com.apexfission.android.math.models.ImageSpaceChain
 import com.apexfission.android.carddetector.ui.camerapreview.createPreviewImageSpaceChain
 import java.util.concurrent.atomic.AtomicReference
 
+@OptIn(UnstableApi::class)
 @Composable
 fun VideoPreviewWithFullFrameCapture(
     videoUri: Uri, modifier: Modifier = Modifier, captureIntervalMs: Long = 33L, onFrame: (Bitmap, ImageSpaceChain) -> Unit
-) /* body omitted */
+)
 ```

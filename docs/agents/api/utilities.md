@@ -6,17 +6,12 @@ The dHash helpers are synchronous CPU work. Input images remain caller-owned; te
 
 `OcrWrapper()` owns an ML Kit Latin recognizer. `run(Bitmap)` suspends and returns text blocks with nullable Rect bounds relative to its input. It neither recycles the bitmap nor parses IDs/barcodes. ML Kit failures propagate; new calls after close throw IllegalStateException. Close is idempotent and disposes the recognizer once active wrapper requests finish. Keep the input valid through processing; see the ownership recipe.
 
-## Declarations
-
-Exact source excerpts; implementation bodies are omitted. Imports below provide type resolution, including some implementation-only imports.
-
-### OcrWrapper (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/ocr/OcrWrapper.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/ocr/OcrWrapper.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain.ocr
-
 import android.graphics.Bitmap
 import android.graphics.Rect
 import com.google.mlkit.vision.common.InputImage
@@ -29,53 +24,43 @@ data class OcrResult(
     val text: String,
     val boundingBox: Rect?
 )
-
 class OcrWrapper internal constructor(
     private val recognizer: OcrRecognizer,
 ) : AutoCloseable {
     constructor() : this(MlKitOcrRecognizer())
-
-    suspend fun run(image: Bitmap): List<OcrResult> /* body omitted */
-
-    override fun close() /* body omitted */
+    suspend fun run(image: Bitmap): List<OcrResult>
+    override fun close()
 }
 ```
 
-### differenceHash (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/image/differenceHash.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/domain/tflite/image/differenceHash.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.domain.tflite.image
-
 import android.graphics.Bitmap
 import androidx.core.graphics.scale
 import com.apexfission.android.math.models.ImageBox
 
-fun Bitmap.generateDHash(hashSize: Int = 8): ULong /* body omitted */
-
+fun Bitmap.generateDHash(hashSize: Int = 8): ULong
 fun Bitmap.generateDHashFromRegion(
     box: ImageBox,
     hashSize: Int = 8
-): ULong /* body omitted */
-
-fun ULong.hammingDistanceTo(other: ULong): Int /* body omitted */
-
-fun dhashDistance(a: Bitmap, b: Bitmap, hashSize: Int = 8): Int /* body omitted */
-
-fun isVisuallySimilar(a: Bitmap, b: Bitmap, maxDistance: Int = 18, hashSize: Int = 8): Boolean /* body omitted */
-
-fun isVisuallySimilar(a: ULong, b: ULong, differenceHashDistanceLimit: Int = 18): Boolean /* body omitted */
+): ULong
+fun ULong.hammingDistanceTo(other: ULong): Int
+fun dhashDistance(a: Bitmap, b: Bitmap, hashSize: Int = 8): Int
+fun isVisuallySimilar(a: Bitmap, b: Bitmap, maxDistance: Int = 18, hashSize: Int = 8): Boolean
+fun isVisuallySimilar(a: ULong, b: ULong, differenceHashDistanceLimit: Int = 18): Boolean
 ```
 
-### BitmapUse (carddetector)
+## `carddetector/src/main/java/com/apexfission/android/carddetector/resource/BitmapUse.kt`
 
 [Source](../../../carddetector/src/main/java/com/apexfission/android/carddetector/resource/BitmapUse.kt)
 
 ```kotlin
 package com.apexfission.android.carddetector.resource
-
 import android.graphics.Bitmap
 
-inline fun <T> Bitmap.use(block: (Bitmap) -> T): T /* body omitted */
+inline fun <T> Bitmap.use(block: (Bitmap) -> T): T
 ```

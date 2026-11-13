@@ -1,5 +1,4 @@
 import {buildVersioned} from './build-versioned.mjs';
-import {createHash} from 'node:crypto';
 import {readFile,writeFile,mkdir,rm,readdir,copyFile} from 'node:fs/promises';
 import {resolve,dirname,relative} from 'node:path';
 import {execFileSync} from 'node:child_process';
@@ -7,8 +6,7 @@ import {rewriteMarkdown,humanPages,base,repository} from './markdown.mjs';
 const root=resolve('..');
 process.env.DOCS_REF ||= execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 if(!/^[a-f0-9]{40}$/.test(process.env.DOCS_REF))throw new Error('DOCS_REF must be an immutable full commit SHA');
-execFileSync('android-repo-setup',['module_release','verify'],{cwd:root,stdio:'inherit'});
-for(const script of ['docs','media'])execFileSync('python3',[`scripts/${script}.py`,'verify'],{cwd:root,stdio:'inherit'});
+execFileSync('android-repo-docs',['check'],{cwd:root,stdio:'inherit'});
 const read=p=>readFile(resolve(root,p),'utf8');
 async function put(p,s){await mkdir(dirname(p),{recursive:true});await writeFile(p,s);}
 async function walk(dir){let out=[];for(const e of await readdir(dir,{withFileTypes:true})){const p=resolve(dir,e.name);out.push(...e.isDirectory()?await walk(p):[p]);}return out;}
@@ -24,18 +22,8 @@ const manifest=JSON.parse(await read('docs/screenshots/manifest.json'));
 for(const s of manifest.scenarios)await copyFile(resolve(root,'docs/screenshots',s.file),resolve('public/screenshots',s.file));
 await copyFile(resolve(root,'docs/screenshots/manifest.json'),'public/screenshots/manifest.json');
 const ui=JSON.parse(await read('docs/screenshots/ui-manifest.json'));
-if(!/^[a-f0-9]{40}$/.test(ui.source)||ui.images.length!==23)throw new Error('Invalid UI screenshot provenance');
-const expectedUi=new Set([...['front','back','front-ready','back-ready','turn-over','review'].flatMap(s=>['en','es'].map(l=>`capture-${s}-${l}.png`)), ...['single-side-detected','single-side-idle','detection-overlay','lock-on-overlay','debug-overlay','welcome-en','welcome-es','single-side-auto-en','single-side-auto-es','single-review-en','single-review-es'].map(s=>s+'.png')]);
-for(const item of ui.images){
- if(!expectedUi.delete(item.file))throw new Error(`Unexpected or duplicate UI screenshot: ${item.file}`);
- const path=resolve(root,'docs/screenshots',item.file),bytes=await readFile(path);
- if(bytes.subarray(0,8).toString('hex')!=='89504e470d0a1a0a'||
-    createHash('sha256').update(bytes).digest('hex')!==item.sha256||
-    bytes.readUInt32BE(16)!==item.width||bytes.readUInt32BE(20)!==item.height)
-  throw new Error(`Changed UI screenshot; review provenance before accepting: ${item.file}`);
- await copyFile(path,resolve('public/screenshots',item.file));
-}
-if(expectedUi.size)throw new Error('Missing required UI screenshots');
+// Integrity, dimensions, required filenames and source provenance are checked by android-repo-docs.
+for(const item of ui.images)await copyFile(resolve(root,'docs/screenshots',item.file),resolve('public/screenshots',item.file));
 await copyFile(resolve(root,'docs/screenshots/ui-manifest.json'),'public/screenshots/ui-manifest.json');
 
 const core=JSON.parse(await read('docs/releases/carddetector.json'));

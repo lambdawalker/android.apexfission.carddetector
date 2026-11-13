@@ -1,0 +1,122 @@
+schema: 1
+repository: lambdawalker/android.apexfission.carddetector
+title: Card Detector
+modules:
+  carddetector: Card Detector
+  tfmodel: Sentinel Card Model
+tooling_ref: 8e7d731e798ff9defcd71b2b146958e0ab3e146a
+sources:
+  roots:
+  - carddetector/src/main/java
+  - tfmodel/src/main/java
+  manifest: docs/api-inputs.json
+  groups:
+  - include:
+    - '**/ui/capture/**/*.kt'
+    - '**/CardDetectorLite.kt'
+    - '**/CardTrackingSimulator.kt'
+    - '**/CardDetectorPreset.kt'
+    - '**/CameraPreset.kt'
+    - '**/CardDetectorOverlayScope.kt'
+    intro: .project/docs/introductions/components.md
+    output: docs/agents/api/components.md
+  - include:
+    - '**/ui/overlays/**/*.kt'
+    intro: .project/docs/introductions/overlays.md
+    output: docs/agents/api/overlays.md
+  - include:
+    - '**/domain/ocr/**/*.kt'
+    - '**/domain/tflite/image/**/*.kt'
+    - '**/resource/**/*.kt'
+    intro: .project/docs/introductions/utilities.md
+    output: docs/agents/api/utilities.md
+  - include:
+    - '**/ui/**/*.kt'
+    intro: .project/docs/introductions/adapters.md
+    output: docs/agents/api/adapters.md
+  - include:
+    - '**/*.kt'
+    intro: .project/docs/introductions/detection.md
+    output: docs/agents/api/detection.md
+  examples:
+  - source: app/src/main/java/com/apexfission/android/carddetector/demo/DocumentationQuickstartActivity.kt
+    target: docs/agents/quickstart.md
+    start: '<!-- example: quickstart -->'
+    end: '<!-- end-example: quickstart -->'
+  - source: app/src/main/java/com/apexfission/android/carddetector/demo/OwnedBitmapWork.kt
+    target: docs/agents/recipes.md
+    start: '<!-- example: ownership -->'
+    end: '<!-- end-example: ownership -->'
+site:
+  build:
+  - npm
+  - --prefix
+  - sites
+  - run
+  - check
+  serve:
+  - npm
+  - --prefix
+  - sites
+  - run
+  - dev
+media:
+  manifest: docs/screenshots/manifest.json
+  base: docs/screenshots
+  required_ids:
+  - historical-card-tracking
+  source:
+    path: docs/demo.mp4
+    min_bytes: 1000000
+  frames:
+  - id: historical-card-tracking
+    candidate: build/docs-media/tracking.png
+    evidence: build/docs-media/tracking.json
+    command:
+    - ffmpeg
+    - -hide_banner
+    - -loglevel
+    - error
+    - -y
+    - -ss
+    - '12'
+    - -i
+    - docs/demo.mp4
+    - -frames:v
+    - '1'
+    - -vf
+    - scale=540:-1
+    - -threads
+    - '1'
+    - build/docs-media/tracking.png
+  manifests:
+  - path: docs/screenshots/ui-manifest.json
+    base: docs/screenshots
+    collection: images
+    file_key: file
+    required_files:
+    - capture-front-en.png
+    - capture-front-es.png
+    - capture-back-en.png
+    - capture-back-es.png
+    - capture-turn-over-en.png
+    - capture-turn-over-es.png
+    - capture-review-en.png
+    - capture-review-es.png
+    - single-side-detected.png
+    - single-side-idle.png
+    - detection-overlay.png
+    - lock-on-overlay.png
+    - debug-overlay.png
+    - welcome-en.png
+    - welcome-es.png
+    - capture-front-ready-en.png
+    - capture-front-ready-es.png
+    - capture-back-ready-en.png
+    - capture-back-ready-es.png
+    - single-side-auto-en.png
+    - single-side-auto-es.png
+    - single-review-en.png
+    - single-review-es.png
+    require_source: true
+    require_dimensions: true

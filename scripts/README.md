@@ -1,10 +1,5 @@
-# Project-specific documentation tools
+# Shared repository tools
 
-Only two executable helpers remain:
+Documentation source extraction, examples, media rendering and acceptance now belong to `android-repo-docs`. Use the root `docs.sh` or `docs.bat` launcher. Project mappings and introductory prose live in `.project/docs/`; runtime helpers are no longer copied into this folder.
 
-- `docs.py`: reviewed Kotlin declaration excerpts and runnable examples, including Card Detector-specific prose and classification.
-- `media.py`: historical recording/frame rendering and acceptance policy.
-
-Bootstrap, setup drift checks, screenshot manifests, and required JUnit checks are owned by the shared CLI. Project-specific inputs live in `.project/verification/checks.json`.
-
-Run `python3 -m unittest discover -s docs/tests -v` for documentation extractor tests. Bootstrap and shared-check tests live in the CLI repository.
+Setup, publishing, required JUnit validation, and GitHub configuration remain owned by `android-repo-setup`, through `setup.sh` / `setup.bat` and `.project/setup/`. Shared tool regression tests live in `gradle.android-repo-setup`.
