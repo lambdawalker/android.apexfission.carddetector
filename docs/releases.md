@@ -121,3 +121,33 @@ npm run check
 Fetch historical media with `git lfs pull --include="docs/**" --exclude=""` before the site build. Do not regenerate confirmed archives from current properties.
 
 The generated workflows verify both libraries against Central and JitPack coordinates without uploading, run unit tests, render/validate previews for both screenshot-enabled modules, and provide signed APK builds. The specialized capture-guide emulator tests remain separate. The workflow generator protects locally edited generated files; review changes before overwriting them.
+
+## Automatic attempt reconciliation
+
+Before selecting a version, the shared CLI now checks all pending attempts for the
+selected module and destination. A proven provider failure with no public artifacts
+is archived, allowing a newer version to proceed. A completed upload whose public
+artifacts pass verification is finalized without uploading again. Older confirmed
+publications are added to history without replacing newer installation metadata.
+Active deployments, missing upload receipts, partial artifacts, and unknown outcomes
+stay pending and appear in the Actions reconciliation summary.
+
+Central publishing captures the provider deployment ID in the release journal as
+soon as the upload receipt is logged. New reservations also keep a versioned snapshot
+of their resolved verification rules. Failed versions remain reserved and cannot be
+re-uploaded at that destination. Cancellations are checked by the next publishing
+run; ordinary failures also attempt reconciliation before the job exits.
+
+Preview a module without changing remote state:
+
+```sh
+sh ./setup.sh module_release reconcile --module carddetector
+RELEASE_REPOSITORY=jitpack sh ./setup.sh module_release reconcile --module carddetector
+```
+
+Add `--apply` to archive proven failures or finalize verified publications. Use
+`--version X.Y.Z` to limit recovery to one attempt. Central status reads require the
+same username/password used for publication. The new logic does not retroactively
+prove unknown legacy attempts failed. In particular, JitPack `tagNotFound` without
+a matching commit remains uncertain. See the shared CLI's
+[reconciliation rules](https://github.com/lambdawalker/gradle.android-repo-setup/blob/e107a1391053c3a70dbd01e40860ce4b5321290c/docs/release-reconciliation.md).

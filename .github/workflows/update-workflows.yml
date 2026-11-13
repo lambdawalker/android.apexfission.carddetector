@@ -5,7 +5,7 @@ on:
       version:
         description: Validated Rust tooling tag or full commit SHA
         required: true
-        default: 'v0.1.17'
+        default: 'e107a1391053c3a70dbd01e40860ce4b5321290c'
       docs_version:
         description: Documentation tool tag or full commit SHA (blank preserves current pin)
         required: false
