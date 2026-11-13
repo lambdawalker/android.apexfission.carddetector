@@ -1,10 +1,9 @@
-import {base} from './markdown.mjs';
 
 /** Shared presentation, with links into the selected documentation scope. */
-export function showcase(scope) {
+export function showcase(scope, base) {
  const es=scope.language==='es',lang=scope.language;
  const link=(slug)=>scope.root+slug+'/';
- const gallery=(items)=>`<div class="screen-gallery">\n${items.map(([file,title,description])=>`<figure><img src="${base}/screenshots/${file}.png" alt="${title}" loading="lazy" width="1032" height="2237" /><figcaption><strong>${title}</strong> ${description}</figcaption></figure>`).join('\n')}\n</div>`;
+ const gallery=(items)=>items.map(([file,title,description])=>`### ${title}\n\n![${title}](${base}/screenshots/${file}.png)\n\n${description}\n`).join('\n');
  return `# ${es?'Detecta. Sigue. Captura.':'Detect. Track. Capture.'}
 
 ${es?'Integra detección de tarjetas en Android con seguimiento local y recortes para tu propio flujo de procesamiento. CameraX y Jetpack Compose proporcionan la vista de cámara y los controles.':'Build an Android card-scanning experience with on-device detection, temporal tracking, and cropped images for your own processing pipeline. CameraX and Jetpack Compose provide the preview and capture controls.'}

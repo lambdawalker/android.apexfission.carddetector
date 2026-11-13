@@ -1,0 +1,11 @@
+---
+import '../styles/brand.css';
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import pages from '../../pages.json';
+import site from '../../site.json';
+import {currentPage} from '../../scripts/navigation.mjs';
+const page=currentPage(pages,Astro.url.pathname,(site.prefix||'').replace(/\/$/,''));
+const base=(site.prefix||'').replace(/\/$/,'');
+---
+<Default><slot />{page?.guide==='project/media' && <figure class="recording"><video controls playsinline preload="metadata" poster={`${base}/screenshots/tracking.png`} aria-label="Historical screen recording of card detection guidance" aria-describedby="recording-description"><source src={`${base}/media/card-detection.mp4`} type="video/mp4" /><a href={`${base}/media/card-detection.mp4`}>Download the recording</a></video><figcaption id="recording-description">31-second historical demonstration. No narrated audio. Capture source and device unknown. This recording does not verify current-release functionality.</figcaption></figure>}</Default>
+<style>.recording{margin:1.5rem 0}.recording video{max-width:min(100%,28rem);max-height:70vh}.recording figcaption{font-size:.85rem;margin-top:.5rem}</style>
