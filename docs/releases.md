@@ -53,6 +53,24 @@ JitPack installs the pinned CLI from source and runs `./setup.sh jitpack_build`.
 
 Source tags and release histories are immutable. Keep all pending/upload-started markers until the destination outcome is known. The migration observed old `release-pending/carddetector/0.1.10`, `release-uploading/carddetector/0.1.10`, and `release-pending/jitpack/carddetector/0.1.9` refs; it does not delete, confirm or retry them. Check their current remote status before the next release.
 
+### Publish after an unresolved older JitPack attempt
+
+The [failed publish run](https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/43357262211) stopped during preparation, before reservation or upload. The old JitPack `0.1.9` journal remains pending even though `0.1.10` is confirmed. During investigation, JitPack returned `tagNotFound` with no source commit for `carddetector~v0.1.9`. That is not proof of a failed build; do not delete the pending journal, its legacy source tag, or confirmed release records to bypass the check.
+
+To intentionally publish current source as a separate version:
+
+1. Start a **new** run of **Publish carddetector** from `main` with repository **jitpack**.
+2. Enter an explicit version newer than all detector release history. `0.1.11` passed preparation against the source of the failed run; choose a later version if history has advanced.
+3. Enable **bypass_version_verification**. For JitPack this preserves older pending attempts while allowing the separate newer release. Upload-started markers still block it.
+
+Do not use **Re-run failed jobs** for this recovery: that repeats the original blank version and disabled override. The equivalent preparation check does not reserve or upload artifacts:
+
+```sh
+RELEASE_REPOSITORY=jitpack ./setup.sh module_release prepare --module carddetector --version 0.1.11 --allow-pending-jitpack
+```
+
+Use **Reconcile failed JitPack attempts** only when the provider can prove terminal failure at the journal's exact source and no public artifacts exist. Preview first. The current `v0.1.17` reconciliation command rejects legacy unqualified source tags; the shared CLI correction adds verified legacy-tag support without rewriting their identity. A `tagNotFound` response still requires investigation or the explicit separate-release path above.
+
 An in-flight Python publication must be reconciled using its original source and tooling. The CLI is absent from historical immutable source revisions, and its new verification records differ from legacy model records. See [archived Python instructions](legacy-python-publishing.md). Legacy scripts and their tests were removed from current source; retrieve them in a separate checkout at the original release source SHA. Do not delete or rewrite old release markers. New releases use the CLI.
 
 ## Documentation and verification
