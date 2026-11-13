@@ -53,6 +53,36 @@ JitPack installs the pinned CLI from source and runs `./setup.sh jitpack_build`.
 
 Source tags and release histories are immutable. Keep all pending/upload-started markers until the destination outcome is known. The migration observed old `release-pending/carddetector/0.1.10`, `release-uploading/carddetector/0.1.10`, and `release-pending/jitpack/carddetector/0.1.9` refs; it does not delete, confirm or retry them. Check their current remote status before the next release.
 
+### Recover the published Central 0.1.10 release
+
+The failed `0.1.15` and `0.1.16` runs selected **maven-central**, not JitPack.
+They stopped before uploading because the Central `0.1.10` reservation and
+upload marker were still present. Documentation was skipped after publication
+failed. The Central artifacts are public and all five SHA-256 values match the
+original reservation at `b36e4fce5b7583cb1f8a4fb6fe8c0888727b9e2c`.
+
+Run **Recover published Central carddetector 0.1.10** from `main` once. This
+manual workflow uses the normal release lock and Central environment. It checks
+the exact reservation, verifies the public files with the original source's
+Python verifier, and passes that confirmation record to the current CLI
+finalizer. Finalization updates the generated installation guide and history,
+then atomically clears only this completed Central attempt. It preserves the
+independent JitPack journal and all existing source tags. A repeat run recognizes
+the completed release and skips confirmation/finalization.
+
+This split is necessary because the old source predates
+`.project/setup/config.yaml`: current CLI `confirm` cannot load its verification
+contract. Do not substitute today's contract, delete markers manually, or
+re-upload `0.1.10`. The original verifier checks artifact structure, dependencies,
+bytecode, signature presence and every reserved hash; the current finalizer rechecks the
+reservation, source ancestry, metadata ordering and remote ref leases.
+
+After recovery, start a new **Publish carddetector** run and explicitly select
+the destination. Selecting **jitpack** publishes the coordinates used by auth;
+leaving **maven-central** selected uses Central. `bypass_version_verification`
+does not switch destinations and cannot ignore an upload-started Central journal.
+The JitPack pending-attempt procedure below still applies independently.
+
 ### Publish after an unresolved older JitPack attempt
 
 The [failed publish run](https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/43357262211) stopped during preparation, before reservation or upload. The old JitPack `0.1.9` journal remains pending even though `0.1.10` is confirmed. During investigation, JitPack returned `tagNotFound` with no source commit for `carddetector~v0.1.9`. That is not proof of a failed build; do not delete the pending journal, its legacy source tag, or confirmed release records to bypass the check.
