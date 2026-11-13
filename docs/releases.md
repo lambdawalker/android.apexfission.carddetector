@@ -51,55 +51,13 @@ JitPack installs the pinned CLI from source and runs `./setup.sh jitpack_build`.
 
 ## Recovery and legacy attempts
 
-Source tags and release histories are immutable. Keep all pending/upload-started markers until the destination outcome is known. The migration observed old `release-pending/carddetector/0.1.10`, `release-uploading/carddetector/0.1.10`, and `release-pending/jitpack/carddetector/0.1.9` refs; it does not delete, confirm or retry them. Check their current remote status before the next release.
+Source tags and release histories are immutable. The shared CLI [reconciles previous attempts](#automatic-attempt-reconciliation) before selecting a new version. Keep pending/upload-started markers until reconciliation can verify the destination outcome; a failed Actions run alone does not prove that publication failed.
 
-### Recover the published Central 0.1.10 release
+For an interrupted publication, run **SUB - Finalize Card Detector release** with the original repository, module and version. It verifies existing artifacts and completes release bookkeeping without uploading again. Retry **Documentation** independently if only the site deployment failed.
 
-The failed `0.1.15` and `0.1.16` runs selected **maven-central**, not JitPack.
-They stopped before uploading because the Central `0.1.10` reservation and
-upload marker were still present. Documentation was skipped after publication
-failed. The Central artifacts are public and all five SHA-256 values match the
-original reservation at `b36e4fce5b7583cb1f8a4fb6fe8c0888727b9e2c`.
+If an older JitPack attempt remains uncertain, investigate its provider status and original source. To intentionally publish a separate newer release, start a new module publish run from `main`, select **jitpack**, enter a version newer than all of that module's release history, and enable **bypass_version_verification**. This preserves the older pending attempt; upload-started markers still block it. Re-running a failed job uses its original inputs, so it cannot change the destination, version or override.
 
-Run **Recover published Central carddetector 0.1.10** from `main` once. This
-manual workflow uses the normal release lock and Central environment. It checks
-the exact reservation, verifies the public files with the original source's
-Python verifier, and passes that confirmation record to the current CLI
-finalizer. Finalization updates the generated installation guide and history,
-then atomically clears only this completed Central attempt. It preserves the
-independent JitPack journal and all existing source tags. A repeat run recognizes
-the completed release and skips confirmation/finalization.
-
-This split is necessary because the old source predates
-`.project/setup/config.yaml`: current CLI `confirm` cannot load its verification
-contract. Do not substitute today's contract, delete markers manually, or
-re-upload `0.1.10`. The original verifier checks artifact structure, dependencies,
-bytecode, signature presence and every reserved hash; the current finalizer rechecks the
-reservation, source ancestry, metadata ordering and remote ref leases.
-
-After recovery, start a new **Publish carddetector** run and explicitly select
-the destination. Selecting **jitpack** publishes the coordinates used by auth;
-leaving **maven-central** selected uses Central. `bypass_version_verification`
-does not switch destinations and cannot ignore an upload-started Central journal.
-The JitPack pending-attempt procedure below still applies independently.
-
-### Publish after an unresolved older JitPack attempt
-
-The [failed publish run](https://github.com/lambdawalker/android.apexfission.carddetector/actions/runs/43357262211) stopped during preparation, before reservation or upload. The old JitPack `0.1.9` journal remains pending even though `0.1.10` is confirmed. During investigation, JitPack returned `tagNotFound` with no source commit for `carddetector~v0.1.9`. That is not proof of a failed build; do not delete the pending journal, its legacy source tag, or confirmed release records to bypass the check.
-
-To intentionally publish current source as a separate version:
-
-1. Start a **new** run of **Publish carddetector** from `main` with repository **jitpack**.
-2. Enter an explicit version newer than all detector release history. `0.1.11` passed preparation against the source of the failed run; choose a later version if history has advanced.
-3. Enable **bypass_version_verification**. For JitPack this preserves older pending attempts while allowing the separate newer release. Upload-started markers still block it.
-
-Do not use **Re-run failed jobs** for this recovery: that repeats the original blank version and disabled override. The equivalent preparation check does not reserve or upload artifacts:
-
-```sh
-RELEASE_REPOSITORY=jitpack ./setup.sh module_release prepare --module carddetector --version 0.1.11 --allow-pending-jitpack
-```
-
-Use **Reconcile failed JitPack attempts** only when the provider can prove terminal failure at the journal's exact source and no public artifacts exist. Preview first. The current `v0.1.17` reconciliation command rejects legacy unqualified source tags; the shared CLI correction adds verified legacy-tag support without rewriting their identity. A `tagNotFound` response still requires investigation or the explicit separate-release path above.
+The generated **Reconcile failed JitPack attempts** workflows remain available for manual recovery. Preview first; applying reconciliation requires verified terminal failure at the journal's exact source and no public artifacts. A `tagNotFound` response without a matching commit remains uncertain.
 
 An in-flight Python publication must be reconciled using its original source and tooling. The CLI is absent from historical immutable source revisions, and its new verification records differ from legacy model records. See [archived Python instructions](legacy-python-publishing.md). Legacy scripts and their tests were removed from current source; retrieve them in a separate checkout at the original release source SHA. Do not delete or rewrite old release markers. New releases use the CLI.
 
