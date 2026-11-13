@@ -5,11 +5,11 @@ on:
       version:
         description: Validated Rust tooling tag or full commit SHA
         required: true
-        default: 'e107a1391053c3a70dbd01e40860ce4b5321290c'
+        default: 'v0.1.20'
       docs_version:
         description: Documentation tool tag or full commit SHA (blank preserves current pin)
         required: false
-        default: 'v0.1.16'
+        default: 'v0.1.20'
 permissions:
   contents: read
 jobs:
