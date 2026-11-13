@@ -3,14 +3,16 @@
   "group": "com.apexfission.android.carddetector",
   "module": "carddetector",
   "phase": "confirmed-public",
+  "repository": "maven-central",
+  "repository_url": "https://repo.maven.apache.org/maven2",
   "sha256": {
-    "-javadoc.jar": "07c7b594f8cdc145fe76208770cf347ce16e0e1980eea9f236f0f43c39e56d37",
-    "-sources.jar": "e748f42851a4baa286ccd078d0f61eb66c94b2c475a20706136ade99980e4bf7",
-    ".aar": "8003d0265497462d16339c6588a6a619b26e8a5aa42a6f2ab72b3dd44e2b4d8b",
-    ".module": "f6ba39648fc7a38aee735941130f8a0f8972ad10e85303307e3d83fc3be6da99",
-    ".pom": "50c957411c4df0450c978187cd5bafef321441b470e500e6fc93684f68952b2d"
+    "-javadoc.jar": "ffbe953796bfc182cd5c26ba483977a2a4b768b9a031dfe2ad2bd212cbeb72c1",
+    "-sources.jar": "aa8be0e71e94a10ee332576d682dfbe4332175a34990cd30804d3a86c3d93646",
+    ".aar": "bac321100eed3cf52570c959a2a608bf8b34d0314dcf9e945a18ddceee7aefc6",
+    ".module": "ff7d6f0d515904b47c727185ada10e92c9e121856b167718c414c4bb3e1011af",
+    ".pom": "9b228481f9651d09c8975dce63ac9066c32bfd42ad23ccc292ba036b6d7ab393"
   },
-  "source": "acb0035aee1a0aec0c6886617243514a040fa650",
-  "version": "0.1.1",
-  "workflow_run": "37376198689"
+  "source": "b36e4fce5b7583cb1f8a4fb6fe8c0888727b9e2c",
+  "version": "0.1.10",
+  "workflow_run": "42352181293"
 }

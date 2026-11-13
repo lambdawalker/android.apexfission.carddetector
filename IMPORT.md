@@ -19,7 +19,7 @@ Choose one publishing destination and one dependency syntax.
 
 ### maven-central
 
-Repository: **maven-central**. Confirmed version **0.1.1**. [Source commit](https://github.com/lambdawalker/android.apexfission.carddetector/commit/acb0035aee1a0aec0c6886617243514a040fa650).
+Repository: **maven-central**. Confirmed version **0.1.10**. [Source commit](https://github.com/lambdawalker/android.apexfission.carddetector/commit/b36e4fce5b7583cb1f8a4fb6fe8c0888727b9e2c).
 
 #### Gradle Kotlin DSL
 
@@ -38,7 +38,7 @@ In the app's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.apexfission.android.carddetector:card-detector:0.1.1")
+    implementation("com.apexfission.android.carddetector:card-detector:0.1.10")
 }
 ```
 
@@ -59,7 +59,7 @@ In the app's `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'com.apexfission.android.carddetector:card-detector:0.1.1'
+    implementation 'com.apexfission.android.carddetector:card-detector:0.1.10'
 }
 ```
 
@@ -69,7 +69,7 @@ Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
 
 ```toml
 [libraries]
-carddetector = { module = "com.apexfission.android.carddetector:card-detector", version = "0.1.1" }
+carddetector = { module = "com.apexfission.android.carddetector:card-detector", version = "0.1.10" }
 ```
 
 Then use this instead of the direct dependency in the app's `build.gradle.kts`:
@@ -99,7 +99,7 @@ Add these repositories and dependency to `pom.xml`:
   <dependency>
     <groupId>com.apexfission.android.carddetector</groupId>
     <artifactId>card-detector</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.10</version>
     <type>aar</type>
   </dependency>
 </dependencies>
