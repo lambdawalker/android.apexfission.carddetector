@@ -25,4 +25,4 @@ Existing accepted screenshot metadata remains historical evidence for its origin
 and review affected consumer screens before accepting new baselines; do not rewrite historical
 acceptance hashes to make the migration appear validated.
 
-Pinned implementation: `a32dce2342b80f5b793fec6ba8ce75c69228251b` ([UI Common PR #2](https://github.com/lambdawalker/android.ui.common/pull/2)).
+Pinned implementation: `589b1925bb90ba5db45d4a22c5abcf7bffafe7c9` ([UI Common PR #2](https://github.com/lambdawalker/android.ui.common/pull/2)).

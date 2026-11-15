@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: lambdawalker/android.ui.common
-          ref: a32dce2342b80f5b793fec6ba8ce75c69228251b
+          ref: 589b1925bb90ba5db45d4a22c5abcf7bffafe7c9
           path: _integration/ui-common
       - uses: actions/setup-java@v5
         with:
