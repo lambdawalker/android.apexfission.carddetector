@@ -33,4 +33,5 @@
     <string name="ocr_demo_failed">La solicitud de OCR falló: %1$s</string>
     <string name="ocr_demo_timings">Backend: %1$d ms · Inferencia OCR: %2$d ms</string>
     <string name="ocr_demo_no_fields">El OCR se completó correctamente. Este despliegue no devolvió campos extraídos.</string>
+    <string name="catalog_app_settings">Ajustes de la aplicación</string>
 </resources>

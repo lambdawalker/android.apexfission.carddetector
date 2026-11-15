@@ -48,3 +48,12 @@ rootProject.name = "carddetector"
 include(":app")
 include(":carddetector")
 include(":tfmodel")
+
+// Temporary source integration until UI Common has a confirmed published release.
+providers.gradleProperty("uiCommonCheckout").orNull?.let { checkout ->
+    includeBuild(checkout) {
+        dependencySubstitution {
+            substitute(module("com.apexfission.android:ui-common")).using(project(":ui-common"))
+        }
+    }
+}

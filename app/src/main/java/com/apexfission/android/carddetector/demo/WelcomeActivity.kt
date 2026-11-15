@@ -1,5 +1,6 @@
 package com.apexfission.android.carddetector.demo
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -22,9 +23,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.apexfission.android.carddetector.demo.ui.theme.CardDetectorDemoTheme
-import com.apexfission.android.democommon.CardTitle
-import com.apexfission.android.democommon.DemoCard
-import com.apexfission.android.democommon.DemoScreen
+import com.apexfission.android.ui.common.SectionHeading
+import com.apexfission.android.ui.common.ContentCard
+import com.apexfission.android.ui.common.CatalogScreen
 
 /** Launcher catalog. Camera permissions are requested only by the selected camera demo. */
 class WelcomeActivity : ComponentActivity() {
@@ -92,15 +93,21 @@ internal fun WelcomeScreen(
     onOpenDemo: (DemoDestination) -> Unit,
     onOpenSettings: () -> Unit,
 ) {
-    DemoScreen(
+    CatalogScreen(
         title = stringResource(R.string.welcome_title),
-        welcomeNote = stringResource(R.string.welcome_note),
+        description = stringResource(R.string.welcome_note),
         eyebrow = stringResource(R.string.welcome_eyebrow),
-        onOpenSettings = onOpenSettings,
+        headerActions = {
+            androidx.compose.material3.OutlinedButton(
+                onClick = onOpenSettings,
+                modifier = Modifier.fillMaxWidth(),
+                shape = androidx.compose.material3.MaterialTheme.shapes.small,
+            ) { androidx.compose.material3.Text(stringResource(R.string.catalog_app_settings)) }
+        },
     ) {
         items(DemoDestination.entries, key = { it.name }) { demo ->
-            DemoCard {
-                CardTitle(title = stringResource(demo.title), icon = demo.icon)
+            ContentCard {
+                SectionHeading(title = stringResource(demo.title), icon = demo.icon)
                 Text(
                     stringResource(demo.description),
                     style = MaterialTheme.typography.bodyMedium,
