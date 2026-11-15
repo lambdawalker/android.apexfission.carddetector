@@ -58,7 +58,7 @@ dependencies {
             module = providers.gradleProperty("modelCoreArtifact").get()
         )
     }
-    implementation(libs.apexfission.demo.common)
+    implementation(libs.apexfission.ui.common)
     implementation(libs.apexfission.permission)
     implementation(libs.apexfission.yolo)
 

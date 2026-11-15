@@ -83,3 +83,7 @@ source pins require Rust and Git. No setup credentials are needed.
 Configuration and project-specific introductory Markdown live in `.project/docs/`.
 Confirmed release records and archived source identities remain authoritative.
 Documentation checks do not accept images, publish artifacts, or deploy the site.
+
+## UI Common migration
+
+UI Common is pinned to its confirmed JitPack release `ui-common~v0.1.0-jitpack`. See [migration instructions](docs/ui-common-migration.md) for dependency coordinates and validation.

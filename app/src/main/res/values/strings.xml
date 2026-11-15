@@ -33,4 +33,5 @@
     <string name="ocr_demo_failed">OCR request failed: %1$s</string>
     <string name="ocr_demo_timings">Backend: %1$d ms · OCR inference: %2$d ms</string>
     <string name="ocr_demo_no_fields">OCR succeeded. This deployment did not return extracted fields.</string>
+    <string name="catalog_app_settings">App settings</string>
 </resources>
